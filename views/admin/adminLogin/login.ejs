@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Admin Login Page</title>
+    <link rel="shortcut icon" href="/img/fav.png" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:400,700"
+    />
+    <link rel="stylesheet" href="/adminpublic/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="/adminpublic/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/adminpublic/css/templatemo-style.css"/>
+  </head>
+  <body>
+    <div>
+      <nav class="navbar navbar-expand-xl">
+        <div class="container h-100">
+         <a class="navbar-brand logo_h" 
+              ><img src="/img/logo.png" alt="";
+            /></a>
+        </div>
+      </nav>
+    </div>
+    <div class="container tm-mt-big tm-mb-big">
+      <div class="row">
+        <div class="col-12 mx-auto tm-login-col">
+          <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+            <div class="row">
+              <div class="col-12 text-center">
+                <h2 class="tm-block-title mb-4">Welcome to Dashboard, Login</h2>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-12">
+                <form action="/admin/login" method="post" class="tm-login-form" onsubmit="return signInValidation()">
+                  <div class="form-group">
+                    <label for="adminGmail">Gmail</label>
+                    <input
+                      name="gmail"
+                      type="email"
+                      class="form-control validate"
+                      id="adminGmail1"
+                    />
+                    <div id="error-message-gmail" style="color: red"></div>
+                  </div>
+                  <div class="form-group mt-3">
+                    <label for="password">Password</label>
+                    <input
+                      name="password"
+                      type="password"
+                      class="form-control validate"
+                      id="password"
+                      value=""
+                    />
+                    <div id="error-message-password" style="color: red"></div>
+                  </div>
+                  <div class="form-group mt-4">
+                    <button
+                      type="submit"
+                      class="btn btn-primary btn-block text-uppercase"
+                    >
+                      Login
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <footer class="tm-footer row tm-mt-small">
+      <div class="col-12 font-weight-light">
+      </div>
+    </footer>
+   <script>
+     function signInValidation() {
+    let email = document.getElementById("adminGmail1").value;
+    let password1 = document.getElementById("password").value;
+console.log("gmail",email);
+    if (email == "") {
+      document.getElementById("error-message-gmail").innerHTML = "*please write email*";
+      return false;
+    } 
+    else {
+      document.getElementById("error-message-gmail").innerHTML = "";
+    }
+    if (password1 == "") {
+      document.getElementById("error-message-password").innerHTML =
+        "*please write your password*";
+      return false;
+    }
+    if (password1.length < 8) {
+      document.getElementById("error-message-password").innerHTML =
+        "*please write password Atleast 8 charaters*";
+      return false;
+    }
+    if (password1.search(/[0-9]/) == -1) {
+      document.getElementById("error-message-password").innerHTML =
+        "*please write password Atleast 1 Numberic character";
+      return false;
+    }
+    if (password1.search(/[a-z]/) == -1) {
+      document.getElementById("error-message-password").innerHTML =
+        "*please write password Atleast 1 lower case character";
+      return false;
+    }
+    if (password1.search(/[A-Z]/) == -1) {
+      document.getElementById("error-message-password").innerHTML =
+        "*please write password Atleast 1 upper case character";
+      return false;
+    }
+    if (password1.search(/[!\@\#\$\%\^\&\*\(\)\_\-\+\=\<\>\,\?]/) == -1) {
+      document.getElementById("error-message-password").innerHTML =
+        "*please write password Atleast 1 special symbol in the character";
+      return false;
+    } else {
+      document.getElementById("error-message-password").innerHTML = "";
+      return true;
+    }
+  }
+</script>
+  </body>
+</html>

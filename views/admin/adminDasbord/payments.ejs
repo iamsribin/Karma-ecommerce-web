@@ -1,0 +1,56 @@
+
+
+<%- include('../admin-partials/header'); %>
+<div class="col-12 tm-block-col">
+    <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
+        <h2 class="tm-block-title">Payments List</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">PAYMENT ID.</th>
+                    <th scope="col">STATUS</th>
+                    <th scope="col">AMOUNT</th>
+                    <th scope="col">PAYMENT METHOD</th>
+                    <th scope="col">CREATION DATE</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row"><b>#122349</b></th>
+                    <td>
+                        <div class="tm-status-circle moving">
+                        </div>succeeded
+                    </td>
+                    <td>$799</td>
+                    <td>Razor pay</td>
+                    <td>04:00, 14 NOV 2018</td>
+                </tr>
+                <tr>
+                    <th scope="row"><b>#122349</b></th>
+                    <td>
+                        <div class="tm-status-circle cancelled">
+                        </div>Declined
+                    </td>
+                    <td>$500</td>
+                    <td>COD</td>
+                    <td>06:00, 28 NOV 2018</td>
+                </tr>
+                <tr>
+                    <th scope="row"><b>#122349</b></th>
+                    <td>
+                        <div class="tm-status-circle pending">
+                        </div>Pending
+                    </td>
+                    <td>$500</td>
+                    <td>COD</td>
+                    <td>06:00, 28 NOV 2018</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<%- include('../admin-partials/footer'); %>
+

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>forgotpassword</title>
+    <link rel="shortcut icon" href="img/fav.png">
+    <link rel="stylesheet" href="/css/login.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css"
+    />
+</head>
+<body>
+    <div class="otpcontainer" id="otpcontainer">
+    <div class="form-containe sign-in-containe">
+        <form
+          id="forgotPasswordForm"
+        >
+          <h2>forgot password</h2>
+          <span>enter email address</span>
+          <span id="error-message" style="color: red;"></span>
+          <input name="email" id="email" type="email" placeholder="email" />
+          <button type="submit">sent otp</button>
+        </form>
+      </div>
+    </div>
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/frond-end-JS/forgotPasswordEmail.js"></script>
+</body>
+</html>

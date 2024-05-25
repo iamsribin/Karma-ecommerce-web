@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Dashboard</title>
+    <link rel="shortcut icon" href="/img/fav.png" />
+    <!-- <link rel="shortcut icon" href="/img/logo.png" /> -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="/adminpublic/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/adminpublic/css/templatemo-style.css" />
+    <link rel="stylesheet" href="/adminpublic/css/fontawesome.min.css" />
+
+    <link rel="stylesheet" href="/adminpublic/cropper/cropper.min.css">
+
+    <style>
+      .nav-link.active {
+        color: #ffffff !important;
+      }
+
+      .nav-link.active::after {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 3px;
+        background-color: #ffc107;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+      }
+
+      .nav-item {
+        position: relative;
+      }
+
+
+      /* Style for search bar */
+.input-group {
+  width: 100%;
+}
+/* Style for action buttons */
+.btn {
+  margin-bottom: 10px;
+}
+
+/* Style for table image */
+.product-image {
+  max-width: 100px;
+  height: auto;
+}
+
+/* Style for status badge */
+.badge {
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+/*  */
+/* Change search bar color to white */
+.input-group input[type="text"] {
+  color: #fff;
+}
+
+/* Style for action buttons */
+.action-buttons .btn {
+  width: 100%;
+}
+
+/* Style for table image */
+.product-image {
+  max-width: 100px;
+  height: auto;
+}
+
+/* Style for status badge */
+.badge {
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .action-buttons .btn {
+    margin-top: 10px;
+  }
+
+  /* nav product */
+
+}
+
+
+    </style>
+  </head>
+
+  <body id="reportsPage">
+    <nav class="navbar navbar-expand-xl">
+      <div class="container h-100">
+        <a class="navbar-brand logo_h"><img src="/img/logo.png" alt="" /></a>
+        <button
+          class="navbar-toggler ml-auto mr-0"
+          type="button"
+          data-toggle="collapse"
+          data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <i class="fas fa-bars tm-nav-icon"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mx-auto h-100">
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/products">
+                <i class="fas fa-shopping-cart"></i> Products
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/customers">
+                <i class="far fa-user"></i> customer
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/categories">
+                <i class="fas fa-list"></i> Categories
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/orders">
+                <i class="fas fa-truck"></i> Orders
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/coupens">
+                <i class="fas fa-tag"></i> Coupens
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/banners">
+                <i class="fas fa-image"></i> Banners
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/admin/payments">
+                <i class="fas fa-money-bill-alt"></i> Payments
+              </a>
+            </li>
+          </ul>
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link d-block" href="/admin/logout">
+                Admin, <b>Logout</b>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+

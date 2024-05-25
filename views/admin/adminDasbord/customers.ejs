@@ -1,0 +1,116 @@
+<%- include('../admin-partials/header'); %>
+<div class="col-12 tm-block-col">
+  <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
+    <h2 class="tm-block-title">Customer List</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">NO.</th>
+          <th scope="col">STATUS</th>
+          <th scope="col">CUSTOMER</th>
+          <th scope="col">GMAIL</th>
+          <th scope="col">PHONE</th>
+          <th scope="col">CREATED</th>
+          <th scope="col">ACTION</th>
+        </tr>
+      </thead>
+      <div class="col-lg-8">
+        <div class="input-group mb-3">
+          <input
+            type="text"
+            class="form-control"
+            style="background-color: aliceblue; color: black"
+            placeholder="Search products..."
+          />
+          <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="button">
+              <i class="fas fa-search"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <tbody>
+        <% locals.users.forEach((user, index) => { %>
+        <tr>
+          <th scope="row"><b><%= index + 1 %></b></th>
+          <td>
+            <% if (user.status == "active") { %>
+            <div class="tm-status-circle moving"></div>
+            Active <% } else { %>
+            <div class="tm-status-circle cancelled"></div>
+            Blocked <% } %>
+          </td>
+          <td>
+            <a href="" style="color: white;">
+            <img
+              width="40"
+              height="40"
+              src="<%= user.profilePicture %>"
+              class="tm-profile-photo rounded-circle"
+              alt="Profile Photo"
+            /><b> <%= user.name %></b>
+        </a>
+          </td>
+          <td><b><%= user.email %></b></td>
+          <td>9072016696</td>
+          <td><%= user.createdAt %></td>
+          <td>
+            <div class="d-flex flex-row">
+              <button
+                type="button"
+                class="btn btn-<%= user.status == 'active' ? 'danger' : 'success' %> btn-sm blockUnBlockAction"
+                data-id="<%= user._id %>"
+                style="border-radius: 8%"
+              >
+                <%= user.status == 'active' ? 'Block' : 'Unblock' %>
+              </button>
+            </div>
+          </td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+  document.querySelectorAll(".blockUnBlockAction").forEach((button) => {
+    button.addEventListener("click", async (event) => {
+      event.preventDefault();
+      const userId = event.target.getAttribute("data-id");
+      const action = event.target.textContent.trim().toLowerCase();
+
+      Swal.fire({
+        title: `Do you want to ${action} this user?`,
+        icon: action === "block" ? "warning" : "question",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        confirmButtonText: "OK",
+
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+
+          const response = await fetch(`/admin/block-unblock-user/${userId}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (response.ok) {
+            window.location.href = "/admin/product";
+
+          } else {
+            Swal.fire({
+             icon: "error",
+             title: "Oops...",
+             text: "Something went wrong!",
+            });
+          }
+        }
+      });
+    });
+  });
+</script>
+<%- include('../admin-partials/footer'); %>

@@ -1,0 +1,54 @@
+
+
+
+<%- include('../admin-partials/header'); %>
+<div class="col-12 tm-block-col">
+    <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
+        <h2 class="tm-block-title">Coupen List</h2>
+        <a href="/admin/add-coupen" class="btn btn-primary mr-2">Add New Coupen</a>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">COUPEN CODE</th>
+                    <th scope="col">COUPEN</th>
+                    <th scope="col">ACTIVE</th>
+                    <th scope="col">MAX DISCOUND  AMOUNT</th>
+                    <th scope="col">COUNT</th>
+                    <th scope="col">MAX COUNT</th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row"><b>#122349</b></th>
+                    <td><b>Summer Coupen</b></td>
+                    <td>
+                        <div class="tm-status-circle moving">
+                        </div>Active
+                    </td>
+
+                    <td><b>200</b></td>
+                    <td><b>50</b></td>
+                    <td><b>Null</b></td>
+
+                </tr>
+                <tr>
+                    <th scope="row"><b>#122349</b></th>
+                    <td><b>One Time Reward</b></td>
+                    <td>
+                        <div class="tm-status-circle cancelled">
+                        </div>Expired
+                    </td>
+                    <td><b>200</b></td>
+                    <td><b>Null</b></td>
+                    <td><b>Null</b></td>
+
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<%- include('../admin-partials/footer'); %>

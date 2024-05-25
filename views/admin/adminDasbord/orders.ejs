@@ -1,0 +1,61 @@
+<%- include('../admin-partials/header'); %>
+<div class="col-12 tm-block-col">
+  <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
+    <h2 class="tm-block-title">Order List</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">ORDER ID.</th>
+          <th scope="col">STATUS</th>
+          <th scope="col">PRODUCT</th>
+          <th scope="col">CUSTOMER</th>
+          <th scope="col">UPDATE</th>
+          <th scope="col">PAYMENT</th>
+          <th scope="col">PAYMENT METHOD</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row"><b>1</b></th>
+          <td>
+            <div class="tm-status-circle moving"></div>
+            Delivered
+          </td>
+          <td><b>Nike Gamma Force </b></td>
+          <td><b>Jacob Miller</b></td>
+          <td><b>1 min ago</b></td>
+          <td>$900</td>
+          <td><b>Razor pay</b></td>
+        </tr>
+        <tr>
+          <th scope="row"><b>2</b></th>
+          <td>
+            <div class="tm-status-circle cancelled"></div>
+            Processing
+          </td>
+          <td>Nike Air Force</td>
+          <td><b>George Wilson</b></td>
+          <td><b>7 min ago</b></td>
+          <td>$700</td>
+          <td><b>Razor Pay</b></td>
+        </tr>
+        <tr>
+          <th scope="row"><b>4</b></th>
+          <td>
+            <div class="tm-status-circle pending"></div>
+            Shiped
+          </td>
+
+          <!-- <td><img width="50" height="60" src="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=" class="tm-profile-photo rounded-circle" alt="Profile Photo"><b> Nike Full Force</b></td> -->
+          <td>Nike Full Force</td>
+          <td><b>Harry Ryan</b></td>
+          <td><b>9 min ago</b></td>
+          <td><b>$500</b></td>
+          <td><b>COD</b></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../admin-partials/footer'); %>
