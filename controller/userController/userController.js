@@ -20,6 +20,7 @@ exports.home = async (req, res) => {
     return res.render("user/pages/home", {
       user: userDetalis,
       products: products,
+      title:"Home page"
     });
     
   } catch (error) {
@@ -32,10 +33,8 @@ exports.loginPage = (req, res) => {
   if (req.session.user) {
     return res.redirect("/");
   } else {
-    return res.render("user/registration/login");
+    return res.render("user/registration/login",);
   }
 };
 
-exports.renderCategoryPage = (req, res) => {
-  return res.render("user/pages/category");
-};
+

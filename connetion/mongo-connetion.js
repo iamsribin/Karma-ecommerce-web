@@ -1,19 +1,20 @@
 const mongoose = require("mongoose");
+const Coupon = require("../models/adminModels/coupon");
 
-const  connectToDatabase = async ()=> {
-    try {
+const connectToDatabase = async () => {
+  try {
 
-      await mongoose.connect(process.env.DB_URL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
+    await mongoose.connect(process.env.DB_URL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    
+    await Coupon.syncIndexes();
+    console.log('Database connected');
 
-      });
-      console.log("MONGO connected...");
-      
-    } catch (err) {
-      console.error("Error connecting to the database:", err);
-      process.exit(1);
-    }
+  } catch (error) {
+    console.error('Database connection error:', error);
   }
-  
- module.exports = connectToDatabase;
+};
+
+module.exports = connectToDatabase;

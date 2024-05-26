@@ -2,12 +2,16 @@ const express = require("express");
 const router = express.Router();
 
 const {
-  renderCategoryPage,
   home,
   loginPage,
 } = require("../../controller/userController/userController");
 
-const authController = require("../../controller/userController/authController");
+const {saveNewPassword,
+  find,
+  logout,
+  postEmailForForgetOtp, 
+  renderEmailForForgetOtp
+} = require("../../controller/userController/authController");
 
 const {
   sendOTP,
@@ -19,39 +23,39 @@ const {
 } = require("../../controller/userController/otpController");
 
 const {
-  checkLogin,
-  checkOTPVerification,
-  logout,
-} = require("../../middleware/userMiddleware/chekLogin");
+  isOTPVerificationProcess,
+  userExit,
+  isPasswordChangingProcess,
+} = require("../../middleware/userAuth");
 
-const {getProduct} = require("../../controller/userController/productController")
-
-
+const {
+  getProduct,
+  renderCategoryPage,
+} = require("../../controller/userController/productController");
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
 //login
-router.post("/register", checkLogin, sendOTP);
-router.post("/login", authController.find);
-router.get("/login", loginPage);
-router.get("/getotp", renderotpPage);
+router.post("/register", userExit, sendOTP);
+router.post("/login", userExit, find);
+router.get("/login", userExit, loginPage);
 router.get("/logout", logout);
 //otp
-router.get("/resendOtp", resendOtp);
-router.post("/verify-otp", verifyOtp);
+router.get("/resendOtp", isOTPVerificationProcess, resendOtp);
+router.get("/getotp", isOTPVerificationProcess, renderotpPage);
+router.post("/verify-otp", isOTPVerificationProcess, verifyOtp);
 //home
 router.get("/", home);
 //forgot password
+router.get("/chagePassword", isPasswordChangingProcess, renderNewPasswordPage);
 router.post("/forgot-password-otp", ForgotOtpPage);
-router.post("/verify-forgot-password-otp", verifyOtp);
-router.post("/save-new-password", authController.saveNewPassword);
-router.get("/getotp-forgot-password", authController.postEmailForForgetOtp);
-router.get("/sendmail", authController.renderEmailForForgetOtp);
-router.get("/chagePassword", renderNewPasswordPage);
-
+router.post( "/verify-forgot-password-otp", isPasswordChangingProcess, verifyOtp);
+router.post("/save-new-password", isPasswordChangingProcess, saveNewPassword);
+router.get("/getotp-forgot-password", isPasswordChangingProcess, postEmailForForgetOtp);
+router.get("/sendmail", renderEmailForForgetOtp);
 //product
-router.get("/product/:id",getProduct);
+router.get("/product/:id", getProduct);
 router.get("/category", renderCategoryPage);
 
 module.exports = router;

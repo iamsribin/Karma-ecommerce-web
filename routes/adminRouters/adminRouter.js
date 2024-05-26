@@ -12,16 +12,15 @@ const {
   renderAddproduct,
   renderBanner,
   renderCategory,
-  renderCoupons,
   renderPayments,
   renderOrder,
-  renderAddcoupens,
   addproduct,
 } = require("../../controller/adminController/dashbordController");
 
+const {addCoupon,renderAddCoupons, renderCoupons, deleteCoupon} = require("../../controller/adminController/couponController");
 const {deleteProduct} = require("../../controller/adminController/productController")
 const { blockOrUnBlockUser, renderCostumers } = require("../../controller/adminController/customerController");
-const {adminAuthCheck,checkAdmin} = require("../../middleware/adminMiddleware/authcheack")
+const {adminAuthCheck,checkAdmin} = require("../../middleware/adminAuth")
 
 //admin authentication
 router.get("/login",checkAdmin,renderLogin);
@@ -32,9 +31,10 @@ router.post("/login", logCheck);
 router.get("/dashboard",adminAuthCheck, renderDashboard);
 
 //coupen management
-router.get("/add-coupen",renderAddcoupens);
+router.get("/add-coupen",renderAddCoupons);
 router.get("/coupens",renderCoupons);
-
+router.post("/add-coupon",addCoupon);
+router.delete("/delete-coupon/:id",deleteCoupon);
 //paymens
 router.get("/payments",renderPayments);
 router.get("/orders",renderOrder);
@@ -53,5 +53,6 @@ router.post('/add-product', upload.fields([
 //customers
 router.get("/customers",renderCostumers);
 router.patch("/block-unblock-user/:id", blockOrUnBlockUser);
+
 
 module.exports = router;

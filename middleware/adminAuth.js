@@ -13,5 +13,4 @@ exports.checkAdmin = async (req, res, next) =>{
     }else{
         next();
     }
-
 }

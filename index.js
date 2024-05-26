@@ -59,8 +59,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use((error, req, res, next) => {
 
-  const errorStatus = error.status || 500; 
-  const errorMessage = error.message || "Something went wrong"; 
+  const errorStatus = (error.status) ? error.status : 500; 
+  const errorMessage = (error.message) ? error.message : "Something went wrong"; 
 
   return res.status(errorStatus).json({
     success: false,

@@ -94,6 +94,7 @@ const verifyOtp = async (req, res, next) => {
     await User.findOneAndUpdate({ email: user.email }, { $unset: { otp: "" } });
 
     if (!req.session.passwordChange) {
+      
       req.session.userGmail = user.email;
       req.session.user = user.name;
       req.session.userId = user._id;

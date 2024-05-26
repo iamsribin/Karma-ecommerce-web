@@ -1,12 +1,15 @@
 const Product = require("../../models/adminModels/product");
 const { createError } = require("../../utils/errors");
 const productDB = require("../../models/adminModels/product");
-const usersDB = require("../../models/userModels/userModel")
 
+
+
+//render dashboard page
 exports.renderDashboard = async (req, res) => {
   res.render("admin/adminDasbord/dashbord");
 };
 
+// render products page
 exports.renderProducts = async (req, res, next) => {
   try {
     const products = await productDB.find({});
@@ -16,35 +19,32 @@ exports.renderProducts = async (req, res, next) => {
   }
 };
 
+// render add products page
 exports.renderAddproduct = async (req, res) => {
   res.render("admin/adminDasbord/addproduct");
 };
 
 
-
+// render category page
 exports.renderCategory = async (req, res) => {
   res.render("admin/adminDasbord/addproduct");
 };
 
+// render order page
 exports.renderOrder = async (req, res) => {
   res.render("admin/adminDasbord/orders");
 };
 
-exports.renderCoupons = async (req, res) => {
-  res.render("admin/adminDasbord/coupens");
-};
-
+// render banner page
 exports.renderBanner = async (req, res) => {
   res.render("admin/adminDasbord/addproduct");
 };
 
+// render payments page
 exports.renderPayments = async (req, res) => {
   res.render("admin/adminDasbord/payments");
 };
 
-exports.renderAddcoupens = async (req, res) => {
-  res.render("admin/adminDasbord/addCoupens");
-};
 
 //add product
 exports.addproduct = async (req, res, next) => {

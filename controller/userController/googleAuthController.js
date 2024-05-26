@@ -56,7 +56,6 @@ exports.googleLoginSucess = async (req, res, next) => {
      return next(createError(403, "Not Authorized!"));
     }
   } catch (error) {
-    console.error("Error in Google login:", error);
    return next(createError(null, null));
   }
 };

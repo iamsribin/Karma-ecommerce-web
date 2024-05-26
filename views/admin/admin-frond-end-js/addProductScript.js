@@ -1,5 +1,5 @@
 // Declare cropper globally
-let cropper = null;
+let cropper ;
 
 // Utility function to check if a string contains only spaces
 function isOnlySpaces(str) {
@@ -255,6 +255,7 @@ document
 
 //###################### cropp image ###############################
 
+  // let cropper ;
 function previewImage(event, imagePreviewId) {
   const reader = new FileReader();
   reader.onload = function () {
@@ -282,7 +283,116 @@ function initCropper(imageElement) {
   }
 }
 
+// Handle form submission    
+// document.querySelector("#productForm").addEventListener("submit", async (e) => {
+//   e.preventDefault();
+//   if (validateForm()) {
+//     try {
+//       if (cropper) {
+//         const croppedCanvas = cropper.getCroppedCanvas();
+//         croppedCanvas.toBlob(async (blob) => {
+//           const formData = new FormData(document.getElementById("productForm"));
+//           formData.set("productImage1", blob,"croppedImage1.png"); 
+//           formData.set("productImage2", blob,"croppedImage2.png");
+//           formData.set("productImage3", blob,"croppedImage3.png");
+
+//           const response = await fetch("/admin/add-product", {
+//             method: "POST",
+//             body: formData,
+//           });
+
+//           if (response.ok) {
+//             Swal.fire({
+//               title: "Successfully Added Product",
+//               icon: "success",
+//               showCancelButton: false,
+//               confirmButtonColor: "#3085d6",
+//               confirmButtonText: "OK",
+//             }).then(async (result) => {
+//               if (result.isConfirmed) {
+//                 window.location.href = "/admin/add-product";
+//               }
+//             });
+//           } else {
+//             Swal.fire({
+//               title: "Successfully send new OTP",
+//               icon: "error",
+//               showCancelButton: false,
+//               confirmButtonColor: "#3085d6",
+//               confirmButtonText: "OK",
+//             });
+//             console.log("An error occurred", response);
+//           }
+//         }, "image/png");
+//       } else {
+//         // Submit the form if no cropping is needed
+//         document.getElementById("productForm").submit();
+//       }
+//     } catch (error) {
+//       console.log("Add product error:", error);
+//     }
+//   }
+// });
+
+
 // Handle form submission
+// document.querySelector("#productForm").addEventListener("submit", async (e) => {
+//   e.preventDefault();
+//   if (validateForm()) {
+//     try {
+//       if (cropper) {
+//         const croppedCanvas = cropper.getCroppedCanvas();
+//         croppedCanvas.toBlob(async (blob) => {
+//           const formData = new FormData(document.getElementById("productForm"));
+
+//           // Get the selected file input
+//           const selectedFileInput = cropper.getCropBoxData().viewMode === 1
+//             ? document.getElementById("productImage1")
+//             : cropper.getCropBoxData().viewMode === 2
+//               ? document.getElementById("productImage2")
+//               : document.getElementById("productImage3");
+
+//           // Set the blob only for the selected file input
+//           formData.set(selectedFileInput.id, blob, `croppedImage${selectedFileInput.id.slice(-1)}.png`);
+
+//           const response = await fetch("/admin/add-product", {
+//             method: "POST",
+//             body: formData,
+//           });
+
+//           if (response.ok) {
+//             Swal.fire({
+//               title: "Successfully Added Product",
+//               icon: "success",
+//               showCancelButton: false,
+//               confirmButtonColor: "#3085d6",
+//               confirmButtonText: "OK",
+//             }).then(async (result) => {
+//               if (result.isConfirmed) {
+//                 window.location.href = "/admin/add-product";
+//               }
+//             });
+//           } else {
+//             Swal.fire({
+//               title: "An error occurred",
+//               icon: "error",
+//               showCancelButton: false,
+//               confirmButtonColor: "#3085d6",
+//               confirmButtonText: "OK",
+//             });
+//             console.log("An error occurred", response);
+//           }
+//         }, "image/png");
+//       } else {
+//         // Submit the form if no cropping is needed
+//         document.getElementById("productForm").submit();
+//       }
+//     } catch (error) {
+//       console.log("Add product error:", error);
+//     }
+//   }
+// });
+
 document.querySelector("#productForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   if (validateForm()) {
@@ -291,9 +401,20 @@ document.querySelector("#productForm").addEventListener("submit", async (e) => {
         const croppedCanvas = cropper.getCroppedCanvas();
         croppedCanvas.toBlob(async (blob) => {
           const formData = new FormData(document.getElementById("productForm"));
-          formData.set("productImage1", blob, "croppedImage1.png"); // Adjust field name as necessary
-          formData.set("productImage2", blob, "croppedImage2.png");
-          formData.set("productImage3", blob, "croppedImage3.png");
+
+          // Get the selected file input container
+          const cropBoxData = cropper.getCropBoxData();
+          const selectedFileInputContainer = cropBoxData.viewMode === 1
+            ? document.getElementById("imagePreview1").parentElement
+            : cropBoxData.viewMode === 2
+              ? document.getElementById("imagePreview2").parentElement
+              : document.getElementById("imagePreview3").parentElement;
+
+          // Get the selected file input
+          const selectedFileInput = selectedFileInputContainer.querySelector('input[type="file"]');
+
+          // Set the blob only for the selected file input
+          formData.set(selectedFileInput.id, blob, `croppedImage${selectedFileInput.id.slice(-1)}.png`);
 
           const response = await fetch("/admin/add-product", {
             method: "POST",
@@ -314,7 +435,7 @@ document.querySelector("#productForm").addEventListener("submit", async (e) => {
             });
           } else {
             Swal.fire({
-              title: "Successfully send new OTP",
+              title: "An error occurred",
               icon: "error",
               showCancelButton: false,
               confirmButtonColor: "#3085d6",
@@ -332,3 +453,5 @@ document.querySelector("#productForm").addEventListener("submit", async (e) => {
     }
   }
 });
+
+

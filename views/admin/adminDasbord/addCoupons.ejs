@@ -1,0 +1,128 @@
+<%- include('../admin-partials/header'); %>
+<div class="container tm-mt-big tm-mb-big">
+  <div class="row">
+    <div class="col-lg col-md-12 col-sm-12 mx-auto">
+      <form action="/gdd" id="addCouponForm">
+        <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
+          <div class="row tm-edit-product-row">
+            <div class="col-lg-6 col-md-6 col-sm-12">
+              <div class="form-group mb-3">
+                <label for="name" style="color: white">Name</label>
+                <input
+                  id="name"
+                  name="name"
+                  type="text"
+                  class="form-control"
+                  style="background-color: white; color: black"
+                />
+                <span id="error-message-name" class="text-danger"></span>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="form-group mb-3">
+                <label for="couponCode" style="color: white">Coupon Code</label>
+                <input
+                  id="couponCode"
+                  name="couponCode"
+                  type="text"
+                  class="form-control"
+                  style="background-color: white; color: black"
+                />
+                <span id="error-message-coupon-code" class="text-danger"></span>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="form-group mb-3">
+                <label for="couponCode" style="color: white"
+                  >Maximum Uses</label
+                >
+                <input
+                  id="maximumUses"
+                  name="maximumUses"
+                  type="number"
+                  class="form-control"
+                  placeholder="optional"
+                  style="background-color: white; color: black"
+                />
+                <span id="error-message-maxUse-code" class="text-danger"></span>
+              </div>
+            </div>
+          </div>
+          <div class="row tm-edit-product-row">
+            <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="form-group mb-3">
+                <label for="expiryDate" style="color: white">Expiry Date</label>
+                <input
+                  id="expiryDate"
+                  name="expiryDate"
+                  type="date"
+                  class="form-control"
+                  style="background-color: white; color: black"
+                />
+                <span id="error-message-expiry-date" class="text-danger"></span>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="form-group mb-3">
+                <label for="startDate" style="color: white">Start Date</label>
+                <input
+                  id="startDate"
+                  name="startDate"
+                  type="date"
+                  class="form-control"
+                  style="background-color: white; color: black"
+                />
+                <span id="error-message-start-date" class="text-danger"></span>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="form-group mb-3">
+                <label for="minimumPurchaseAmount" style="color: white"
+                  >Minimum Purchase Amount</label
+                >
+                <input
+                  id="minAmount"
+                  name="minimumPurchaseAmount"
+                  type="number"
+                  class="form-control"
+                  placeholder="optional"
+                  style="background-color: white; color: black"
+                />
+                <span id="error-message-min-amount" class="text-danger"></span>
+              </div>
+            </div>
+            <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="form-group mb-3">
+                <label for="offerAmount" style="color: white"
+                  >Offer Amount</label
+                >
+                <input
+                  id="offerAmount"
+                  name="offerAmount"
+                  type="number"
+                  class="form-control"
+                  style="background-color: white; color: black"
+                />
+                <span
+                  id="error-message-offer-amount"
+                  class="text-danger"
+                ></span>
+              </div>
+            </div>
+          </div>
+          <hr />
+          <div class="row tm-edit-product-row">
+            <div class="col-12" style="display: flex; justify-content: center">
+              <button type="submit" class="btn btn-primary text-uppercase">
+                Add Coupon Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/admin/admin-frond-end-js/addCouponScript.js"></script>
+<%- include('../admin-partials/footer'); %>
