@@ -5,34 +5,67 @@
     <div class="col-lg col-md-12 col-sm-12 mx-auto">
       <div class="row">
         <div class="col-12">
-          <h2 class="tm-block-title d-inline-block" style="width: fit-content">Add Product</h2>
+          <h2 class="tm-block-title d-inline-block" style="width: fit-content">
+            Add Product
+          </h2>
         </div>
       </div>
       <!-- First Row: Photos -->
-      <form id="productForm" action="/admin/add-product" method="post" enctype="multipart/form-data">
+      <form
+        id="productForm"
+        action="/admin/add-product"
+        method="post"
+        enctype="multipart/form-data"
+      >
         <div class="row tm-edit-product-row">
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
-              <label for="productImage1" style="color: white">Product Image 1</label>
-              <input id="productImage1" type="file" class="form-control-file" onchange="previewImage(event, 'imagePreview1');" accept="image/*" />
+              <label for="productImage1" style="color: white"
+                >Product Image 1</label
+              >
+              <input
+                id="productImage1"
+                type="file"
+                class="form-control-file"
+                onchange="previewImage(event, 'imagePreview1');"
+                accept="image/*"
+              />
               <img id="imagePreview1" name="productImage1" src="" />
-              <div id="error-message-image1" style="color: red;"></div>
+              <div id="error-message-image1" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
-              <label for="productImage2" style="color: white">Product Image 2</label>
-              <input id="productImage2" name="productImage2" type="file" class="form-control-file" onchange="previewImage(event, 'imagePreview2');" accept="image/*" />
+              <label for="productImage2" style="color: white"
+                >Product Image 2</label
+              >
+              <input
+                id="productImage2"
+                name="productImage2"
+                type="file"
+                class="form-control-file"
+                onchange="previewImage(event, 'imagePreview2');"
+                accept="image/*"
+              />
               <img id="imagePreview2" src="" />
-              <div id="error-message-image2" style="color: red;"></div>
+              <div id="error-message-image2" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
-              <label for="productImage3" style="color: white">Product Image 3</label>
-              <input id="productImage3" name="productImage3" type="file" class="form-control-file" onchange="previewImage(event, 'imagePreview3');" accept="image/*" />
+              <label for="productImage3" style="color: white"
+                >Product Image 3</label
+              >
+              <input
+                id="productImage3"
+                name="productImage3"
+                type="file"
+                class="form-control-file"
+                onchange="previewImage(event, 'imagePreview3');"
+                accept="image/*"
+              />
               <img id="imagePreview3" src="" />
-              <div id="error-message-image3" style="color: red;"></div>
+              <div id="error-message-image3" style="color: red"></div>
             </div>
           </div>
         </div>
@@ -42,15 +75,27 @@
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
               <label for="name" style="color: white">Product Name</label>
-              <input id="name" name="name" type="text" class="form-control validate" style="background-color: white; color: black" />
-              <div id="error-message-product-name" style="color: red;"></div>
+              <input
+                id="name"
+                name="name"
+                type="text"
+                class="form-control validate"
+                style="background-color: white; color: black"
+              />
+              <div id="error-message-product-name" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
               <label for="description" style="color: white">Description</label>
-              <textarea class="form-control validate" rows="1" id="description" name="description" style="background-color: white; color: black"></textarea>
-              <div id="error-message-description" style="color: red;"></div>
+              <textarea
+                class="form-control validate"
+                rows="1"
+                id="description"
+                name="description"
+                style="background-color: white; color: black"
+              ></textarea>
+              <div id="error-message-description" style="color: red"></div>
             </div>
           </div>
         </div>
@@ -60,15 +105,27 @@
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
               <label for="basePrice" style="color: white">Base Price</label>
-              <input id="basePrice" name="basePrice" type="number" class="form-control validate" style="background-color: white; color: black" />
-              <div id="error-message-base-price" style="color: red;"></div>
+              <input
+                id="basePrice"
+                name="basePrice"
+                type="number"
+                class="form-control validate"
+                style="background-color: white; color: black"
+              />
+              <div id="error-message-base-price" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
               <label for="quantity" style="color: white">Quantity</label>
-              <input id="quantity" name="quantity" type="number" class="form-control validate" style="background-color: white; color: black" />
-              <div id="error-message-quantity" style="color: red;"></div>
+              <input
+                id="quantity"
+                name="quantity"
+                type="number"
+                class="form-control validate"
+                style="background-color: white; color: black"
+              />
+              <div id="error-message-quantity" style="color: red"></div>
             </div>
           </div>
         </div>
@@ -78,36 +135,67 @@
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="brand" style="color: white">Brand</label>
-              <select class="custom-select tm-select-accounts" id="brand" name="brand" style="background-color: white; color: black;">
+              <select
+                class="custom-select tm-select-accounts"
+                id="brand"
+                name="brand"
+                style="background-color: white; color: black"
+              >
                 <option selected value="Select brand">Select brand</option>
-                <option value="Nike">Nike</option>
-                <option value="Adidas">Adidas</option>
+                <% brands.forEach((brand) => { %>
+                   <%if(brand.isActive){%>
+                <option value="<%= brand._id %>"><%=brand.name%></option>
+                <%}%>
+                <!-- <option value="Adidas">Adidas</option> -->
+                <% }); %>
               </select>
-              <div id="error-message-brand" style="color: red;"></div>
+              <div id="error-message-brand" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="category" style="color: white">Category</label>
-              <select class="custom-select tm-select-accounts" id="category" name="category" style="background-color: white; color: black;">
-                <option selected value="Select category">Select category</option>
-                <option value="new Arrival">New Arrival</option>
-                <option value="2">Most Popular</option>
-                <option value="3">Trending</option>
+              <select
+                class="custom-select tm-select-accounts"
+                id="category"
+                name="category"
+                style="background-color: white; color: black"
+              >
+                <option selected value="Select category">
+                  Select category
+                </option>
+                <% categories.forEach((category) => { %>
+                  <%if(category.isActive){%>
+               <option value="<%= category._id %>"><%=category.name%></option>
+               <%}%>
+               <!-- <option value="Adidas">Adidas</option> -->
+               <% }); %>
               </select>
-              <div id="error-message-category" style="color: red;"></div>
+              <div id="error-message-category" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
-              <label for="qualityChecking" style="color: white">Quality Checking</label>
+              <label for="qualityChecking" style="color: white"
+                >Quality Checking</label
+              >
               <div>
-                <input type="radio" id="qualityCheckYes" name="qualityChecking" value="Yes">
+                <input
+                  type="radio"
+                  id="qualityCheckYes"
+                  name="qualityChecking"
+                  value="Yes"
+                />
                 <label for="qualityCheckYes" style="color: white">Yes</label>
-                <input type="radio" id="qualityCheckNo" name="qualityChecking" value="No">
+                <input
+                  type="radio"
+                  id="qualityCheckNo"
+                  name="qualityChecking"
+                  value="No"
+                />
                 <label for="qualityCheckNo" style="color: white">No</label>
               </div>
-              <div id="error-message-quality-checking" style="color: red;"></div>
+              <div id="error-message-quality-checking" style="color: red"></div>
             </div>
           </div>
         </div>
@@ -117,41 +205,87 @@
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="width" style="color: white">Width (mm)</label>
-              <input id="width" name="width" type="number" class="form-control validate" style="background-color: white; color: black" />
-              <div id="error-message-width" style="color: red;"></div>
+              <input
+                id="width"
+                name="width"
+                type="number"
+                class="form-control validate"
+                style="background-color: white; color: black"
+              />
+              <div id="error-message-width" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="height" style="color: white">Height (mm)</label>
-              <input id="height" name="height" type="number" class="form-control validate" style="background-color: white; color: black" />
-              <div id="error-message-height" style="color: red;"></div>
+              <input
+                id="height"
+                name="height"
+                type="number"
+                class="form-control validate"
+                style="background-color: white; color: black"
+              />
+              <div id="error-message-height" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="weight" style="color: white">Weight (gm)</label>
-              <input id="weight" name="weight" type="number" class="form-control validate" style="background-color: white; color: black" />
-              <div id="error-message-weight" style="color: red;"></div>
+              <input
+                id="weight"
+                name="weight"
+                type="number"
+                class="form-control validate"
+                style="background-color: white; color: black"
+              />
+              <div id="error-message-weight" style="color: red"></div>
             </div>
           </div>
           <hr />
         </div>
-        <h5 style="text-align: center; color: rgb(185, 195, 204); font-weight: bold; margin-top: 20px;">If your product have any discounts you can add it here:</h5>
+        <h5
+          style="
+            text-align: center;
+            color: rgb(185, 195, 204);
+            font-weight: bold;
+            margin-top: 20px;
+          "
+        >
+          If your product have any discounts you can add it here:
+        </h5>
 
         <div class="row tm-edit-product-row">
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
-              <label for="offer Amount" style="color: white">Offer Amount</label>
-              <input id="offer-amount" name="offerAmount" type="number" class="form-control validate" style="background-color: white; color: black" />
-              <div id="error-message-product-offer" style="color: red;"></div>
+              <label for="offer Amount" style="color: white"
+                >Offer Amount</label
+              >
+              <input
+                id="offer-amount"
+                name="offerAmount"
+                type="number"
+                class="form-control validate"
+                style="background-color: white; color: black"
+              />
+              <div id="error-message-product-offer" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
-              <label for="offer-expiry-date" style="color: white">Offer expiry date</label>
-              <input id="offer-expiry-date" name ="offerExpiryDate" type="date" class="form-control validate" style="background-color: white; color: black" />
-              <div id="error-message-product-offer-date" style="color: red;"></div>
+              <label for="offer-expiry-date" style="color: white"
+                >Offer expiry date</label
+              >
+              <input
+                id="offer-expiry-date"
+                name="offerExpiryDate"
+                type="date"
+                class="form-control validate"
+                style="background-color: white; color: black"
+              />
+              <div
+                id="error-message-product-offer-date"
+                style="color: red"
+              ></div>
             </div>
           </div>
         </div>
@@ -159,7 +293,11 @@
         <!-- Submit Button -->
         <div class="row tm-edit-product-row">
           <div class="col-12" style="display: flex; justify-content: center">
-            <button type="submit" id="addProduct" class="btn btn-primary text-uppercase">
+            <button
+              type="submit"
+              id="addProduct"
+              class="btn btn-primary text-uppercase"
+            >
               Add Product Now
             </button>
           </div>

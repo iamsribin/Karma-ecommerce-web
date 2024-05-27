@@ -5,6 +5,7 @@ const userController = require("../../controller/userController/googleAuthContro
 router.get("/login/sucess", userController.googleLoginSucess);
 router.get("/login/failed", userController.googleLoginFaild);
 
+// Create
 router.get("/google/callback", (req, res, next) => {
   try {
     passport.authenticate("google", (err, user) => {
@@ -20,6 +21,7 @@ router.get("/google/callback", (req, res, next) => {
         return next(createError(401, "Authentication failed"));
 
       }
+      //login user
       req.login(user, (err) => {
         if (err) {
 
@@ -28,13 +30,14 @@ router.get("/google/callback", (req, res, next) => {
 
         res.redirect(process.env.CLIENT_URL);
       });
+
     })(req, res, next);
   } catch (err) {
-
-    console.log("google auth error", err.message);
+   return next(createError(null, null));
   }
 });
 
+//logout user
 router.post("/logout", function (req, res, next) {
   if (req.session.passport) {
 

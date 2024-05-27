@@ -1,0 +1,213 @@
+<%- include('../admin-partials/header'); %>
+
+<div class="container mt-5" style="padding-bottom: 50px">
+  <div class="row">
+    <!-- Category Column -->
+    <div class="col-lg-6">
+      <h2 class="tm-block-title">Category List</h2>
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <div class="input-group">
+            <input
+              type="text"
+              id="categorySearch"
+              class="form-control form-control-lg"
+              style="background-color: aliceblue; color: black"
+              placeholder="Search category..."
+            />
+            <div class="input-group-append">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                onclick="searchCategory()"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 text-right">
+          <a href="/admin/add-category-page" class="btn btn-primary btn-sm"
+            >Add Category</a
+          >
+        </div>
+      </div>
+        <div class="table-responsive">
+          <% if (categories && categories.length > 0) { %>
+          <table class="table table-hover">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">NAME</th>
+                <th scope="col">DESCRIPTION</th>
+                <th scope="col">ADDED DATE</th>
+                <th scope="col">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% categories.forEach((category) => { %> <% if (category.isActive) {
+              %>
+              <tr>
+                <td><b><%= category.name %></b></td>
+                <td><b><%= category.discription %></b></td>
+                <td><b><%= category.createdAt.toDateString() %></b></td>
+                <td>
+                  <a
+                    class="text-danger deleteAction"
+                    onclick="deleteCategory('<%= category._id %>')"
+                  >
+                    <i class="far fa-trash-alt"></i>
+                  </a>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  <a
+                    href="/admin/edit-category/<%= category._id %>"
+                    class="text-primary"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </a>
+                </td>
+              </tr>
+              <% } %> <% }) %>
+            </tbody>
+          </table>
+          <% } else { %>
+          <h1 style="text-align: center"><b>No categories in the database</b></h1>
+          <% } %>
+        </div>
+    </div>
+ 
+    <!-- Brand Column -->
+    <div class="col-lg-6">
+      <h2 class="tm-block-title">Brand List</h2>
+      <div class="row mb-3">
+        <div class="col-md-8">
+          <div class="input-group">
+            <input
+              type="text"
+              id="brandSearch"
+              class="form-control form-control-lg"
+              style="background-color: aliceblue; color: black"
+              placeholder="Search brand..."
+            />
+            <div class="input-group-append">
+              <button
+                class="btn btn-outline-secondary"
+                type="button"
+                onclick="searchBrand()"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 text-right">
+          <a href="/admin/add-brand-page" class="btn btn-primary btn-sm"
+            >Add Brand</a
+          >
+        </div>
+      </div>
+        <div class="table-responsive">
+          <% if (brands && brands.length > 0) { %>
+          <table class="table table-hover">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">NAME</th>
+                <th scope="col">DESCRIPTION</th>
+                <th scope="col">ADDED DATE</th>
+                <th scope="col">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% brands.forEach((brand) => { %> <% if (brand.isActive) { %>
+              <tr>
+                <td><b><%= brand.name %></b></td>
+                <td><b><%= brand.discription %></b></td>
+                <td><b><%= brand.createdAt.toDateString() %></b></td>
+                <td>
+                  <a
+                    class="text-danger deleteAction"
+                    onclick="deleteBrand('<%= brand._id %>')"
+                  >
+                    <i class="far fa-trash-alt"></i>
+                  </a>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  <a
+                    href="/admin/edit-brand/<%= brand._id %>"
+                    class="text-primary"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </a>
+                </td>
+              </tr>
+              <% } %> <% }) %>
+            </tbody>
+          </table>
+          <% } else { %>
+          <h1 style="text-align: center"><b>No brands in the database</b></h1>
+          <% } %>
+        </div>
+      </div>
+  </div>
+ </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function deleteCategory(categoryId) {
+    Swal.fire({
+      title: `Do you want to delete this category?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "OK",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await fetch(`/admin/delete-category/${categoryId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const result = await response.json();
+        if (response.ok) {
+          window.location.href = "/admin/categories-and-brand";
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: result.message,
+          });
+        }
+      }
+    });
+  }
+
+  function deleteBrand(brandId) {
+    Swal.fire({
+      title: `Do you want to delete this brand?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      confirmButtonText: "OK",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await fetch(`/admin/delete-brand/${brandId}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        const result = await response.json();
+        if (response.ok) {
+          window.location.href = "/admin/categories-and-brand";
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: result.message,
+          });
+        }
+      }
+    });
+  }
+</script>
+
+<%- include('../admin-partials/footer'); %>

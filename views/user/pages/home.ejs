@@ -63,7 +63,7 @@
       <!-- single product -->
 
       <% locals.products.forEach((product)=>{ %>
-         <% if(product.quantity > 0 && product.status===true){%>
+         <% if(product.quantity > 0 && product.isActive===true){%>
       <div class="col-lg-3 col-md-6">
         <div class="single-product">
           <a href="/product/<%=product._id%>">
@@ -71,6 +71,8 @@
           </a>
           <div class="product-details">
             <h6><%=product.name%></h6>
+            <h5>BRAND : <%= product.brand.name %> </h5>
+            <h5>CATEGORY : <%= product.category.name %></h5>
             <div class="price">
               <%if(product.offerAmount){%>
               <h6>$<%=product.offerAmount%></h6>

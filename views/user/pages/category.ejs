@@ -1,4 +1,37 @@
 <%- include('../userPartials/header'); %>
+<style>
+  .product-image-wrapper {
+    position: relative;
+  }
+  .image-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+  }
+  .product-image-wrapper:hover .image-overlay {
+    opacity: 1;
+  }
+  .social-info {
+    color: white;
+    margin: 10px 0;
+    text-align: center;
+  }
+  .social-info span {
+    font-size: 24px;
+  }
+  .social-info p.hover-text {
+    margin: 0;
+  }
+</style>
 <!-- Start Banner Area -->
 <section class="banner-area organic-breadcrumb">
   <div class="container">
@@ -555,52 +588,53 @@
       <section class="lattest-product-area pb-40 category-list">
         <div class="row">
           <!-- single product -->
-          <% locals.products.forEach((product)=>{ %> <% if(product.quantity > 0
-          && product.status===true){%>
-          <div class="col-lg-4 col-md-6 col-sm-12">
-            <div class="single-product">
-              <a href="/product/<%=product._id%>">
-                <img
-                  class="img-fluid"
-                  src="/<%=product.imagePaths[0]%>"
-                  alt=""
-                />
-              </a>
-              <div class="product-details">
-                <h6><%=product.name%></h6>
-                <div class="price">
-                  <%if(product.offerAmount){%>
-                  <h6>$<%=product.offerAmount%></h6>
-                  <h6 class="l-through">$<%= product.basePrice%></h6>
-                  <%}else{%>
-                  <h6>$<%=product.basePrice%></h6>
-                  <%}%> <%if(product.quantity < 10){%>
-                  <h6 style="color: rgb(255, 136, 0)">Limited Stock</h6>
-                  <%} else if(product.quantity ==0){%>
-                  <h6 style="color: red">Out of Stock</h6>
-                  <%}else{%>
-                  <h6 style="color: rgb(0, 255, 17)">In Stock</h6>
-                  <%}%>
-                </div>
-                <div class="prd-bottom">
-                  <a href="" class="social-info">
-                    <span class="ti-bag"></span>
-                    <p class="hover-text">add to bag</p>
-                  </a>
-                  <a href="" class="social-info">
-                    <span class="lnr lnr-heart"></span>
-                    <p class="hover-text">Wishlist</p>
-                  </a>
-
-                  <a href="/product/<%=product._id%>" class="social-info">
-                    <span class="lnr lnr-move"></span>
-                    <p class="hover-text">view more</p>
-                  </a>
+          <% locals.products.forEach((product) => { %> 
+            <% if (product.quantity > 0 && product.isActive === true) { %>
+              <div class="col-lg-4 col-md-6 col-sm-12">
+                <div class="single-product">
+                  <div class="product-image-wrapper">
+                    <a href="/product/<%= product._id %>">
+                      <img class="img-fluid" src="/<%= product.imagePaths[0] %>" alt="" />
+                      <div class="image-overlay">
+                        <a href="" class="social-info">
+                          <span class="ti-bag"></span>
+                          <p class="hover-text">add to bag</p>
+                        </a>
+                        <a href="" class="social-info">
+                          <span class="lnr lnr-heart"></span>
+                          <p class="hover-text">Wishlist</p>
+                        </a>
+                        <a href="/product/<%= product._id %>" class="social-info">
+                          <span class="lnr lnr-move"></span>
+                          <p class="hover-text">view more</p>
+                        </a>
+                      </div>
+                    </a>
+                  </div>
+                  <div class="product-details">
+                    <h6><%= product.name %></h6>
+                    <h5>BRAND : <%= product.brand.name %></h5>
+                    <h5>CATEGORY : <%= product.category.name %></h5>
+                    <div class="price">
+                      <% if (product.offerAmount) { %>
+                        <h6>$<%= product.offerAmount %></h6>
+                        <h6 class="l-through">$<%= product.basePrice %></h6>
+                      <% } else { %>
+                        <h6>$<%= product.basePrice %></h6>
+                      <% } %>
+                      <% if (product.quantity < 10) { %>
+                        <h6 style="color: rgb(255, 136, 0)">Limited Stock</h6>
+                      <% } else if (product.quantity == 0) { %>
+                        <h6 style="color: red">Out of Stock</h6>
+                      <% } else { %>
+                        <h6 style="color: rgb(0, 255, 17)">In Stock</h6>
+                      <% } %>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          <%}%> <%})%>
+            <% } %>
+          <% }) %>
         </div>
       </section>
       <!-- End Best Seller -->

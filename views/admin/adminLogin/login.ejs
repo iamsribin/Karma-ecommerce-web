@@ -12,15 +12,15 @@
     />
     <link rel="stylesheet" href="/adminpublic/css/fontawesome.min.css" />
     <link rel="stylesheet" href="/adminpublic/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="/adminpublic/css/templatemo-style.css"/>
+    <link rel="stylesheet" href="/adminpublic/css/templatemo-style.css" />
   </head>
   <body>
     <div>
       <nav class="navbar navbar-expand-xl">
         <div class="container h-100">
-         <a class="navbar-brand logo_h" 
-              ><img src="/img/logo.png" alt="";
-            /></a>
+          <a class="navbar-brand logo_h"
+            ><img src="/img/logo.png" alt="" ;
+          /></a>
         </div>
       </nav>
     </div>
@@ -35,7 +35,13 @@
             </div>
             <div class="row mt-2">
               <div class="col-12">
-                <form action="/admin/login" method="post" class="tm-login-form" onsubmit="return signInValidation()">
+                <form
+            
+                  id="login-form"
+      
+                  class="tm-login-form"
+                  
+                >
                   <div class="form-group">
                     <label for="adminGmail">Gmail</label>
                     <input
@@ -73,55 +79,97 @@
       </div>
     </div>
     <footer class="tm-footer row tm-mt-small">
-      <div class="col-12 font-weight-light">
-      </div>
+      <div class="col-12 font-weight-light"></div>
     </footer>
-   <script>
-     function signInValidation() {
-    let email = document.getElementById("adminGmail1").value;
-    let password1 = document.getElementById("password").value;
-console.log("gmail",email);
-    if (email == "") {
-      document.getElementById("error-message-gmail").innerHTML = "*please write email*";
-      return false;
-    } 
-    else {
-      document.getElementById("error-message-gmail").innerHTML = "";
-    }
-    if (password1 == "") {
-      document.getElementById("error-message-password").innerHTML =
-        "*please write your password*";
-      return false;
-    }
-    if (password1.length < 8) {
-      document.getElementById("error-message-password").innerHTML =
-        "*please write password Atleast 8 charaters*";
-      return false;
-    }
-    if (password1.search(/[0-9]/) == -1) {
-      document.getElementById("error-message-password").innerHTML =
-        "*please write password Atleast 1 Numberic character";
-      return false;
-    }
-    if (password1.search(/[a-z]/) == -1) {
-      document.getElementById("error-message-password").innerHTML =
-        "*please write password Atleast 1 lower case character";
-      return false;
-    }
-    if (password1.search(/[A-Z]/) == -1) {
-      document.getElementById("error-message-password").innerHTML =
-        "*please write password Atleast 1 upper case character";
-      return false;
-    }
-    if (password1.search(/[!\@\#\$\%\^\&\*\(\)\_\-\+\=\<\>\,\?]/) == -1) {
-      document.getElementById("error-message-password").innerHTML =
-        "*please write password Atleast 1 special symbol in the character";
-      return false;
-    } else {
-      document.getElementById("error-message-password").innerHTML = "";
-      return true;
-    }
-  }
-</script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+      function signInValidation() {
+        let email = document.getElementById("adminGmail1").value;
+        let password1 = document.getElementById("password").value;
+
+        if (email == "") {
+          document.getElementById("error-message-gmail").innerHTML =
+            "*please write email*";
+          return false;
+        } else {
+          document.getElementById("error-message-gmail").innerHTML = "";
+        }
+        if (password1 == "") {
+          document.getElementById("error-message-password").innerHTML =
+            "*please write your password*";
+          return false;
+        }
+        if (password1.length < 8) {
+          document.getElementById("error-message-password").innerHTML =
+            "*please write password Atleast 8 charaters*";
+          return false;
+        }
+        if (password1.search(/[0-9]/) == -1) {
+          document.getElementById("error-message-password").innerHTML =
+            "*please write password Atleast 1 Numberic character";
+          return false;
+        }
+        if (password1.search(/[a-z]/) == -1) {
+          document.getElementById("error-message-password").innerHTML =
+            "*please write password Atleast 1 lower case character";
+          return false;
+        }
+        if (password1.search(/[A-Z]/) == -1) {
+          document.getElementById("error-message-password").innerHTML =
+            "*please write password Atleast 1 upper case character";
+          return false;
+        }
+        if (password1.search(/[!\@\#\$\%\^\&\*\(\)\_\-\+\=\<\>\,\?]/) == -1) {
+          document.getElementById("error-message-password").innerHTML =
+            "*please write password Atleast 1 special symbol in the character";
+          return false;
+        } else {
+          document.getElementById("error-message-password").innerHTML = "";
+          return true;
+        }
+      }
+      const loginForm = document.querySelector("#login-form");
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        if (signInValidation()) {
+          try {
+            const formData = new FormData(loginForm);
+            const gmail = formData.get("gmail");
+            const password = formData.get("password");
+            const response = await fetch("/admin/login", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                gmail,
+                password,
+              }),
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+              window.location.href = "/admin/dashboard";
+            } else {
+              Swal.fire({
+                title: data.message,
+                icon: "error",
+                showCancelButton: false,
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+              });
+            }
+          } catch (error) {
+            console.log(error);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: "Something went wrong",
+            });
+          }
+        }
+      });
+    </script>
   </body>
 </html>

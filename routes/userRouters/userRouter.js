@@ -5,14 +5,14 @@ const {
   home,
   loginPage,
 } = require("../../controller/userController/userController");
-
+//auth controller
 const {saveNewPassword,
   find,
   logout,
   postEmailForForgetOtp, 
   renderEmailForForgetOtp
 } = require("../../controller/userController/authController");
-
+//otp controller
 const {
   sendOTP,
   renderotpPage,
@@ -21,13 +21,13 @@ const {
   ForgotOtpPage,
   renderNewPasswordPage,
 } = require("../../controller/userController/otpController");
-
+//middileware
 const {
   isOTPVerificationProcess,
   userExit,
   isPasswordChangingProcess,
 } = require("../../middleware/userAuth");
-
+//product controller
 const {
   getProduct,
   renderCategoryPage,

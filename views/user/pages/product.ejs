@@ -41,7 +41,7 @@
         </script>
         <!-- Etalage image gallery -->
         <ul id="etalage">
-          <% product.imagePaths.forEach((imagePath, index) => { %>
+          <% product.imagePaths.forEach((imagePath) => { %>
           <li>
             <img
               class="etalage_thumb_image"
@@ -60,28 +60,46 @@
       <div class="col-lg-5 offset-lg-1">
         <div class="s_product_text">
           <h3><%= product.name %></h3>
-          <% if(product.offerAmount) { %>
-          <div><b style="color: #000;">OFFER PRICE</b> &nbsp;: <b style="color: black;">$<%= product.offerAmount %></b></div>
-          <b style="color: #000; ">PRICE</b> &nbsp;: <b style="color: rgb(255, 0, 0); text-decoration: line-through;"">$<%= product.basePrice %></b>
-
+          <% if (product.offerAmount) { %>
+          <div>
+            <b style="color: #000">OFFER PRICE</b>:
+            <b style="color: black">$<%= product.offerAmount %></b>
+          </div>
+          <div>
+            <b style="color: #000">PRICE</b>:
+            <b style="color: rgb(255, 0, 0); text-decoration: line-through"
+              >$<%= product.basePrice %></b
+            >
+          </div>
           <% } else { %>
-          <b style="color: #000;">PRICE</b> &nbsp;: <b style="color: black;">$<%= product.basePrice %></b>
+          <div>
+            <b style="color: #000">PRICE &nbsp; : </b>
+            <b style="color: black">$<%= product.basePrice %></b>
+          </div>
           <% } %>
           <ul class="list">
             <li>
-                <span ><b style="color: black;">CATEGORY</b></span> &nbsp; : <b style="color: #000;"><%= product.category %></b>
+              <span><b style="color: black">CATEGORY &nbsp; : </b></span
+              > <b style="color: #000"><%= product.category.name %></b>
             </li>
             <li>
-                <span><b style="color: black;">Availability</b></span> &nbsp; <% if(product.quantity < 10) { %>
-                : <b style="color: rgb(255, 136, 0)">Limited Stock</b>
-                <% } else if(product.quantity == 0) { %>
-                : <b style="color: red">Out of Stock</b>
-                <% } else { %>
-                : <b style="color: rgb(0, 255, 17)">In Stock</b>
-                <% } %>
+              <span><b style="color: black">BRAND &nbsp; : </b></span
+              > <b style="color: #000"><%= product.brand.name %></b>
+            </li>
+            <li>
+              <span><b style="color: black">AVAILABILITY &nbsp; : </b></span
+              > <% if (product.quantity < 10) { %>
+              <b style="color: rgb(255, 136, 0)">Limited Stock</b>
+              <% } else if (product.quantity === 0) { %>
+              <b style="color: red">Out of Stock</b>
+              <% } else { %>
+              <b style="color: rgb(0, 255, 17)">In Stock</b>
+              <% } %>
             </li>
           </ul>
-          <p><b style="color: black;">Description</b>&nbsp;: <%= product.description %></p>
+          <p>
+            <b style="color: black">Description &nbsp; : </b> <%= product.description %>
+          </p>
           <div class="product_count">
             <label for="qty">Quantity:</label>
             <input
@@ -172,19 +190,34 @@
         <div class="single-product-slider">
           <div class="container">
             <div class="row">
+              <% relatedProducts.forEach((relatedProduct) => { %>
               <div class="col-lg-3 col-md-6">
                 <div class="single-product">
                   <img
                     class="img-fluid"
-                    src="/img/product/p2.jpg"
-                    alt="Product Image"
+                    src="/<%= relatedProduct.imagePaths[0] %>"
+                    alt="<%= relatedProduct.name %>"
                   />
                   <div class="product-details">
-                    <h6>Addidas New Hammer Sole for Sports Person</h6>
+                    <h6><%= relatedProduct.name %></h6>
+                    <h5>BRAND : <%= relatedProduct.brand.name %> </h5>
+                    <h5>CATEGORY : <%= relatedProduct.category.name %></h5>
                     <div class="price">
-                      <h6>$150.00</h6>
-                      <h6 class="l-through">$20.00</h6>
+                      <%if(relatedProduct.offerAmount){%>
+                      <h6>$<%=relatedProduct.offerAmount%></h6>
+                      <h6 class="l-through">$<%= relatedProduct.basePrice%></h6>
+                      <%}else{%>
+                        <h6>$<%=relatedProduct.basePrice%></h6>
+                        <%}%>
+                      <%if(relatedProduct.quantity < 10){%>
+                      <h6 style="color:  rgb(255, 136, 0)">Limited Stock</h6>
+                      <%} else if(relatedProduct.quantity ==0){%>
+                      <h6 style="color: red">Out of Stock</h6>
+                      <%}else{%>
+                      <h6 style="color: rgb(0, 255, 17)">In Stock</h6>
+                      <%}%>
                     </div>
+         
                     <div class="prd-bottom">
                       <a href="#" class="social-info">
                         <span class="ti-bag"></span>
@@ -202,7 +235,7 @@
                   </div>
                 </div>
               </div>
-              <!-- More product items can be added here -->
+              <% }) %>
             </div>
           </div>
         </div>

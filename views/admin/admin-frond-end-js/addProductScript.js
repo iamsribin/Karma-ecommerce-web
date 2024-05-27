@@ -150,15 +150,6 @@ function validateForm() {
   return !!isValid;
 }
 
-// Event listener for form submission
-document
-  .getElementById("productForm")
-  .addEventListener("submit", function (event) {
-    if (!validateForm()) {
-      event.preventDefault();
-    }
-  });
-
 // Event listeners for input fields to remove error messages while typing
 const fieldsToValidate = [
   {

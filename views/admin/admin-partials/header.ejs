@@ -7,7 +7,10 @@
     <title>Dashboard</title>
     <link rel="shortcut icon" href="/img/fav.png" />
     <!-- <link rel="shortcut icon" href="/img/logo.png" /> -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,700" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Roboto:400,700"
+    />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
@@ -19,7 +22,7 @@
     <link rel="stylesheet" href="/adminpublic/css/templatemo-style.css" />
     <link rel="stylesheet" href="/adminpublic/css/fontawesome.min.css" />
 
-    <link rel="stylesheet" href="/adminpublic/cropper/cropper.min.css">
+    <link rel="stylesheet" href="/adminpublic/cropper/cropper.min.css" />
 
     <style>
       .nav-link.active {
@@ -41,65 +44,65 @@
         position: relative;
       }
 
-
       /* Style for search bar */
-.input-group {
-  width: 100%;
-}
-/* Style for action buttons */
-.btn {
-  margin-bottom: 10px;
-}
+      .input-group {
+        width: 100%;
+      }
+      /* Style for action buttons */
+      .btn {
+        margin-bottom: 10px;
+      }
 
-/* Style for table image */
-.product-image {
-  max-width: 100px;
-  height: auto;
-}
+      /* Style for table image */
+      .product-image {
+        max-width: 100px;
+        height: auto;
+      }
 
-/* Style for status badge */
-.badge {
-  font-size: 12px;
-  padding: 6px 8px;
-  border-radius: 4px;
-}
+      /* Style for status badge */
+      .badge {
+        font-size: 12px;
+        padding: 6px 8px;
+        border-radius: 4px;
+      }
 
-/*  */
-/* Change search bar color to white */
-.input-group input[type="text"] {
-  color: #fff;
-}
+      /*  */
+      /* Change search bar color to white */
+      .input-group input[type="text"] {
+        color: #fff;
+      }
 
-/* Style for action buttons */
-.action-buttons .btn {
-  width: 100%;
-}
+      /* Style for action buttons */
+      .action-buttons .btn {
+        width: 100%;
+      }
 
-/* Style for table image */
-.product-image {
-  max-width: 100px;
-  height: auto;
-}
+      /* Style for table image */
+      .product-image {
+        max-width: 100px;
+        height: auto;
+      }
 
-/* Style for status badge */
-.badge {
-  font-size: 12px;
-  padding: 6px 8px;
-  border-radius: 4px;
-}
+      /* Style for status badge */
+      .badge {
+        font-size: 12px;
+        padding: 6px 8px;
+        border-radius: 4px;
+      }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .action-buttons .btn {
-    margin-top: 10px;
-  }
-}
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .action-buttons .btn {
+          margin-top: 10px;
+        }
+      }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
 
   <body id="reportsPage">
     <nav class="navbar navbar-expand-xl">
-      <div class="container h-100">
+      <div class="container h-100" style="margin: 20px">
         <a class="navbar-brand logo_h"><img src="/img/logo.png" alt="" /></a>
         <button
           class="navbar-toggler ml-auto mr-0"
@@ -130,8 +133,8 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/admin/categories">
-                <i class="fas fa-list"></i> Categories
+              <a class="nav-link" href="/admin/categories-and-brand">
+                <i class="fas fa-list"></i> Categories/Brand
               </a>
             </li>
             <li class="nav-item">
@@ -157,7 +160,7 @@
           </ul>
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link d-block" href="/admin/logout">
+              <a class="nav-link d-block" id="logout" style="cursor: pointer; color: #fff;">
                 Admin, <b>Logout</b>
               </a>
             </li>
@@ -165,4 +168,28 @@
         </div>
       </div>
     </nav>
-
+    <script>
+      document.getElementById("logout").addEventListener("click", (e) => {
+        e.preventDefault();
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to log out?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/admin/logout";
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              icon: "success",
+            });
+          }
+        });
+      })
+    </script>
+  </body>
+</html>

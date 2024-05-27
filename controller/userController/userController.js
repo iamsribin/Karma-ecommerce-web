@@ -1,5 +1,6 @@
 const userDB = require("../../models/userModels/userModel");
 const productDB = require("../../models/adminModels/product");
+const product = require("../../models/adminModels/product");
 
 //render home page
 exports.home = async (req, res) => {
@@ -15,8 +16,8 @@ exports.home = async (req, res) => {
       userDetalis = await userDB.findOne({ id });
     }
 
-    let products = await productDB.find({});
-
+    const products = await productDB.find({}).populate('brand').populate('category');
+  
     return res.render("user/pages/home", {
       user: userDetalis,
       products: products,
