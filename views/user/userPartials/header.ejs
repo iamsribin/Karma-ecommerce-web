@@ -31,7 +31,39 @@
     <link rel="stylesheet" href="/css/main.css" />
 
   </head>
-
+  <style>
+    .product-image-wrapper {
+      position: relative;
+    }
+    .image-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      transition: opacity 0.3s ease-in-out;
+    }
+    .product-image-wrapper:hover .image-overlay {
+      opacity: 1;
+    }
+    .social-info {
+      color: white;
+      margin: 10px 0;
+      text-align: center;
+    }
+    .social-info span {
+      font-size: 24px;
+    }
+    .social-info p.hover-text {
+      margin: 0;
+    }
+  </style>
   <body>
     <!-- Start Header Area -->
     <header class="header_area sticky-header">

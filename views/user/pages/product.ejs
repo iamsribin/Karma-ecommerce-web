@@ -79,16 +79,16 @@
           <% } %>
           <ul class="list">
             <li>
-              <span><b style="color: black">CATEGORY &nbsp; : </b></span
-              > <b style="color: #000"><%= product.category.name %></b>
+              <span><b style="color: black">CATEGORY &nbsp; : </b></span>
+              <b style="color: #000"><%= product.category.name %></b>
             </li>
             <li>
-              <span><b style="color: black">BRAND &nbsp; : </b></span
-              > <b style="color: #000"><%= product.brand.name %></b>
+              <span><b style="color: black">BRAND &nbsp; : </b></span>
+              <b style="color: #000"><%= product.brand.name %></b>
             </li>
             <li>
-              <span><b style="color: black">AVAILABILITY &nbsp; : </b></span
-              > <% if (product.quantity < 10) { %>
+              <span><b style="color: black">AVAILABILITY &nbsp; : </b></span> <%
+              if (product.quantity < 10) { %>
               <b style="color: rgb(255, 136, 0)">Limited Stock</b>
               <% } else if (product.quantity === 0) { %>
               <b style="color: red">Out of Stock</b>
@@ -96,9 +96,29 @@
               <b style="color: rgb(0, 255, 17)">In Stock</b>
               <% } %>
             </li>
+            <li>
+              <select
+                class="tm-select-accounts"
+                name="color[]"
+                style="background-color: white; color: black"
+              >
+                <% product.variants.forEach((variant, index) => { %> <% if(index
+                ===0){%>
+                <option selected value="<%= variant.size._id %>">
+                  <%= variant.size.size %>
+                </option>
+                <%}else{%>
+                <option value="<%= variant.size._id %>">
+                  <%= variant.size.size %>
+                </option>
+                <%}%> <% }) %>
+              </select>
+            </li>
           </ul>
+          <br />
           <p>
-            <b style="color: black">Description &nbsp; : </b> <%= product.description %>
+            <b style="color: black">Description &nbsp; : </b> <%=
+            product.description %>
           </p>
           <div class="product_count">
             <label for="qty">Quantity:</label>
@@ -192,45 +212,53 @@
             <div class="row">
               <% relatedProducts.forEach((relatedProduct) => { %>
               <div class="col-lg-3 col-md-6">
+                <!-- <div class="col-lg-4 col-md-6 col-sm-12"> -->
                 <div class="single-product">
-                  <img
-                    class="img-fluid"
-                    src="/<%= relatedProduct.imagePaths[0] %>"
-                    alt="<%= relatedProduct.name %>"
-                  />
+                  <div class="product-image-wrapper">
+                    <a href="/product/<%= relatedProduct._id %>">
+                      <img
+                        class="img-fluid"
+                        src="/<%= relatedProduct.imagePaths[0] %>"
+                        alt=""
+                      />
+                      <div class="image-overlay">
+                        <a href="" class="social-info">
+                          <span class="ti-bag"></span>
+                          <p class="hover-text">add to bag</p>
+                        </a>
+                        <a href="" class="social-info">
+                          <span class="lnr lnr-heart"></span>
+                          <p class="hover-text">Wishlist</p>
+                        </a>
+                        <a
+                          href="/product/<%= relatedProduct._id %>"
+                          class="social-info"
+                        >
+                          <span class="lnr lnr-move"></span>
+                          <p class="hover-text">view more</p>
+                        </a>
+                      </div>
+                    </a>
+                  </div>
                   <div class="product-details">
                     <h6><%= relatedProduct.name %></h6>
-                    <h5>BRAND : <%= relatedProduct.brand.name %> </h5>
+                    <h5>BRAND : <%= relatedProduct.brand.name %></h5>
                     <h5>CATEGORY : <%= relatedProduct.category.name %></h5>
                     <div class="price">
-                      <%if(relatedProduct.offerAmount){%>
-                      <h6>$<%=relatedProduct.offerAmount%></h6>
-                      <h6 class="l-through">$<%= relatedProduct.basePrice%></h6>
-                      <%}else{%>
-                        <h6>$<%=relatedProduct.basePrice%></h6>
-                        <%}%>
-                      <%if(relatedProduct.quantity < 10){%>
-                      <h6 style="color:  rgb(255, 136, 0)">Limited Stock</h6>
-                      <%} else if(relatedProduct.quantity ==0){%>
+                      <% if (relatedProduct.offerAmount) { %>
+                      <h6>$<%= relatedProduct.offerAmount %></h6>
+                      <h6 class="l-through">
+                        $<%= relatedProduct.basePrice %>
+                      </h6>
+                      <% } else { %>
+                      <h6>$<%= relatedProduct.basePrice %></h6>
+                      <% } %> <% if (relatedProduct.quantity < 10) { %>
+                      <h6 style="color: rgb(255, 136, 0)">Limited Stock</h6>
+                      <% } else if (relatedProduct.quantity == 0) { %>
                       <h6 style="color: red">Out of Stock</h6>
-                      <%}else{%>
+                      <% } else { %>
                       <h6 style="color: rgb(0, 255, 17)">In Stock</h6>
-                      <%}%>
-                    </div>
-         
-                    <div class="prd-bottom">
-                      <a href="#" class="social-info">
-                        <span class="ti-bag"></span>
-                        <p class="hover-text">Add to bag</p>
-                      </a>
-                      <a href="#" class="social-info">
-                        <span class="lnr lnr-heart"></span>
-                        <p class="hover-text">Wishlist</p>
-                      </a>
-                      <a href="#" class="social-info">
-                        <span class="lnr lnr-move"></span>
-                        <p class="hover-text">View more</p>
-                      </a>
+                      <% } %>
                     </div>
                   </div>
                 </div>
@@ -251,20 +279,24 @@
           <table class="table">
             <tbody>
               <tr>
-                <td><h5>Width</h5></td>
-                <td><h5><%= product.width %>mm</h5></td>
+                <td><h5>TAG</h5></td>
+                <td><h5><%= product.tag %> mm</h5></td>
               </tr>
               <tr>
-                <td><h5>Height</h5></td>
-                <td><h5><%= product.height %>mm</h5></td>
+                <td><h5>midsoleDrop</h5></td>
+                <td><h5><%= product.midsoleDrop %> mm</h5></td>
               </tr>
               <tr>
-                <td><h5>Weight</h5></td>
-                <td><h5><%= product.weight %>gm</h5></td>
+                <td><h5>foreFoot</h5></td>
+                <td><h5><%= product.foreFoot %> mm</h5></td>
               </tr>
               <tr>
-                <td><h5>Quality Checking</h5></td>
-                <td><h5><%= product.qualityChecking %></h5></td>
+                <td><h5>heel</h5></td>
+                <td><h5><%= product.heel %> mm</h5></td>
+              </tr>
+              <tr>
+                <td><h5>weight</h5></td>
+                <td><h5><%= product.weight %> gm</h5></td>
               </tr>
             </tbody>
           </table>

@@ -56,7 +56,8 @@
           <% } else { %>
           <td><b>NULL</b></td>
           <% } %>
-          <td><b><%= product.quantity %></b></td>
+          <td>
+            <b><%= product.totalQuantity %></b></td>
           <td><b><%= product.category.name %></b></td>
           <td><b><%= product.brand.name %></b></td>
           <td><b><%= product.createdAt.toDateString() %></b></td>
@@ -65,7 +66,7 @@
               <i class="far fa-trash-alt"></i>
             </a>
             &nbsp; &nbsp;
-            <a href="edit-product.html" class="text-primary">
+            <a href="/admin/edit-product/<%= product._id %>" class="text-primary">
               <i style="color: white" class="fas fa-edit"></i>
             </a>
           </td>
@@ -79,7 +80,6 @@
     </table>
   </div>
 </div>
-
 
 <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center">

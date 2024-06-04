@@ -1,3 +1,4 @@
+
 <%- include('../admin-partials/header'); %>
 
 <div class="container tm-mt-big tm-mb-big">
@@ -42,14 +43,35 @@
       >
         <!-- Product Images -->
         <label for="image">Image:</label><br />
-        <input
+
+        <div class="col-lg-4 col-md-4 col-sm-12">
+          <div class="form-group mb-3">
+            
+            <% product.imagePaths.forEach((img) =>{ %>
+            <input
+              id="productImage1"
+              type="file"
+              class="form-control-file"
+              onchange="previewImage(event, 'imagePreview1');"
+              accept="image/*"
+            />
+            <img
+              id="imagePreview1"
+              name="productImage1"
+              src="/<%=img%>"
+            />
+            <%})%>
+            <div id="error-message-image1" style="color: red"></div>
+          </div>
+        </div>
+     <!-- <input
           type="file"
           id="images"
           name="images"
           accept="image/*"
           multiple
           onchange="displaySelectedImages(this)"
-        />
+        /> -->
         <div
           class="selected-images-container"
           id="selectedImagesContainer"
@@ -694,4 +716,8 @@
     return dataTransfer.files;
   }
 </script>
+<script src="/adminpublic/cropper/cropper.min.js"></script>
+<script src="/adminpublic/cropper/cropper.min.js"></script>
+<script src="/admin/admin-frond-end-js/editProductScript.js"></script>
 <%- include('../admin-partials/footer'); %>
+

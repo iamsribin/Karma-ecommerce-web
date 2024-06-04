@@ -20,22 +20,22 @@ function validateField(fieldId, errorMessageId, validationFn, errorMessage) {
 }
 
 //validation for quality checking
-// function validateQualityChecking() {
-//   const qualityCheckYes = document.getElementById("qualityCheckYes");
-//   const qualityCheckNo = document.getElementById("qualityCheckNo");
-//   const errorMessageElement = document.getElementById(
-//     "error-message-quality-checking"
-//   );
+function validateQualityChecking() {
+  const qualityCheckYes = document.getElementById("qualityCheckYes");
+  const qualityCheckNo = document.getElementById("qualityCheckNo");
+  const errorMessageElement = document.getElementById(
+    "error-message-quality-checking"
+  );
 
-//   if (!qualityCheckYes.checked && !qualityCheckNo.checked) {
-//     errorMessageElement.innerHTML =
-//       "Please select an option for quality checking.";
-//     return false;
-//   } else {
-//     errorMessageElement.innerHTML = "";
-//     return true;
-//   }
-// }
+  if (!qualityCheckYes.checked && !qualityCheckNo.checked) {
+    errorMessageElement.innerHTML =
+      "Please select an option for quality checking.";
+    return false;
+  } else {
+    errorMessageElement.innerHTML = "";
+    return true;
+  }
+}
 
 //vallidation for offer
 function validateOfferAndExpiryDate() {
@@ -128,24 +128,24 @@ function validateForm() {
     (value) => value === "Select category",
     "Please select a category."
   );
-  isValid &= validateField(
-    "productImage1",
-    "error-message-image1",
-    (value) => value === "",
-    "Please select at least one image."
-  );
-  isValid &= validateField(
-    "productImage2",
-    "error-message-image2",
-    (value) => value === "",
-    "Please select at least one image."
-  );
-  isValid &= validateField(
-    "productImage3",
-    "error-message-image3",
-    (value) => value === "",
-    "Please select at least one image."
-  );
+//   isValid &= validateField(
+//     "productImage1",
+//     "error-message-image1",
+//     (value) => value === "",
+//     "Please select at least one image."
+//   );
+//   isValid &= validateField(
+//     "productImage2",
+//     "error-message-image2",
+//     (value) => value === "",
+//     "Please select at least one image."
+//   );
+//   isValid &= validateField(
+//     "productImage3",
+//     "error-message-image3",
+//     (value) => value === "",
+//     "Please select at least one image."
+//   );
   isValid &= validateOfferAndExpiryDate();
   return !!isValid;
 }
@@ -207,24 +207,24 @@ const fieldsToValidate = [
     validationFn: (value) => value === "Select category",
     errorMessage: "Please select a category.",
   },
-  {
-    fieldId: "productImage1",
-    errorMessageId: "error-message-image1",
-    validationFn: (value) => value === "",
-    errorMessage: "Please select at least one image.",
-  },
-  {
-    fieldId: "productImage2",
-    errorMessageId: "error-message-image2",
-    validationFn: (value) => value === "",
-    errorMessage: "Please select at least one image.",
-  },
-  {
-    fieldId: "productImage3",
-    errorMessageId: "error-message-image3",
-    validationFn: (value) => value === "",
-    errorMessage: "Please select at least one image.",
-  },
+//   {
+//     fieldId: "productImage1",
+//     errorMessageId: "error-message-image1",
+//     validationFn: (value) => value === "",
+//     errorMessage: "Please select at least one image.",
+//   },
+//   {
+//     fieldId: "productImage2",
+//     errorMessageId: "error-message-image2",
+//     validationFn: (value) => value === "",
+//     errorMessage: "Please select at least one image.",
+//   },
+//   {
+//     fieldId: "productImage3",
+//     errorMessageId: "error-message-image3",
+//     validationFn: (value) => value === "",
+//     errorMessage: "Please select at least one image.",
+//   },
 ];
 
 fieldsToValidate.forEach(
@@ -273,6 +273,84 @@ function initCropper(imageElement) {
     console.log("Invalid image element");
   }
 }
+
+document.querySelector("#productForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (validateForm()) {
+    try {
+      if (cropper) {
+        const croppedCanvas = cropper.getCroppedCanvas();
+        croppedCanvas.toBlob(async (blob) => {
+          const formData = new FormData(document.getElementById("productForm"));
+
+          // Get the selected file input container
+          const cropBoxData = cropper.getCropBoxData();
+          const selectedFileInputContainer = cropBoxData.viewMode === 1
+            ? document.getElementById("imagePreview1").parentElement
+            : cropBoxData.viewMode === 2
+              ? document.getElementById("imagePreview2").parentElement
+              : document.getElementById("imagePreview3").parentElement;
+
+          // Get the selected file input
+          const selectedFileInput = selectedFileInputContainer.querySelector('input[type="file"]');
+
+          // Set the blob only for the selected file input
+          formData.set(selectedFileInput.id, blob, `croppedImage${selectedFileInput.id.slice(-1)}.png`);
+          const inputField = document.querySelector("#name");
+          const id = inputField.getAttribute("data_id")
+
+          const response = await fetch(`/admin/edit-product/${id}`, {
+            method: "PATCH",
+            body: formData,
+          });
+               const data = response.json();
+          if (response.ok) {
+            Swal.fire({
+              title: "Successfully edited Product",
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+            }).then(async (result) => {
+              if (result.isConfirmed) {
+                window.location.href = "/admin/add-product";
+              }
+            });
+          } else {
+            Swal.fire({
+              title: data.message,
+              icon: "error",
+              showCancelButton: false,
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+            });
+            console.log("An error occurred", response);
+          }
+        }, "image/png");
+      } else {
+        // Submit the form if no cropping is needed
+        document.getElementById("productForm").submit();
+      }
+    } catch (error) {
+      console.log("Add product error:", error);
+    }
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Handle form submission    
 // document.querySelector("#productForm").addEventListener("submit", async (e) => {
@@ -383,66 +461,3 @@ function initCropper(imageElement) {
 //     }
 //   }
 // });
-
-document.querySelector("#productForm").addEventListener("submit", async (e) => {
-  e.preventDefault();
-  if (validateForm()) {
-    try {
-      if (cropper) {
-        const croppedCanvas = cropper.getCroppedCanvas();
-        croppedCanvas.toBlob(async (blob) => {
-          const formData = new FormData(document.getElementById("productForm"));
-
-          // Get the selected file input container
-          const cropBoxData = cropper.getCropBoxData();
-          const selectedFileInputContainer = cropBoxData.viewMode === 1
-            ? document.getElementById("imagePreview1").parentElement
-            : cropBoxData.viewMode === 2
-              ? document.getElementById("imagePreview2").parentElement
-              : document.getElementById("imagePreview3").parentElement;
-
-          // Get the selected file input
-          const selectedFileInput = selectedFileInputContainer.querySelector('input[type="file"]');
-
-          // Set the blob only for the selected file input
-          formData.set(selectedFileInput.id, blob, `croppedImage${selectedFileInput.id.slice(-1)}.png`);
-
-          const response = await fetch("/admin/add-product", {
-            method: "POST",
-            body: formData,
-          });
-
-          if (response.ok) {
-            Swal.fire({
-              title: "Successfully Added Product",
-              icon: "success",
-              showCancelButton: false,
-              confirmButtonColor: "#3085d6",
-              confirmButtonText: "OK",
-            }).then(async (result) => {
-              if (result.isConfirmed) {
-                window.location.href = "/admin/add-product";
-              }
-            });
-          } else {
-            Swal.fire({
-              title: "An error occurred",
-              icon: "error",
-              showCancelButton: false,
-              confirmButtonColor: "#3085d6",
-              confirmButtonText: "OK",
-            });
-            console.log("An error occurred", response);
-          }
-        }, "image/png");
-      } else {
-        // Submit the form if no cropping is needed
-        document.getElementById("productForm").submit();
-      }
-    } catch (error) {
-      console.log("Add product error:", error);
-    }
-  }
-});
-
-

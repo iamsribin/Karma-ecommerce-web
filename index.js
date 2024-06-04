@@ -5,6 +5,7 @@ const session = require("express-session");
 const { v4: uuidv4 } = require("uuid");
 const cors = require("cors");
 const passport = require("passport");
+const flash = require("connect-flash");
 require("dotenv").config();
 const userRouter = require("./routes/userRouters/userRouter");
 const googleAuthController = require("./routes/userRouters/googleAuthRouter");
@@ -36,8 +37,15 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(flash());
 
 app.use(passport.authenticate('session'));
+
+app.use((req, res, next) => {
+    res.locals.successMessage = req.flash('success');
+    res.locals.errorMessage = req.flash('error');
+    next();
+  });
 
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
@@ -72,8 +80,12 @@ app.use((error, req, res, next) => {
 });
 
 app.get("*", (req, res) => {
-  res.status(404).render("404");
+  res.status(404).render("errorPages/404");
 });
+
+app.get("/internalError", (req, res) =>{
+  res.status(500).render("errorPages/500");
+})
 
 connectToDatabase();
 

@@ -49,7 +49,9 @@ exports.addCoupon = async (req, res, next) => {
     });
 
     if (existingCoupon) {
-      return next(createError(400, "This coupon code already exists and is active!"));
+      return next(
+        createError(400, "This coupon code already exists and is active!")
+      );
     }
 
     const newCoupon = new Coupon({
@@ -89,8 +91,72 @@ exports.deleteCoupon = async (req, res, next) => {
 
     res.status(200).send(coupon);
   } catch (error) {
-    
     console.error("Error deleting coupon:", error);
     next(createError(null, null));
+  }
+};
+
+//render edit coupon page
+exports.renderEditCouponPage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return next(createError(400, "Invalid ID"));
+    }
+
+    const coupon = await Coupon.findById(id);
+    if (!coupon) {
+      return next(createError(404, "category not found"));
+    }
+    return res.render("admin/adminDasbord/editCoupon", { coupon });
+  } catch (error) {
+    console.log(error);
+    return next(createError(null, null));
+  }
+};
+
+//edit coupon
+exports.editCoupon = async (req, res, next) => {
+  try {
+    const {
+      couponCode,
+      name,
+      expiryDate,
+      startDate,
+      minimumPurchaseAmount,
+      offerAmount,
+      maximumUses,
+    } = req.body;
+
+    const { id } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return next(createError(400, "Invalid ID"));
+    }
+
+    const coupon = await Coupon.findOneAndUpdate(
+      { _id: id },
+      {
+        $set: {
+          couponCode,
+          name,
+          expiryDate,
+          startDate,
+          minimumPurchaseAmount,
+          offerAmount,
+          maximumUses,
+        },
+      },
+      { new: true }
+    );
+
+    if (!coupon) {
+      return next(createError(404, "coupon not found"));
+    }
+
+    res.status(200).send({ coupon });
+  } catch (error) {
+    console.log(error);
+    return next(createError(null, null));
   }
 };

@@ -68,14 +68,13 @@
           <td><b><%= coupon.currentUsageCount %></b></td>
           <td>
             <a
-             
               class="text-danger deleteAction"
               data-id="<%= coupon._id %>"
               onclick="deleteCoupon('<%= coupon._id %>')"
               ><i class="far fa-trash-alt"></i
             ></a>
             &nbsp;
-            <a href="" class="text-primary"
+            <a href="/admin/edit-coupon-page/<%= coupon._id%>" class="text-primary"
               ><i style="color: white" class="fas fa-edit"></i
             ></a>
           </td>
@@ -83,7 +82,6 @@
         <%}%> <%})%>
       </tbody>
     </table>
-
   </div>
 </div>
 

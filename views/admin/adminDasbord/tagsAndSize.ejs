@@ -4,7 +4,7 @@
   <div class="row">
     <!-- Category Column -->
     <div class="col-lg-6">
-      <h2 class="tm-block-title">Category List</h2>
+      <h2 class="tm-block-title">Tag List</h2>
       <div class="row mb-3">
         <div class="col-md-8">
           <div class="input-group">
@@ -13,13 +13,13 @@
               id="categorySearch"
               class="form-control form-control-lg"
               style="background-color: aliceblue; color: black"
-              placeholder="Search category..."
+              placeholder="Search tag..."
             />
             <div class="input-group-append">
               <button
                 class="btn btn-outline-secondary"
                 type="button"
-                onclick="searchCategory()"
+                onclick="searchTag()"
               >
                 <i class="fas fa-search"></i>
               </button>
@@ -27,39 +27,37 @@
           </div>
         </div>
         <div class="col-md-4 text-right">
-          <a href="/admin/add-category-page" class="btn btn-primary btn-sm"
-            >Add Category</a
+          <a href="/admin/add-tag-page" class="btn btn-primary btn-sm"
+            >Add Tag</a
           >
         </div>
       </div>
         <div class="table-responsive">
-          <% if (categories && categories.length > 0) { %>
+          <% if (tags && tags.length > 0) { %>
           <table class="table table-hover">
             <thead class="thead-dark">
               <tr>
-                <th scope="col">NAME</th>
-                <th scope="col">DESCRIPTION</th>
+                <th scope="col">TAG</th>
                 <th scope="col">ADDED DATE</th>
                 <th scope="col">ACTION</th>
               </tr>
             </thead>
             <tbody>
-              <% categories.forEach((category) => { %> <% if (category.isActive) {
+              <% tags.forEach((tag) => { %> <% if (tag.isActive) {
               %>
               <tr>
-                <td><b><%= category.name %></b></td>
-                <td><b><%= category.discription %></b></td>
-                <td><b><%= category.createdAt.toDateString() %></b></td>
+                  <td><b><%= tag.tagName %></b></b></td>
+                <td><b><%= tag.createdDate.toDateString() %></b></td>
                 <td>
                   <a
                     class="text-danger deleteAction"
-                    onclick="deleteCategory('<%= category._id %>')"
+                    onclick="deleteTag('<%= tag._id %>')"
                   >
                     <i class="far fa-trash-alt"></i>
                   </a>
                   &nbsp;&nbsp;&nbsp;&nbsp;
-                  <a
-                    href="/admin/edit-category-page/<%= category._id %>"
+                  <a color
+                    href="/admin/edit-tag-page/<%= tag._id %>"
                     class="text-primary"
                   >
                     <i class="fas fa-edit"></i>
@@ -70,14 +68,14 @@
             </tbody>
           </table>
           <% } else { %>
-          <h1 style="text-align: center"><b>No categories in the database</b></h1>
+          <h1 style="text-align: center"><b>No tag in the database</b></h1>
           <% } %>
         </div>
     </div>
  
     <!-- Brand Column -->
     <div class="col-lg-6">
-      <h2 class="tm-block-title">Brand List</h2>
+      <h2 class="tm-block-title">size List</h2>
       <div class="row mb-3">
         <div class="col-md-8">
           <div class="input-group">
@@ -86,13 +84,13 @@
               id="brandSearch"
               class="form-control form-control-lg"
               style="background-color: aliceblue; color: black"
-              placeholder="Search brand..."
+              placeholder="Search size..."
             />
             <div class="input-group-append">
               <button
                 class="btn btn-outline-secondary"
                 type="button"
-                onclick="searchBrand()"
+                onclick="searchSize()"
               >
                 <i class="fas fa-search"></i>
               </button>
@@ -100,38 +98,36 @@
           </div>
         </div>
         <div class="col-md-4 text-right">
-          <a href="/admin/add-brand-page" class="btn btn-primary btn-sm"
-            >Add Brand</a
+          <a href="/admin/add-size-page" class="btn btn-primary btn-sm"
+            >Add size</a
           >
         </div>
       </div>
         <div class="table-responsive">
-          <% if (brands && brands.length > 0) { %>
+          <% if (sizes && sizes.length > 0) { %>
           <table class="table table-hover">
             <thead class="thead-dark">
               <tr>
                 <th scope="col">NAME</th>
-                <th scope="col">DESCRIPTION</th>
                 <th scope="col">ADDED DATE</th>
                 <th scope="col">ACTION</th>
               </tr>
             </thead>
             <tbody>
-              <% brands.forEach((brand) => { %> <% if (brand.isActive) { %>
+              <% sizes.forEach((size) => { %> <% if (size.isActive) { %>
               <tr>
-                <td><b><%= brand.name %></b></td>
-                <td><b><%= brand.discription %></b></td>
-                <td><b><%= brand.createdAt.toDateString() %></b></td>
+                <td><b><%= size.size %></b></td>
+                <td><b><%= size.createdDate.toDateString() %></b></td>
                 <td>
                   <a
                     class="text-danger deleteAction"
-                    onclick="deleteBrand('<%= brand._id %>')"
+                    onclick="deleteSize('<%= size._id %>')"
                   >
                     <i class="far fa-trash-alt"></i>
                   </a>
                   &nbsp;&nbsp;&nbsp;&nbsp;
                   <a
-                    href="/admin/edit-brand-page/<%= brand._id %>"
+                    href="/admin/edit-size-page/<%= size._id %>"
                     class="text-primary"
                   >
                     <i class="fas fa-edit"></i>
@@ -142,7 +138,7 @@
             </tbody>
           </table>
           <% } else { %>
-          <h1 style="text-align: center"><b>No brands in the database</b></h1>
+          <h1 style="text-align: center"><b>No size in the database</b></h1>
           <% } %>
         </div>
       </div>
@@ -151,16 +147,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  function deleteCategory(categoryId) {
+  function deleteTag(tagId) {
     Swal.fire({
-      title: `Do you want to delete this category?`,
+      title: `Do you want to delete this tag?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       confirmButtonText: "OK",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const response = await fetch(`/admin/delete-category/${categoryId}`, {
+        const response = await fetch(`/admin/delete-tag/${tagId}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -168,7 +164,7 @@
         });
         const result = await response.json();
         if (response.ok) {
-          window.location.href = "/admin/categories-and-brand";
+          window.location.reload();
         } else {
           Swal.fire({
             icon: "error",
@@ -180,16 +176,16 @@
     });
   }
 
-  function deleteBrand(brandId) {
+  function deleteSize(sizeId) {
     Swal.fire({
-      title: `Do you want to delete this brand?`,
+      title: `Do you want to delete this size?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       confirmButtonText: "OK",
     }).then(async (result) => {
       if (result.isConfirmed) {
-        const response = await fetch(`/admin/delete-brand/${brandId}`, {
+        const response = await fetch(`/admin/delete-size/${sizeId}`, {
           method: "DELETE",
           headers: {
             "Content-Type": "application/json",
@@ -197,7 +193,7 @@
         });
         const result = await response.json();
         if (response.ok) {
-          window.location.href = "/admin/categories-and-brand";
+          window.location.reload();
         } else {
           Swal.fire({
             icon: "error",

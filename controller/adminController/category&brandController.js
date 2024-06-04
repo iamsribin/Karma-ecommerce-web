@@ -71,12 +71,63 @@ exports.deleteCategory = async (req, res, next) => {
   }
 };
 
+//render edit category page
+exports.renderEditCategoryPage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return next(createError(400, "Invalid ID"));
+    }
+
+    const category = await categoryDB.findById(id);
+    if (!category) {
+      return next(createError(404, "category not found"));
+    }
+    return res.render("admin/adminDasbord/editCategory",{category});
+    
+  } catch (error) {
+    console.log(error);
+    return next(createError(null, null));
+  }
+}
+
+//edit  category 
+exports.editCategory = async (req, res, next) =>{
+  try {
+const {name , discription} = req.body;
+const {id} = req.params;
+
+if (!mongoose.Types.ObjectId.isValid(id)) {
+  return next(createError(400, "Invalid ID"));
+}
+
+const category = await categoryDB.findOneAndUpdate(
+  { _id: id },
+  { $set: { name, discription } },
+  { new: true }
+);
+
+if (!category) {
+  return next(createError(404, "category not found"));
+}
+console.log(category);
+res.status(200).send({ category });
+
+}catch(error){
+  console.log(error);
+return next(createError(null, null));
+}
+}
+
 // #########################    BRAND   #######################
 
+
+//render add brand page
 exports.renderAddBrandPage = async (req, res, next) => {
   return res.render("admin/adminDasbord/addBrand");
 };
 
+//add new brand
 exports.AddNewBrand = async (req, res, next) => {
   try {
     const { name, discription } = req.body;
@@ -96,7 +147,7 @@ exports.AddNewBrand = async (req, res, next) => {
 
     return res.status(200).send(newBrand);
   } catch (error) {
-    console.log(error);
+
     return next(createError(null, null));
   }
 };
@@ -118,7 +169,56 @@ exports.deleteBrand = async (req, res, next) => {
 
     res.status(200).send(brand);
   } catch (error) {
-    console.log(error);
+
     return next(createError(null, null));
   }
 };
+
+//render edit brand page
+exports.renderEditBrandPage = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return next(createError(400, "Invalid ID"));
+    }
+
+    const brand = await brandDB.findById(id);
+    if (!brand) {
+      return next(createError(404, "brand not found"));
+    }
+    return res.render("admin/adminDasbord/editBrand",{brand});
+    
+  } catch (error) {
+    console.log(error);
+    return next(createError(null, null));
+  }
+
+}
+
+//edit brand
+exports.editBrand = async (req, res, next) =>{
+  try {
+const {name , discription} = req.body;
+const {id} = req.params;
+
+if (!mongoose.Types.ObjectId.isValid(id)) {
+  return next(createError(400, "Invalid ID"));
+}
+
+const brand = await brandDB.findOneAndUpdate(
+  { _id: id },
+  { $set: { name, discription } },
+  { new: true }
+);
+
+if (!brand) {
+  return next(createError(404, "category not found"));
+}
+console.log(brand);
+res.status(200).send({ brand });
+
+}catch(error){
+  console.log(error);
+return next(createError(null, null));
+}
+}

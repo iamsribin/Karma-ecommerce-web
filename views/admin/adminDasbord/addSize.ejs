@@ -2,38 +2,23 @@
 <div class="container tm-mt-big tm-mb-big">
   <div class="row">
     <div class="col-lg col-md-12 col-sm-12 mx-auto">
-      <form id="brandForm">
+      <form id="sizeForm">
         <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
-          <div class="row tm-edit-product-row">
+          <div class="row tm-edit-product-row" style="display: flex; justify-content: center;">
             <div class="col-lg-6 col-md-6 col-sm-12">
               <div class="form-group mb-3">
-                <label for="name" style="color: white">Name</label>
+                <label for="name" style="color: white">Size</label>
                 <input
                   id="name"
-                  name="name"
+                  name="size"
                   type="text"
                   class="form-control"
                   style="background-color: white; color: black"
                 />
                 <span
-                  id="error-message-brand-name"
+                  id="error-message-category-name"
                   class="text-danger"
                 ></span>
-              </div>
-            </div>
-            <div class="col-lg-6 col-md-6 col-sm-12">
-              <div class="form-group mb-3">
-                <label for="discription" style="color: white"
-                  >Discription</label
-                >
-                <textarea
-                  class="form-control validate"
-                  rows="1"
-                  id="description"
-                  name="discription"
-                  style="background-color: white; color: black"
-                ></textarea>
-                <span id="error-message-description" class="text-danger"></span>
               </div>
             </div>
           </div>
@@ -41,7 +26,7 @@
           <div class="row tm-edit-product-row">
             <div class="col-12" style="display: flex; justify-content: center">
               <button type="submit" class="btn btn-primary text-uppercase">
-                Add Brand Now
+                Add Size Now
               </button>
             </div>
           </div>
@@ -74,16 +59,11 @@
 
     isValid &= validateField(
       "name",
-      "error-message-brand-name",
+      "error-message-category-name",
       isOnlySpaces,
-      "*Please enter a valid brand name*"
+      "*Please enter a valid size*"
     );
-    isValid &= validateField(
-      "description",
-      "error-message-description",
-      isOnlySpaces,
-      "Please enter a valid description."
-    );
+
     if (!isValid) return false;
    
     return isValid;
@@ -92,15 +72,9 @@
   const fieldsToValidate = [
     {
       fieldId: "name",
-      errorMessageId: "error-message-brand-name",
+      errorMessageId: "error-message-category-name",
       validationFn: isOnlySpaces,
-      errorMessage: "*Please enter a valid brand name*",
-    },
-    {
-      fieldId: "description",
-      errorMessageId: "error-message-description",
-      validationFn: isOnlySpaces,
-      errorMessage: "Please enter a valid description.",
+      errorMessage: "*Please enter a valid size*",
     },
   ];
 
@@ -113,36 +87,34 @@
   );
 
   //send data to server
-  const addCategoryForm = document.querySelector("#brandForm");
-  addCategoryForm.addEventListener("submit", async (event) => {
+  const addSizeForm = document.querySelector("#sizeForm");
+  addSizeForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (validateForm()) {
-      const formData = new FormData(addCategoryForm);
-      const name = formData.get("name");
-      const discription = formData.get("discription");
+      const formData = new FormData(addSizeForm);
+      const size = formData.get("size");
 
       try {
-        const response = await fetch("/admin/add-brand", {
+        const response = await fetch("/admin/add-size", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            name,
-            discription,
+            size,
           }),
         });
         const data = await response.json();
         if (response.ok) {
           Swal.fire({
-            title: `Brand "${data.name}" successfully Added `,
+            title: `size "${data.size}" successfully Added `,
             icon: "success",
             showCancelButton: false,
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
           }).then(async (result) => {
             if (result.isConfirmed) {
-              window.location.href = "/admin/add-brand-page";
+              window.location.href = "/admin/color-and-size";
             }
           });
         } else {
@@ -155,7 +127,6 @@
           });
         }
       } catch (error) {
-        console.log(error);
         Swal.fire({
           title: "An error occurred",
           icon: "error",

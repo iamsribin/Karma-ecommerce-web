@@ -2,7 +2,7 @@
 <div class="container tm-mt-big tm-mb-big">
   <div class="row">
     <div class="col-lg col-md-12 col-sm-12 mx-auto">
-      <form id="brandForm">
+      <form id="editCategoryForm">
         <div class="tm-bg-primary-dark tm-block tm-block-h-auto">
           <div class="row tm-edit-product-row">
             <div class="col-lg-6 col-md-6 col-sm-12">
@@ -12,11 +12,13 @@
                   id="name"
                   name="name"
                   type="text"
+                  value="<%=category.name%>"
+                  data_id = "<%= category._id%>"
                   class="form-control"
                   style="background-color: white; color: black"
                 />
                 <span
-                  id="error-message-brand-name"
+                  id="error-message-category-name"
                   class="text-danger"
                 ></span>
               </div>
@@ -31,8 +33,9 @@
                   rows="1"
                   id="description"
                   name="discription"
+                 
                   style="background-color: white; color: black"
-                ></textarea>
+                ><%= category.discription%></textarea>
                 <span id="error-message-description" class="text-danger"></span>
               </div>
             </div>
@@ -41,7 +44,7 @@
           <div class="row tm-edit-product-row">
             <div class="col-12" style="display: flex; justify-content: center">
               <button type="submit" class="btn btn-primary text-uppercase">
-                Add Brand Now
+                Edit Category Now
               </button>
             </div>
           </div>
@@ -74,9 +77,9 @@
 
     isValid &= validateField(
       "name",
-      "error-message-brand-name",
+      "error-message-category-name",
       isOnlySpaces,
-      "*Please enter a valid brand name*"
+      "*Please enter a valid category name*"
     );
     isValid &= validateField(
       "description",
@@ -92,9 +95,9 @@
   const fieldsToValidate = [
     {
       fieldId: "name",
-      errorMessageId: "error-message-brand-name",
+      errorMessageId: "error-message-category-name",
       validationFn: isOnlySpaces,
-      errorMessage: "*Please enter a valid brand name*",
+      errorMessage: "*Please enter a valid category name*",
     },
     {
       fieldId: "description",
@@ -113,17 +116,19 @@
   );
 
   //send data to server
-  const addCategoryForm = document.querySelector("#brandForm");
+  const addCategoryForm = document.querySelector("#editCategoryForm");
   addCategoryForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     if (validateForm()) {
       const formData = new FormData(addCategoryForm);
       const name = formData.get("name");
       const discription = formData.get("discription");
+      const inputField = document.querySelector('#name');
+      const id = inputField.getAttribute("data_id");
 
       try {
-        const response = await fetch("/admin/add-brand", {
-          method: "POST",
+        const response = await fetch(`/admin/edit-category/${id}`, {
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -134,15 +139,16 @@
         });
         const data = await response.json();
         if (response.ok) {
+            console.log(data);
           Swal.fire({
-            title: `Brand "${data.name}" successfully Added `,
+            title: `category "${data.category.name}" successfully edited `,
             icon: "success",
             showCancelButton: false,
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
           }).then(async (result) => {
             if (result.isConfirmed) {
-              window.location.href = "/admin/add-brand-page";
+              window.location.href = "/admin/categories-and-brand";
             }
           });
         } else {
@@ -155,7 +161,6 @@
           });
         }
       } catch (error) {
-        console.log(error);
         Swal.fire({
           title: "An error occurred",
           icon: "error",
