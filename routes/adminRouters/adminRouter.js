@@ -36,6 +36,7 @@ const {
   addProduct,
   editProduct,
   renderEditProductPage,
+  adminAddProductCheck_get,
 } = require("../../controller/adminController/productController");
 
 //customer controller
@@ -80,64 +81,60 @@ const {
 
 
 //middlewares
-const { adminAuthCheck, checkAdmin } = require("../../middleware/adminAuth");
+const { adminAuthCheck, checkAdmin, verifyAdmin } = require("../../middleware/adminAuth");
 
 //admin authentication router
 router.get("/login", checkAdmin, renderLogin);
 router.post("/login", logCheck);
 router.get("/logout", logOut);
 //dashbord
-router.get("/dashboard", adminAuthCheck, renderDashboard);
+router.get("/dashboard", verifyAdmin, renderDashboard);
 //coupen management
-router.get("/add-coupen", renderAddCoupons);
-router.get("/coupens", renderCoupons);
-router.post("/add-coupon", addCoupon);
-router.delete("/delete-coupon/:id", deleteCoupon);
-router.get("/edit-coupon-page/:id", renderEditCouponPage);
-router.patch("/edit-coupon/:id", editCoupon);
+router.get("/add-coupen",verifyAdmin, renderAddCoupons);
+router.get("/coupens",verifyAdmin, renderCoupons);
+router.post("/add-coupon", verifyAdmin, addCoupon);
+router.delete("/delete-coupon/:id",verifyAdmin, deleteCoupon);
+router.get("/edit-coupon-page/:id",verifyAdmin, renderEditCouponPage);
+router.patch("/edit-coupon/:id", verifyAdmin,editCoupon);
 //paymens
-router.get("/payments", renderPayments);
-router.get("/orders", renderOrder);
+router.get("/payments",verifyAdmin, renderPayments);
+router.get("/orders", verifyAdmin, renderOrder);
 //products
-router.get("/products", renderProducts);
-router.get("/add-product", renderAddproduct);
-router.delete("/delete-product/:id", deleteProduct);
-router.get("/edit-product/:id", renderEditProductPage);
-router.post("/add-product", upload.array('images', 4),   addProduct);
-router.patch("/edit-product/:id",  upload.fields([
-  { name: "productImage1", maxCount: 1 },
-  { name: "productImage2", maxCount: 1 },
-  { name: "productImage3", maxCount: 1 },
-]), editProduct);
+router.get("/products", verifyAdmin, renderProducts);
+router.get("/add-product", verifyAdmin, renderAddproduct);
+router.delete("/delete-product/:id", verifyAdmin, deleteProduct);
+router.get("/edit-product/:id",verifyAdmin, renderEditProductPage);
+router.post("/add-product", verifyAdmin, upload.array('images', 4),   addProduct);
+router.post("/edit-product/:id", verifyAdmin, upload.array('images', 4),  editProduct);
 //customers
-router.get("/customers", renderCostumers);
-router.patch("/block-unblock-user/:id", blockOrUnBlockUser);
+router.get("/customers",verifyAdmin, renderCostumers);
+router.patch("/block-unblock-user/:id",verifyAdmin,  blockOrUnBlockUser);
 //category
-router.get("/categories-and-brand", renderCategoriesAndBrands);
-router.get("/add-category-page", renderAddCategoryPage);
-router.post("/add-category", AddNewCategory);
-router.delete("/delete-category/:id", deleteCategory);
-router.get("/edit-category-page/:id",renderEditCategoryPage);
-router.patch("/edit-category/:id", editCategory);
+router.get("/categories-and-brand", verifyAdmin, renderCategoriesAndBrands);
+router.get("/add-category-page", verifyAdmin, renderAddCategoryPage);
+router.post("/add-category", verifyAdmin, AddNewCategory);
+router.delete("/delete-category/:id",verifyAdmin, deleteCategory);
+router.get("/edit-category-page/:id",verifyAdmin, renderEditCategoryPage);
+router.patch("/edit-category/:id", verifyAdmin, editCategory);
 //brand
-router.get("/add-brand-page", renderAddBrandPage);
-router.post("/add-brand", AddNewBrand);
-router.delete("/delete-brand/:id", deleteBrand);
-router.get("/edit-brand-page/:id", renderEditBrandPage);
-router.patch("/edit-brand/:id", editBrand);
+router.get("/add-brand-page", verifyAdmin, renderAddBrandPage);
+router.post("/add-brand", verifyAdmin, AddNewBrand);
+router.delete("/delete-brand/:id", verifyAdmin, deleteBrand);
+router.get("/edit-brand-page/:id", verifyAdmin, renderEditBrandPage);
+router.patch("/edit-brand/:id", verifyAdmin, editBrand);
 //tags
-router.get("/tags-and-size", renderTagAndSize);
-router.get("/add-tag-page", renderAddTagPage);
-router.post("/add-tag", AddNewTag);
-router.delete("/delete-tag/:id", deleteTag);
-router.get("/edit-tag-page/:id",renderEditTagPage);
-router.patch("/edit-tag/:id", editTag);
+router.get("/tags-and-size", verifyAdmin, renderTagAndSize);
+router.get("/add-tag-page", verifyAdmin, renderAddTagPage);
+router.post("/add-tag", verifyAdmin, AddNewTag);
+router.delete("/delete-tag/:id", verifyAdmin,  deleteTag);
+router.get("/edit-tag-page/:id", verifyAdmin, renderEditTagPage);
+router.patch("/edit-tag/:id", verifyAdmin, editTag);
 //size
-router.get("/add-size-page", renderAddSizePage);
-router.post("/add-size", AddNewSize);
-router.delete("/delete-size/:id", deleteSize);
-router.get("/edit-size-page/:id", renderEditSizePage);
-router.patch("/edit-size/:id", editSize);
+router.get("/add-size-page", verifyAdmin, renderAddSizePage);
+router.post("/add-size", verifyAdmin, AddNewSize);
+router.delete("/delete-size/:id", verifyAdmin, deleteSize);
+router.get("/edit-size-page/:id", verifyAdmin, renderEditSizePage);
+router.patch("/edit-size/:id", verifyAdmin, editSize);
 
-
+router.post('/admin-add-product-check', adminAddProductCheck_get);
 module.exports = router;

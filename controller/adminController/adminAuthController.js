@@ -28,7 +28,6 @@ exports.logCheck = (req, res, next) => {
 exports.logOut = (req, res, next) => {
   try {
     if (req.session.admin) {
-
       req.session.destroy((err) => {
         if (err) {
           return next(createError(null, null));
@@ -38,7 +37,7 @@ exports.logOut = (req, res, next) => {
 
     }
   } catch (error) {
-
+console.log(error);
     return next(createError(null, null));
   }
 };

@@ -12,6 +12,12 @@ const {saveNewPassword,
   postEmailForForgetOtp, 
   renderEmailForForgetOtp
 } = require("../../controller/userController/authController");
+
+const {
+  getUserProfile,
+  getCart,
+} = require("../../controller/userController/userProfileController");
+
 //otp controller
 const {
   sendOTP,
@@ -26,6 +32,8 @@ const {
   isOTPVerificationProcess,
   userExit,
   isPasswordChangingProcess,
+  isBlock,
+  verifyUser,
 } = require("../../middleware/userAuth");
 //product controller
 const {
@@ -46,7 +54,7 @@ router.get("/resendOtp", isOTPVerificationProcess, resendOtp);
 router.get("/getotp", isOTPVerificationProcess, renderotpPage);
 router.post("/verify-otp", isOTPVerificationProcess, verifyOtp);
 //home
-router.get("/", home);
+router.get("/",isBlock, home);
 //forgot password
 router.get("/chagePassword", isPasswordChangingProcess, renderNewPasswordPage);
 router.post("/forgot-password-otp", ForgotOtpPage);
@@ -55,7 +63,10 @@ router.post("/save-new-password", isPasswordChangingProcess, saveNewPassword);
 router.get("/getotp-forgot-password", isPasswordChangingProcess, postEmailForForgetOtp);
 router.get("/sendmail", renderEmailForForgetOtp);
 //product
-router.get("/product/:id", getProduct);
-router.get("/category", renderCategoryPage);
+router.get("/product/:id",isBlock, getProduct);
+router.get("/category", isBlock, verifyUser, renderCategoryPage);
 
+//user profile
+router.get("/user-profile", isBlock, getUserProfile);
+router.get("/user-cart", isBlock, getCart);
 module.exports = router;

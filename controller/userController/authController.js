@@ -18,6 +18,7 @@ exports.find = async (req, res, next) => {
     if (!isMatch) return next(createError(401, "Invalid email or password"));
 
     req.session.user = user.name;
+    req.session.userGmail = user.email;
 
     return res.status(200).json({ name: user.name });
   } catch (error) {

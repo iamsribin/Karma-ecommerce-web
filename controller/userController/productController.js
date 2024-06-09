@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const { createError } = require("../../utils/errors");
 const productDB = require("../../models/adminModels/product");
+const userDB = require("../../models/userModels/userModel")
 
 // get single product
 exports.getProduct = async (req, res, next) => {
@@ -8,7 +9,7 @@ exports.getProduct = async (req, res, next) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(createError(400, "Invalid ID!!!"));
+      return res.render( "errorPages/404");``
     }
 
     // Fetch the single product along with its brand and category
@@ -26,18 +27,22 @@ exports.getProduct = async (req, res, next) => {
       return next(createError(404, "Product not found"));
     }
 
-    console.log(product);
     // Fetch related products by the same category, excluding the current product
     const relatedProducts = await productDB
       .find({
         category: product.category._id,
         _id: { $ne: product._id },
         isActive: true,
-      }).populate("brand")
+      })
+      .populate("brand")
       .populate("category")
+      .populate("tag")
       .limit(5);
 
+    const userDetalis = await userDB.findOne({ email: req.session.userGmail });
+    
     res.render("user/pages/product", {
+      user: userDetalis,
       product: product,
       relatedProducts: relatedProducts,
       title: "Single Product",
@@ -49,12 +54,13 @@ exports.getProduct = async (req, res, next) => {
   }
 };
 
+
 //categories page
 exports.renderCategoryPage = async (req, res) => {
   const products = await productDB
     .find({})
     .populate("brand")
     .populate("category");
-
-  return res.render("user/pages/category", { products, title: "Category" });
+const userDetalis = await userDB.findOne({email: req.session.userGmail});
+  return res.render("user/pages/category", {      user: userDetalis, products, title: "Category" });
 };

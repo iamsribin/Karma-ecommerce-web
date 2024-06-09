@@ -188,11 +188,6 @@
         }).then((result) => {
           if (result.isConfirmed) {
             window.location.href = "/admin/logout";
-            Swal.fire({
-              title: "Deleted!",
-              text: "Your file has been deleted.",
-              icon: "success",
-            });
           }
         });
       })

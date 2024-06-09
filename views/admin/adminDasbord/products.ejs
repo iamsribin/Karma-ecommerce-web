@@ -44,7 +44,7 @@
         <tr>
           <td>
             <img
-              src="/<%= product.imagePaths[0] %>"
+              src="<%= product.imagePaths[0] %>"
               alt="Product Image"
               class="img-fluid product-image"
             />
@@ -56,8 +56,7 @@
           <% } else { %>
           <td><b>NULL</b></td>
           <% } %>
-          <td>
-            <b><%= product.totalQuantity %></b></td>
+          <td><b><%= product.totalQuantity %></b></td>
           <td><b><%= product.category.name %></b></td>
           <td><b><%= product.brand.name %></b></td>
           <td><b><%= product.createdAt.toDateString() %></b></td>

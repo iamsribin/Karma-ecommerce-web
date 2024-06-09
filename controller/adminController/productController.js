@@ -7,6 +7,7 @@ const categoriesDB = require("../../models/adminModels/category");
 const sizeDB = require("../../models/adminModels/size");
 const tagDB = require("../../models/adminModels/tag");
 const fs = require("fs");
+const path = require('path');
 const { ObjectId } = require("mongodb");
 
 // render products list page
@@ -16,16 +17,16 @@ exports.renderProducts = async (req, res, next) => {
       .find({})
       .populate("brand")
       .populate("category");
+    console.log(products);
     return res.render("admin/adminDasbord/products", { products });
-
   } catch (error) {
-    return res.redirect("/internalError");  }
+    return res.redirect("/internalError");
+  }
 };
 
 // render add products page
 exports.renderAddproduct = async (req, res) => {
   try {
-
     const brands = await brandDB.find({});
     const categories = await categoriesDB.find({});
     const sizes = await sizeDB.find({ isActive: true });
@@ -37,9 +38,9 @@ exports.renderAddproduct = async (req, res) => {
       tags,
       sizes,
     });
-
   } catch (error) {
-    return res.redirect("/internalError");  }
+    return res.redirect("/internalError");
+  }
 };
 
 //add products
@@ -62,40 +63,44 @@ exports.addProduct = async (req, res, next) => {
       offerExpiryDate,
     } = req.body;
 
-    if (req.files.length < 1) {
-      req.flash('error', 'Product not found');
+
+    const mainName = name.toUpperCase();
+
+    const existProduct = await Product.findOne({
+      name: mainName,
+      isActive: true,
+    });
+
+    if (existProduct) {
+      req.flash("error", "Product already exist");
       return res.redirect("/admin/add-product");
     }
-    const mainName = name.toUpperCase();
+
+    if (req.files.length < 1) {
+      req.flash("error", "Product not found");
+      return res.redirect("/admin/add-product");
+    }
+
 
     const variants = size.map((size, index) => ({
       size: new ObjectId(size),
       quantity: parseInt(quantity[index], 10) || 0,
     }));
-    
+
     let Quantity = quantity.map(Number);
 
-
     let totalQuantity = Quantity.reduce((accumulator, current) => {
-      return accumulator += current;
+      return (accumulator += current);
     }, 0);
 
     const files = req.files;
 
     const imagePaths = Object.values(files)
       .flat()
-      .map((file) => `uploads/products/${file.filename}`);
+      .map((file) => `/uploads/products/${file.filename}`);
 
     let product;
 
-    const existProduct = await Product.findOne({
-      name: mainName,
-      isActive: true,});
-      
-    if(existProduct){
-      req.flash('error', 'Product already exist');
-      return res.redirect("/admin/add-product");
-    }
 
     if (offerAmount) {
       product = new Product({
@@ -137,10 +142,9 @@ exports.addProduct = async (req, res, next) => {
 
     await product.save();
 
-    req.flash('success', `Product ${mainName} added successfully`);
+    req.flash("success", `Product ${mainName} added successfully`);
     return res.redirect("/admin/add-product");
   } catch (error) {
-
     console.log(error);
     return res.redirect("/internalError");
   }
@@ -152,21 +156,23 @@ exports.deleteProduct = async (req, res, next) => {
     const { id } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      next(createError(400, "Inalid ID!!!"));
+      return res.status(404).render("errorPages/404");
     }
 
     const product = await productDB.findById(id);
     product.isActive = false;
 
-    product.imagePaths.forEach((imagePath) => {
-      fs.unlinkSync(imagePath);
-    });
+    // product.imagePaths.forEach((imagePath) => {
+    //   fs.unlinkSync(imagePath);
+    // });
 
     product.save();
 
     return res.status(200).json({ product });
   } catch (error) {
-    return res.redirect("/internalError");  }
+    console.log(error);
+    return res.redirect("/internalError");
+  }
 };
 
 //render edit product page
@@ -177,10 +183,13 @@ exports.renderEditProductPage = async (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(404).render("errorPages/404");
     }
+
     const product = await productDB
       .findById(id)
       .populate("brand")
-      .populate("category");
+      .populate("category")
+      .populate("tag")
+      .populate("variants.size");
 
     const categories = await categoriesDB.find({
       name: { $ne: product.category.name },
@@ -189,15 +198,13 @@ exports.renderEditProductPage = async (req, res, next) => {
     const sizes = await sizeDB.find({ isActive: true });
     const tags = await tagDB.find({ isActive: true });
 
-
     return res.render("admin/adminDasbord/editProduct", {
       product,
       categories,
       brands,
       tags,
-      sizes
+      sizes,
     });
-
   } catch (error) {
     console.log(error);
     return res.redirect("/internalError");
@@ -205,71 +212,132 @@ exports.renderEditProductPage = async (req, res, next) => {
 };
 
 //edit product
+
 exports.editProduct = async (req, res, next) => {
   try {
-    const { id } = req.params;
     const {
       name,
       description,
       basePrice,
+      size,
       brand,
       category,
       quantity,
-      qualityChecking,
-      width,
-      height,
+      midsoleDrop,
+      heel,
+      tag,
+      foreFoot,
       weight,
       offerAmount,
       offerExpiryDate,
+      croppedImages
     } = req.body;
 
+    const { id } = req.params;
+
+
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(404).render("errorPages/404");
+      return res.status(404).render("errorPages/404");
     }
-    // const product = await productDB.findOneAndUpdate(
-    //   { _id: id },
-    //   { $set: { name, discription } },
-    //   { new: true }
-    // );
+
+    const mainName = name.toUpperCase();
+
+    const existProduct = await Product.findOne({
+      name: mainName,
+      isActive: true,
+    });
+
+    if (existProduct) {
+      req.flash("error", "Product already exist");
+      return res.redirect("/admin/add-product");
+    }
+
+
+    let product = await productDB.findById(id);
+
+    if (!product) {
+      req.flash("error", "Product not found");
+      return res.redirect(`/admin/edit-product/${id}`);
+    }
 
     const files = req.files;
+    let imagePaths = [...product.imagePaths];
 
-    const imagePaths = Object.values(files)
-      .flat()
-      .map((file) => `uploads/products/${file.filename}`);
+    if (files && files.length > 0) {
+      files.forEach((file, idx) => {
+        const imgPath = `/uploads/products/${file.filename}`;
+        if (imagePaths[idx]) {
+          fs.unlink(path.join(__dirname, '..', imagePaths[idx]), (err) => {
+            if (err) console.error(err);
+          });
+        }
+        imagePaths[idx] = imgPath;
+      });
+    }
 
-    let product;
+    if (croppedImages) {
+      for (const [idx, croppedImage] of Object.entries(croppedImages)) {
+        if (croppedImage) {
+          const base64Data = croppedImage.replace(/^data:image\/\w+;base64,/, "");
+          const buffer = Buffer.from(base64Data, 'base64');
+          const fileName = `${Date.now()}-${idx}.png`;
+          const imgPath = `/uploads/products/${fileName}`;
+          fs.writeFileSync(`./uploads/products/${fileName}`, buffer);
+          if (imagePaths[idx]) {
+            fs.unlink(path.join(__dirname, '..', imagePaths[idx]), (err) => {
+              if (err) console.error(err);
+            });
+          }
+          imagePaths[idx] = imgPath;
+        }
+      }
+    }
+
+
 
     product = await productDB.findOneAndUpdate(
       { _id: id },
       {
         $set: {
-          name,
+          name: mainName,
           description,
           basePrice,
+          size,
           brand,
           category,
           quantity,
-          imagePaths,
-          qualityChecking,
-          width,
-          height,
+          midsoleDrop,
+          heel,
+          tag,
+          foreFoot,
           weight,
           offerAmount,
+          imagePaths,
           offerExpiryDate,
         },
       },
       { new: true }
     );
 
-    if (!product) {
-      return next(createError(404, "category not found"));
-    }
-    console.log(product);
-
-    res.status(200).send({ product });
+    req.flash("success", `Product ${upperName} updated successfully`);
+    res.redirect(`/admin/edit-product/${id}`);
   } catch (error) {
-    console.log(error);
-    return next(createError(null, null));
+    console.log("category", error);
+    res.redirect("/internalError");
   }
+};
+
+
+
+exports.adminAddProductCheck_get = async (req, res) => {
+	const productTitle = req.body.text;
+  console.log("df",productTitle);
+	let searchResult = await Product.find({ name: { $in: [productTitle] } });
+	console.log(searchResult);
+  if (searchResult.length === 0) {
+		res.json({ status: true, message: 'Available' });
+	} else {
+		res.json({ status: false, message: 'Not Available' });
+	}
 };

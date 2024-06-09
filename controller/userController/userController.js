@@ -5,19 +5,19 @@ const productDB = require("../../models/adminModels/product");
 exports.home = async (req, res) => {
   try {
 
-    const user = req.session?.user;
+    const user = req.session?.userGmail;
 
-    let userDetalis;
+    let userDetalis = null;
 
     if (user) {
-      const id = user._id;
 
-      userDetalis = await userDB.findOne({ id });
+     userDetalis = await userDB.findOne({email: req.session.userGmail});
     }
 
     const products = await productDB.find({})
     .populate('brand')
     .populate('category')
+
     return res.render("user/pages/home", {
       user: userDetalis,
       products: products,

@@ -1,4 +1,3 @@
-
 <%- include('../admin-partials/header'); %>
 
 <div class="container tm-mt-big tm-mb-big">
@@ -7,7 +6,7 @@
       <div class="row">
         <div class="col-12">
           <h2 class="tm-block-title d-inline-block" style="width: fit-content">
-            Add Product
+            Edit Product
           </h2>
           <% if(successMessage && successMessage.length > 0) { %>
           <script>
@@ -34,44 +33,47 @@
           <% } %>
         </div>
       </div>
-      <!-- First Row: Photos -->
       <form
-        id="addProductForm"
-        action="/admin/add-product"
+        id="editProductForm"
+        action="/admin/edit-product/<%= product._id %>"
         method="post"
         enctype="multipart/form-data"
       >
-        <!-- Product Images -->
         <label for="image">Image:</label><br />
-
-        <div class="col-lg-4 col-md-4 col-sm-12">
-          <div class="form-group mb-3">
-            
-            <% product.imagePaths.forEach((img) =>{ %>
-            <input
-              id="productImage1"
-              type="file"
-              class="form-control-file"
-              onchange="previewImage(event, 'imagePreview1');"
-              accept="image/*"
-            />
-            <img
-              id="imagePreview1"
-              name="productImage1"
-              src="/<%=img%>"
-            />
-            <%})%>
-            <div id="error-message-image1" style="color: red"></div>
+        <div class="col-lg-12 col-md-12 col-sm-12">
+          <div class="form-group mb-3 d-flex">
+            <% product.imagePaths.forEach((img, idx) => { %>
+            <div class="image-container" style="margin-right: 10px">
+              <input
+                id="productImage<%= idx %>"
+                type="file"
+                class="form-control-file"
+                onchange="previewImage(event, 'imagePreview<%= idx %>', '<%= idx %>');"
+                accept="image/*"
+              />
+              <img
+                id="imagePreview<%= idx %>"
+                name="productImage<%= idx %>"
+                src="<%= img %>"
+                style="width: 100px; height: 100px; object-fit: cover"
+              />
+              <button
+                type="button"
+                onclick="cropImage('<%= idx %>');"
+                class="btn btn-primary"
+              >
+                Crop
+              </button>
+              <input
+                type="hidden"
+                id="croppedImage<%= idx %>"
+                name="croppedImages[<%= idx %>]"
+              />
+            </div>
+            <% }) %>
           </div>
+          <div id="error-message-image1" style="color: red"></div>
         </div>
-     <!-- <input
-          type="file"
-          id="images"
-          name="images"
-          accept="image/*"
-          multiple
-          onchange="displaySelectedImages(this)"
-        /> -->
         <div
           class="selected-images-container"
           id="selectedImagesContainer"
@@ -79,15 +81,18 @@
         <span class="error-message" id="images-error" style="color: red"></span
         ><br />
         <hr />
-        <!-- Second Row: General Information -->
         <div class="row tm-edit-product-row">
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
-              <label for="name" style="color: white">Product Name</label>
+              <div class="d-flex justify-content-between">
+                <label for="name" style="color: white">Product Name</label>
+                <span id="title-available1" class="font-size-bold"></span>
+              </div>
               <input
                 id="name"
                 name="name"
                 type="text"
+                value="<%= product.name %>"
                 class="form-control validate"
                 style="background-color: white; color: black"
                 oninput="clearError('name-error')"
@@ -106,6 +111,7 @@
                 id="basePrice"
                 name="basePrice"
                 type="number"
+                value="<%= product.basePrice %>"
                 class="form-control validate"
                 style="background-color: white; color: black"
                 oninput="clearError('basePrice-error')"
@@ -119,7 +125,6 @@
           </div>
         </div>
         <hr />
-        <!-- Third Row: Description and tag-->
         <div class="row tm-edit-product-row">
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
@@ -131,10 +136,12 @@
                 style="background-color: white; color: black"
                 onchange="clearError('tag-error')"
               >
-                <option selected value="Select tag">Select tag</option>
-                <% tags.forEach((tag) => { %> <%if(tag.isActive){%>
-                <option value="<%= tag._id %>"><%=tag.tagName%></option>
-                <%}%> <% }); %>
+                <option selected value="<%= product.tag._id %>">
+                  <%= product.tag.tagName %>
+                </option>
+                <% tags.forEach((tag) => { %> <% if (tag.isActive) { %>
+                <option value="<%= tag._id %>"><%= tag.tagName %></option>
+                <% } %> <% }); %>
               </select>
               <div
                 id="tag-error"
@@ -153,7 +160,9 @@
                 name="description"
                 style="background-color: white; color: black"
                 oninput="clearError('description-error')"
-              ></textarea>
+              >
+<%= product.description %></textarea
+              >
               <div
                 class="error-message"
                 id="description-error"
@@ -163,7 +172,6 @@
           </div>
         </div>
         <hr />
-        <!-- Fourth Row: Brand, Category, Weight -->
         <div class="row tm-edit-product-row">
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
@@ -175,10 +183,12 @@
                 style="background-color: white; color: black"
                 onchange="clearError('brand-error')"
               >
-                <option selected value="Select brand">Select brand</option>
-                <% brands.forEach((brand) => { %> <%if(brand.isActive){%>
-                <option value="<%= brand._id %>"><%=brand.name%></option>
-                <%}%> <% }); %>
+                <option selected value="<%= product.brand._id %>">
+                  <%= product.brand.name %>
+                </option>
+                <% brands.forEach((brand) => { %> <% if (brand.isActive) { %>
+                <option value="<%= brand._id %>"><%= brand.name %></option>
+                <% } %> <% }); %>
               </select>
               <div
                 id="brand-error"
@@ -197,13 +207,15 @@
                 style="background-color: white; color: black"
                 onchange="clearError('category-error')"
               >
-                <option selected value="Select category">
-                  Select category
+                <option selected value="<%= product.category._id %>">
+                  <%= product.category.name %>
                 </option>
-                <% categories.forEach((category) => { %>
-                <%if(category.isActive){%>
-                <option value="<%= category._id %>"><%=category.name%></option>
-                <%}%> <% }); %>
+                <% categories.forEach((category) => { %> <% if
+                (category.isActive) { %>
+                <option value="<%= category._id %>">
+                  <%= category.name %>
+                </option>
+                <% } %> <% }); %>
               </select>
               <div
                 id="category-error"
@@ -219,6 +231,7 @@
                 id="weight"
                 name="weight"
                 type="number"
+                value="<%= product.weight %>"
                 class="form-control validate"
                 style="background-color: white; color: black"
                 oninput="clearError('weight-error')"
@@ -232,7 +245,6 @@
           </div>
         </div>
         <hr />
-        <!-- Fifth Row: Midsole Drop, Heel, ForeFoot -->
         <div class="row tm-edit-product-row">
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
@@ -243,6 +255,7 @@
                 id="midsoleDrop"
                 name="midsoleDrop"
                 type="number"
+                value="<%= product.midsoleDrop %>"
                 class="form-control validate"
                 style="background-color: white; color: black"
                 oninput="clearError('midsoleDrop-error')"
@@ -261,6 +274,7 @@
                 id="heel"
                 name="heel"
                 type="number"
+                value="<%= product.heel %>"
                 class="form-control validate"
                 style="background-color: white; color: black"
                 oninput="clearError('heel-error')"
@@ -279,6 +293,7 @@
                 id="foreFoot"
                 name="foreFoot"
                 type="number"
+                value="<%= product.foreFoot %>"
                 class="form-control validate"
                 style="background-color: white; color: black"
                 oninput="clearError('foreFoot-error')"
@@ -292,12 +307,10 @@
           </div>
         </div>
         <hr />
-        <!-- Sixth Row: Offer Amount and Expiry Date -->
         <h3 style="text-align: center; color: rgb(59, 59, 59)">
-          <b>If your product have any discount you can add that here</b>
+          <b>If your product has any discount you can add that here</b>
         </h3>
         <hr />
-
         <div class="row tm-edit-product-row">
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
@@ -306,6 +319,7 @@
                 id="offerAmount"
                 name="offerAmount"
                 type="number"
+                value="<%= product.offerAmount ? product.offerAmount : '' %>"
                 class="form-control validate"
                 style="background-color: white; color: black"
                 oninput="clearError('offerAmount-error')"
@@ -326,6 +340,7 @@
                 id="offerExpiryDate"
                 name="offerExpiryDate"
                 type="date"
+                value="<%= product.offerExpiryDate ? new Date(product.offerExpiryDate).toISOString().slice(0, 10) : '' %>"
                 class="form-control validate"
                 style="background-color: white; color: black"
                 oninput="clearError('offerExpiryDate-error')"
@@ -339,7 +354,6 @@
           </div>
         </div>
         <hr />
-        <!-- Seventh Row: Variant -->
         <div class="mb-3 d-flex justify-content-end">
           <button
             onclick="addVariant()"
@@ -350,6 +364,7 @@
           </button>
         </div>
         <div class="container" id="variants-container">
+          <% product.variants.forEach((variant) => { %>
           <div class="row variant border rounded-3 mb-3">
             <div class="col-sm-3 col-md-5 py-2">
               <select
@@ -358,10 +373,13 @@
                 style="background-color: white; color: black"
                 required
               >
-                <option value="" disabled selected>Select a size</option>
-                <% sizes.forEach((size) => { %>
+                <option value="<%= variant.size._id %>" selected>
+                  <%= variant.size.size %>
+                </option>
+                <% sizes.forEach((size) => { %> <% if (size._id.toString() !==
+                variant.size._id.toString()) { %>
                 <option value="<%= size._id %>"><%= size.size %></option>
-                <% }); %>
+                <% } %> <% }); %>
               </select>
             </div>
             <div class="col-sm-3 col-md-5 py-2">
@@ -374,6 +392,7 @@
                 style="color: black"
                 required
                 oninput="validateInputQty(this)"
+                value="<%= variant.quantity %>"
               />
             </div>
             <div class="col-sm-1 col-md-1 py-2 text-center">
@@ -386,17 +405,21 @@
               </button>
             </div>
           </div>
+          <% }) %>
         </div>
         <hr />
-        <!-- Submit -->
-        <div class="col-12">
+        <div
+          class="col-lg-12 col-md-12 col-sm-12"
+          style="display: flex; justify-content: center; gap: 10px"
+        >
           <button
-            id="submit-btn"
             type="submit"
-            class="btn btn-primary text-uppercase px-5 py-2"
+            id="submit-btn"
+            class="btn btn-primary text-uppercase"
           >
-            Add Product
+            Update Product
           </button>
+          <a href="/admin/products" class="btn btn-primary">Cancel</a>
         </div>
       </form>
     </div>
@@ -406,25 +429,7 @@
 <script src="/adminpublic/cropper/cropper.min.js"></script>
 
 <script>
-  // document.addEventListener("DOMContentLoaded", function () {
-  //   const colorOptions = document.querySelectorAll(
-  //     ".custom-select.tm-select-accounts option"
-  //   );
-
-  //   colorOptions.forEach((option) => {
-  //     const color = option.getAttribute("data-color");
-  //     if (color) {
-  //       const span = option.querySelector(".color-circle");
-  //       if (span) {
-  //         span.style.backgroundColor = color;
-  //       } else {
-  //         option.style.backgroundColor = color; // In case span doesn't exist, which shouldn't be the case here.
-  //       }
-  //     }
-  //   });
-  // });
-
-  const form = document.getElementById("addProductForm");
+  const form = document.getElementById("editProductForm");
   const errorMessages = {
     name: "Please enter the product name.",
     basePrice: "Please enter a valid base price (0 or greater).",
@@ -441,27 +446,11 @@
     offerExpiryDate: "Please enter an offer expiry date.",
   };
 
-  function displaySelectedImages(input) {
-    const container = document.getElementById("selectedImagesContainer");
-    container.innerHTML = "";
-    for (const file of input.files) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        img.classList.add("selected-image");
-        container.appendChild(img);
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
   function addVariant() {
     const container = document.getElementById("variants-container");
     const newVariant = container.children[0].cloneNode(true);
     container.appendChild(newVariant);
 
-    // Enable delete button for all variants except the first one
     const deleteButtons = container.querySelectorAll(".delete-variant");
     deleteButtons.forEach((button, index) => {
       button.disabled = index === 0;
@@ -475,7 +464,6 @@
     if (container.contains(variantToRemove) && container.children.length > 1) {
       container.removeChild(variantToRemove);
 
-      // Enable delete button for all variants except the first one after removal
       const deleteButtons = container.querySelectorAll(".delete-variant");
       deleteButtons.forEach((button, index) => {
         button.disabled = index === 0;
@@ -509,96 +497,88 @@
     const midsoleDrop = document.getElementById("midsoleDrop").value.trim();
     const heel = document.getElementById("heel").value.trim();
     const foreFoot = document.getElementById("foreFoot").value.trim();
-    const images = document.getElementById("images").files;
+    const images = document.querySelectorAll(".form-control-file");
     const offerAmount = document.getElementById("offerAmount").value.trim();
     const offerExpiryDate = document
       .getElementById("offerExpiryDate")
       .value.trim();
 
-    // Reset error messages
     document
       .querySelectorAll(".error-message")
       .forEach((element) => (element.innerHTML = ""));
 
-    // Name validation
-    if (!name) {
+    if (!name || !isNaN(parseInt(name, 10))) {
       valid = false;
       document.getElementById("name-error").innerText = errorMessages.name;
     }
 
-    // Base price validation
     if (!basePrice || isNaN(basePrice) || basePrice <= 0) {
       valid = false;
       document.getElementById("basePrice-error").innerText =
         errorMessages.basePrice;
     }
 
-    // Description validation
     if (!description) {
       valid = false;
       document.getElementById("description-error").innerText =
         errorMessages.description;
     }
 
-    // Brand validation
     if (!brand || brand === "Select brand") {
       valid = false;
       document.getElementById("brand-error").innerText = errorMessages.brand;
     }
 
-    // Tag error
     if (!tag || tag === "Select tag") {
       valid = false;
       document.getElementById("tag-error").innerText = errorMessages.tag;
     }
 
-    // Category validation
     if (!category || category === "Select category") {
       valid = false;
       document.getElementById("category-error").innerText =
         errorMessages.category;
     }
 
-    // Weight validation
     if (!weight || isNaN(weight) || weight <= 0) {
       valid = false;
       document.getElementById("weight-error").innerText = errorMessages.weight;
     }
 
-    // Midsole drop validation
     if (!midsoleDrop || isNaN(midsoleDrop) || midsoleDrop <= 0) {
       valid = false;
       document.getElementById("midsoleDrop-error").innerText =
         errorMessages.midsoleDrop;
     }
 
-    // Heel height validation
     if (!heel || isNaN(heel) || heel <= 0) {
       valid = false;
       document.getElementById("heel-error").innerText = errorMessages.heel;
     }
 
-    // Forefoot height validation
     if (!foreFoot || isNaN(foreFoot) || foreFoot <= 0) {
       valid = false;
       document.getElementById("foreFoot-error").innerText =
         errorMessages.foreFoot;
     }
 
-    // Image validation
-    if (!images.length) {
+    let imageSelected = false;
+    images.forEach((image) => {
+      if (image.files.length > 0) {
+        imageSelected = true;
+      }
+    });
+    if (!imageSelected && !croppedImages.length) {
       valid = false;
       document.getElementById("images-error").innerText = errorMessages.images;
     }
 
-    // Offer amount validation
     if (offerAmount) {
       if (isNaN(offerAmount) || offerAmount <= 0 || offerAmount.trim() === "") {
         valid = false;
         document.getElementById("offerAmount-error").innerText =
           errorMessages.offerAmount;
       }
-      // Offer expiry date validation if offer amount is provided
       if (!offerExpiryDate) {
         valid = false;
         document.getElementById("offerExpiryDate-error").innerText =
@@ -606,118 +586,114 @@
       }
     }
 
-    //brand validationn
-    if (!brand || brand === "Select brand") {
-      valid = false;
-      document.getElementById("brand-error").innerText = errorMessages.brand;
-    }
-
-    // tag validatin
-    if (!tag || tag === "Select tag") {
-      valid = false;
-      document.getElementById("tag-error").innerText = errorMessages.tag;
-    }
-
-    // Category validation
-    if (!category || category === "Select category") {
-      valid = false;
-      document.getElementById("category-error").innerText =
-        errorMessages.category;
-    }
-
     if (!valid) {
       event.preventDefault();
     }
   });
 
-  //image cropp
-  function displaySelectedImages(input) {
-    const selectedImagesContainer = document.getElementById(
-      "selectedImagesContainer"
-    );
-    selectedImagesContainer.innerHTML = "";
+  let cropper;
+  let cropIndex;
 
-    for (let i = 0; i < input.files.length; i++) {
-      const file = input.files[i];
-      const reader = new FileReader();
-      const cropContainer = document.createElement("div");
-      cropContainer.classList.add("image-crop-container");
-      cropContainer.innerHTML = `
-            <div class="image-container">
-                <img id="image${i}" src="" alt="Select an image to crop">
-            </div>
-            <button class="crop-button" id="cropButton${i}">Crop Image ${
-        i + 1
-      }</button>
-        `;
-      selectedImagesContainer.appendChild(cropContainer);
+  function previewImage(event, imagePreviewId, index) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      const imagePreview = document.getElementById(imagePreviewId);
+      if (imagePreview) {
+        imagePreview.src = reader.result;
+        imagePreview.classList.add("selected-image");
+        cropIndex = index;
+        initCropper(imagePreview);
+      } else {
+        console.error("Image preview element not found.");
+      }
+    };
+    reader.readAsDataURL(event.target.files[0]);
+  }
 
-      const image = cropContainer.querySelector(`#image${i}`);
-      const cropButton = cropContainer.querySelector(`#cropButton${i}`);
-
-      reader.onload = () => {
-        image.src = reader.result;
-        let cropper = new Cropper(image, {
-          aspectRatio: 1,
-          viewMode: 1,
-        });
-
-        cropButton.addEventListener("click", (event) => {
-          event.preventDefault();
-          if (cropper) {
-            const canvas = cropper.getCroppedCanvas({
-              width: 300,
-              height: 300,
-            });
-            const croppedImageDataURL = canvas.toDataURL();
-            image.src = croppedImageDataURL;
-            const croppedImageFile = dataURLToFile(
-              croppedImageDataURL,
-              file.name
-            );
-            const currentFiles = Array.from(input.files);
-            currentFiles[i] = croppedImageFile;
-
-            const newFileList = createFileList(currentFiles);
-            input.files = newFileList;
-            cropper.destroy();
-            cropper = null;
-          } else {
-            cropper = new Cropper(image, {
-              aspectRatio: 1,
-              viewMode: 1,
-            });
-          }
-        });
-      };
-      reader.readAsDataURL(file);
+  function initCropper(imageElement) {
+    if (imageElement && imageElement.tagName.toLowerCase() === "img") {
+      if (cropper) {
+        cropper.destroy();
+      }
+      cropper = new Cropper(imageElement, {
+        aspectRatio: 1,
+        viewMode: 1,
+        minContainerWidth: 300,
+        minContainerHeight: 300,
+        ready() {
+          document.querySelector(".cropper-container").style.maxWidth = "400px";
+          document.querySelector(".cropper-container").style.maxHeight =
+            "400px";
+        },
+      });
+    } else {
+      console.log("Invalid image element");
     }
   }
 
-  function dataURLToFile(dataUrl, filename) {
-    const arr = dataUrl.split(",");
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const bstr = atob(arr[1]);
-
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
+  function cropImage(index) {
+    if (cropper) {
+      const canvas = cropper.getCroppedCanvas({
+        width: 100,
+        height: 100,
+      });
+      document.getElementById(`croppedImage${index}`).value =
+        canvas.toDataURL();
+      cropper.destroy();
     }
-
-    return new File([u8arr], filename, { type: mime });
-  }
-
-  function createFileList(currentList) {
-    const dataTransfer = new DataTransfer();
-    currentList.forEach((file) => {
-      dataTransfer.items.add(file);
-    });
-    return dataTransfer.files;
   }
 </script>
-<script src="/adminpublic/cropper/cropper.min.js"></script>
-<script src="/adminpublic/cropper/cropper.min.js"></script>
-<script src="/admin/admin-frond-end-js/editProductScript.js"></script>
-<%- include('../admin-partials/footer'); %>
 
+<script>
+  let titleEl = document.getElementById("name");
+  let message = document.getElementById("title-available1");
+  let targetButton = document.getElementById("submit-btn");
+
+  const sendDebounceTextToBackend = debounce((text) => {
+    let url = "/admin/admin-add-product-check";
+    (text = text.toUpperCase()),
+      fetch(url, {
+        method: "POST",
+        body: JSON.stringify({
+          text,
+        }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          } else {
+            throw new Error("Network response was not ok.");
+          }
+        })
+        .then((data) => {
+          if (data.status) {
+            message.innerHTML = data.message;
+            message.style.color = "rgb(0, 255, 38)";
+          } else {
+            message.innerHTML = data.message;
+            message.style.color = "red";
+            targetButton.setAttribute("disabled", "disabled");
+          }
+        })
+        .catch((error) => {
+          console.error("Error sending data to backend:", error);
+        });
+  });
+
+  titleEl.addEventListener("input", (e) => {
+    sendDebounceTextToBackend(e.target.value);
+  });
+
+  function debounce(callback, delay = 1000) {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => callback(...args), delay);
+    };
+  }
+</script>
+
+<%- include('../admin-partials/footer'); %>

@@ -9,9 +9,9 @@
       <div class="col-first">
         <h1>Product Details Page</h1>
         <nav class="d-flex align-items-center">
-          <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-          <a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-          <a href="single-product.html">Product Details</a>
+          <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+          <a href="/category">Shop<span class="lnr lnr-arrow-right"></span></a>
+          <a href="">Product Details</a>
         </nav>
       </div>
     </div>
@@ -45,12 +45,12 @@
           <li>
             <img
               class="etalage_thumb_image"
-              src="/<%= imagePath %>"
+              src="<%= imagePath %>"
               alt="Product Image Thumbnail"
             />
             <img
               class="etalage_source_image"
-              src="/<%= imagePath %>"
+              src="<%= imagePath %>"
               alt="Product Image"
             />
           </li>
@@ -88,9 +88,9 @@
             </li>
             <li>
               <span><b style="color: black">AVAILABILITY &nbsp; : </b></span> <%
-              if (product.quantity < 10) { %>
+              if (product.totalQuantity < 10) { %>
               <b style="color: rgb(255, 136, 0)">Limited Stock</b>
-              <% } else if (product.quantity === 0) { %>
+              <% } else if (product.totalQuantity === 0) { %>
               <b style="color: red">Out of Stock</b>
               <% } else { %>
               <b style="color: rgb(0, 255, 17)">In Stock</b>
@@ -102,8 +102,8 @@
                 name="color[]"
                 style="background-color: white; color: black"
               >
-                <% product.variants.forEach((variant, index) => { %> <% if(index
-                ===0){%>
+                <% product.variants.forEach((variant, index) => { %>
+                   <% if(index===0){%>
                 <option selected value="<%= variant.size._id %>">
                   <%= variant.size.size %>
                 </option>
@@ -218,7 +218,7 @@
                     <a href="/product/<%= relatedProduct._id %>">
                       <img
                         class="img-fluid"
-                        src="/<%= relatedProduct.imagePaths[0] %>"
+                        src="<%= relatedProduct.imagePaths[0] %>"
                         alt=""
                       />
                       <div class="image-overlay">
@@ -279,23 +279,23 @@
           <table class="table">
             <tbody>
               <tr>
-                <td><h5>TAG</h5></td>
-                <td><h5><%= product.tag %> mm</h5></td>
+                <td><h5>TYPE</h5></td>
+                <td><h5><%= product.tag.tagName %></h5></td>
               </tr>
               <tr>
-                <td><h5>midsoleDrop</h5></td>
+                <td><h5>MIDSOLE DROP </h5></td>
                 <td><h5><%= product.midsoleDrop %> mm</h5></td>
               </tr>
               <tr>
-                <td><h5>foreFoot</h5></td>
+                <td><h5>FOREFOOT</h5></td>
                 <td><h5><%= product.foreFoot %> mm</h5></td>
               </tr>
               <tr>
-                <td><h5>heel</h5></td>
+                <td><h5>HEEL</h5></td>
                 <td><h5><%= product.heel %> mm</h5></td>
               </tr>
               <tr>
-                <td><h5>weight</h5></td>
+                <td><h5>WIGHT</h5></td>
                 <td><h5><%= product.weight %> gm</h5></td>
               </tr>
             </tbody>

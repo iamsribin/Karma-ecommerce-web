@@ -5,7 +5,6 @@ const sizeSchema = new mongoose.Schema({
   size: {
     type: String,
     required: true,
-    unique: true
   },
   createdDate: {
     type: Date,

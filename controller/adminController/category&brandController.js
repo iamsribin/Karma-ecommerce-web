@@ -8,10 +8,12 @@ exports.renderCategoriesAndBrands = async (req, res, next) => {
   try {
     const categories = await categoryDB.find({});
     const brands = await brandDB.find({});
+
     return res.render("admin/adminDasbord/categoriesAndBrands", {
       categories,
       brands,
     });
+
   } catch (error) {
     console.log(error);
   }
@@ -27,8 +29,10 @@ exports.AddNewCategory = async (req, res, next) => {
   try {
     const { name, discription } = req.body;
 
+    const upperCategoryName = name.toUpperCase();
+
     const existingCategory = await categoryDB.findOne({
-      name,
+      name : upperCategoryName,
       isActive: true,
     });
 
@@ -38,7 +42,7 @@ exports.AddNewCategory = async (req, res, next) => {
       );
     }
 
-    const newCategory = new categoryDB({ name, discription });
+    const newCategory = new categoryDB({ name: upperCategoryName, discription });
 
     newCategory.save();
 
@@ -54,7 +58,7 @@ exports.deleteCategory = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(createError(400, "Invalid ID"));
+      return res.status(404).render("errorPages/404");
     }
 
     const category = await categoryDB.findById(id);
@@ -76,7 +80,7 @@ exports.renderEditCategoryPage = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(createError(400, "Invalid ID"));
+      return res.status(404).render("errorPages/404");
     }
 
     const category = await categoryDB.findById(id);
@@ -97,13 +101,26 @@ exports.editCategory = async (req, res, next) =>{
 const {name , discription} = req.body;
 const {id} = req.params;
 
+const upperCategoryName = name.toUpperCase();
+
 if (!mongoose.Types.ObjectId.isValid(id)) {
-  return next(createError(400, "Invalid ID"));
+  return res.status(404).render("errorPages/404");
 }
+
+// const existingCategory = await categoryDB.findOne({
+//   name : upperCategoryName,
+//   isActive: true,
+// });
+
+// if (existingCategory) {
+//   return next(
+//     createError(400, "This category already exists and is active!")
+//   );
+// }
 
 const category = await categoryDB.findOneAndUpdate(
   { _id: id },
-  { $set: { name, discription } },
+  { $set: { name : upperCategoryName, discription } },
   { new: true }
 );
 
@@ -132,8 +149,10 @@ exports.AddNewBrand = async (req, res, next) => {
   try {
     const { name, discription } = req.body;
 
+   const upperBrandName = name.toUpperCase();
+
     const existingBrand = await brandDB.findOne({
-      name,
+      name: upperBrandName,
       isActive: true,
     });
 
@@ -141,7 +160,7 @@ exports.AddNewBrand = async (req, res, next) => {
       return next(createError(400, "This brand already exists and is active!"));
     }
 
-    const newBrand = new brandDB({ name, discription });
+    const newBrand = new brandDB({ name: upperBrandName, discription });
 
     newBrand.save();
 
@@ -157,7 +176,7 @@ exports.deleteBrand = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(createError(400, "Invalid ID"));
+      return res.status(404).render("errorPages/404");
     }
 
     const brand = await brandDB.findById(id);
@@ -179,7 +198,7 @@ exports.renderEditBrandPage = async (req, res, next) => {
   try {
     const { id } = req.params;
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return next(createError(400, "Invalid ID"));
+      return res.status(404).render("errorPages/404");
     }
 
     const brand = await brandDB.findById(id);
@@ -201,13 +220,16 @@ exports.editBrand = async (req, res, next) =>{
 const {name , discription} = req.body;
 const {id} = req.params;
 
+
 if (!mongoose.Types.ObjectId.isValid(id)) {
-  return next(createError(400, "Invalid ID"));
+  return res.status(404).render("errorPages/404");
 }
+
+const upperBrandName = name.toUpperCase()
 
 const brand = await brandDB.findOneAndUpdate(
   { _id: id },
-  { $set: { name, discription } },
+  { $set: { name : upperBrandName, discription } },
   { new: true }
 );
 

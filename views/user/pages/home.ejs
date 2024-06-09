@@ -68,13 +68,13 @@
             <div class="single-product">
               <div class="product-image-wrapper">
                 <a href="/product/<%= product._id %>">
-                  <img class="img-fluid" src="/<%= product.imagePaths[0] %>" alt="" />
+                  <img class="img-fluid" src="<%= product.imagePaths[0] %>" alt="" />
                   <div class="image-overlay">
-                    <a href="" class="social-info">
+                    <a href="" id="add-to-cart" data-id="<%=product._id%>" class="social-info">
                       <span class="ti-bag"></span>
                       <p class="hover-text">add to bag</p>
                     </a>
-                    <a href="" class="social-info">
+                    <a href="" id="wishlist" class="social-info">
                       <span class="lnr lnr-heart"></span>
                       <p class="hover-text">Wishlist</p>
                     </a>
@@ -96,9 +96,9 @@
                   <% } else { %>
                     <h6>$<%= product.basePrice %></h6>
                   <% } %>
-                  <% if (product.quantity < 10) { %>
+                  <% if (product.totalQuantity < 10) { %>
                     <h6 style="color: rgb(255, 136, 0)">Limited Stock</h6>
-                  <% } else if (product.quantity == 0) { %>
+                  <% } else if (product.totalQuantity == 0) { %>
                     <h6 style="color: red">Out of Stock</h6>
                   <% } else { %>
                     <h6 style="color: rgb(0, 255, 17)">In Stock</h6>
@@ -160,5 +160,24 @@
   </div>
 </section>
 <!-- end features Area -->
+
+<script>
+ const cart =  document.getElementById("add-to-cart");
+ cart.addEventListener("click", async (e) => {
+  e.preventDefault();
+  
+  const productId =cart.getAttribute("data-id");
+  const response = await fetch("/add-to-cart",{
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      productId: productId,
+    }),
+  })
+ });
+</script>
+
 
 <%- include('../userPartials/footer'); %>

@@ -79,13 +79,15 @@ app.use((error, req, res, next) => {
 
 });
 
+app.get("/internalError", (req, res) =>{
+  res.status(500).render("errorPages/500");
+})
+
 app.get("*", (req, res) => {
   res.status(404).render("errorPages/404");
 });
 
-app.get("/internalError", (req, res) =>{
-  res.status(500).render("errorPages/500");
-})
+
 
 connectToDatabase();
 

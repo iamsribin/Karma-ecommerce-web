@@ -9,9 +9,8 @@
       <div class="col-first">
         <h1>Shop Category page</h1>
         <nav class="d-flex align-items-center">
-          <a href="index.html">Home<span class="lnr lnr-arrow-right"></span></a>
-          <a href="#">Shop<span class="lnr lnr-arrow-right"></span></a>
-          <a href="category.html">Fashon Category</a>
+          <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
+          <a href="/category">Shop</a>
         </nav>
       </div>
     </div>
@@ -21,7 +20,7 @@
 <div class="container">
   <div class="row">
     <div class="col-xl-3 col-lg-4 col-md-5">
-      <div class="sidebar-categories">
+      <!-- <div class="sidebar-categories">
         <div class="head">Browse Categories</div>
         <ul class="main-categories">
           <li class="main-nav-list">
@@ -403,7 +402,7 @@
             </ul>
           </li>
         </ul>
-      </div>
+      </div> -->
       <div class="sidebar-filter mt-50">
         <div class="top-filter-head">Product Filters</div>
         <div class="common-filter">
@@ -416,7 +415,7 @@
                   type="radio"
                   id="apple"
                   name="brand"
-                /><label for="apple">Apple<span>(29)</span></label>
+                /><label for="apple">ADDIDAS</label>
               </li>
               <li class="filter-list">
                 <input
@@ -424,7 +423,7 @@
                   type="radio"
                   id="asus"
                   name="brand"
-                /><label for="asus">Asus<span>(29)</span></label>
+                /><label for="asus">NIKE</label>
               </li>
               <li class="filter-list">
                 <input
@@ -432,9 +431,9 @@
                   type="radio"
                   id="gionee"
                   name="brand"
-                /><label for="gionee">Gionee<span>(19)</span></label>
+                /><label for="gionee">PUMA</label>
               </li>
-              <li class="filter-list">
+              <!-- <li class="filter-list">
                 <input
                   class="pixel-radio"
                   type="radio"
@@ -449,12 +448,12 @@
                   id="samsung"
                   name="brand"
                 /><label for="samsung">Samsung<span>(19)</span></label>
-              </li>
+              </li> -->
             </ul>
           </form>
         </div>
         <div class="common-filter">
-          <div class="head">Color</div>
+          <div class="head">Size</div>
           <form action="#">
             <ul>
               <li class="filter-list">
@@ -463,7 +462,7 @@
                   type="radio"
                   id="black"
                   name="color"
-                /><label for="black">Black<span>(29)</span></label>
+                /><label for="black">UK 6(EU 40)</label>
               </li>
               <li class="filter-list">
                 <input
@@ -472,10 +471,10 @@
                   id="balckleather"
                   name="color"
                 /><label for="balckleather"
-                  >Black Leather<span>(29)</span></label
+                  >UK 9</label
                 >
               </li>
-              <li class="filter-list">
+              <!-- <li class="filter-list">
                 <input
                   class="pixel-radio"
                   type="radio"
@@ -498,6 +497,31 @@
                   id="spacegrey"
                   name="color"
                 /><label for="spacegrey">Spacegrey<span>(19)</span></label>
+              </li> -->
+            </ul>
+          </form>
+        </div>
+        <div class="common-filter">
+          <div class="head">categories</div>
+          <form action="#">
+            <ul>
+              <li class="filter-list">
+                <input
+                  class="pixel-radio"
+                  type="radio"
+                  id="black"
+                  name="color"
+                /><label for="black">MEN</label>
+              </li>
+              <li class="filter-list">
+                <input
+                  class="pixel-radio"
+                  type="radio"
+                  id="balckleather"
+                  name="color"
+                /><label for="balckleather"
+                  >WOMEN</label
+                >
               </li>
             </ul>
           </form>
@@ -557,12 +581,12 @@
         <div class="row">
           <!-- single product -->
           <% locals.products.forEach((product) => { %> 
-            <% if (product.quantity > 0 && product.isActive === true) { %>
+            <% if ( product.isActive === true) { %>
               <div class="col-lg-4 col-md-6 col-sm-12">
                 <div class="single-product">
                   <div class="product-image-wrapper">
                     <a href="/product/<%= product._id %>">
-                      <img class="img-fluid" src="/<%= product.imagePaths[0] %>" alt="" />
+                      <img class="img-fluid" src="<%= product.imagePaths[0] %>" alt="" />
                       <div class="image-overlay">
                         <a href="" class="social-info">
                           <span class="ti-bag"></span>
@@ -590,9 +614,9 @@
                       <% } else { %>
                         <h6>$<%= product.basePrice %></h6>
                       <% } %>
-                      <% if (product.quantity < 10) { %>
+                      <% if (product.totalQuantity < 10) { %>
                         <h6 style="color: rgb(255, 136, 0)">Limited Stock</h6>
-                      <% } else if (product.quantity == 0) { %>
+                      <% } else if (product.totalQuantity == 0) { %>
                         <h6 style="color: red">Out of Stock</h6>
                       <% } else { %>
                         <h6 style="color: rgb(0, 255, 17)">In Stock</h6>

@@ -14,3 +14,11 @@ exports.checkAdmin = async (req, res, next) =>{
         next();
     }
 }
+
+exports.verifyAdmin = async (req, res, next) =>{
+if(req.session.admin){
+return next()
+}else{
+    res.redirect("/admin/login");
+}
+}

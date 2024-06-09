@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = formData.get("name");
       const email = formData.get("email");
       const password1 = formData.get("password1");
-
+ 
       try {
         const response = await fetch("/register", {
           method: "POST",
