@@ -1,10 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const {profileUpload} = require("../../connetion/multerStorage")
 
+//home controller
 const {
   home,
   loginPage,
 } = require("../../controller/userController/userController");
+
 //auth controller
 const {saveNewPassword,
   find,
@@ -13,9 +16,14 @@ const {saveNewPassword,
   renderEmailForForgetOtp
 } = require("../../controller/userController/authController");
 
+//user porfile controller
 const {
   getUserProfile,
-  getCart,
+  editUserInfo,
+  createAddressess,
+  getEditAddressDetailsWithId,
+  editAddressDetails,
+  deleteAddress,
 } = require("../../controller/userController/userProfileController");
 
 //otp controller
@@ -27,6 +35,27 @@ const {
   ForgotOtpPage,
   renderNewPasswordPage,
 } = require("../../controller/userController/otpController");
+
+//product controller
+const {
+  getProduct,
+  renderCategoryPage,
+} = require("../../controller/userController/productController");
+
+//cart contoller
+const {
+  addCart,
+  removeItemsFromCart,
+  updateCartQuantity,
+  renderCartPage,
+} = require("../../controller/userController/cartController");
+
+//checkout contoller
+const {
+  renderCheckoutPage,
+  placeOrder
+} = require("../../controller/userController/checkoutController");
+
 //middileware
 const {
   isOTPVerificationProcess,
@@ -35,11 +64,6 @@ const {
   isBlock,
   verifyUser,
 } = require("../../middleware/userAuth");
-//product controller
-const {
-  getProduct,
-  renderCategoryPage,
-} = require("../../controller/userController/productController");
 
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
@@ -64,9 +88,21 @@ router.get("/getotp-forgot-password", isPasswordChangingProcess, postEmailForFor
 router.get("/sendmail", renderEmailForForgetOtp);
 //product
 router.get("/product/:id",isBlock, getProduct);
-router.get("/category", isBlock, verifyUser, renderCategoryPage);
-
+router.get("/category", isBlock, renderCategoryPage);
 //user profile
-router.get("/user-profile", isBlock, getUserProfile);
-router.get("/user-cart", isBlock, getCart);
+router.get("/user-profile",verifyUser, isBlock, getUserProfile);
+router.patch("/edit-user-personal-info/:id",verifyUser, profileUpload.single("image"), editUserInfo);
+//address
+router.post("/create-address", createAddressess);
+router.get("/getEditAddress/:id", getEditAddressDetailsWithId);
+router.patch("/editAddress/:id", editAddressDetails);
+router.delete("/delete-address", deleteAddress);
+// cart
+router.get("/cart", verifyUser, renderCartPage);
+router.post("/add-to-cart", verifyUser, addCart); 
+router.put("/update-cart-quantity", updateCartQuantity);
+router.delete("/delete-cart-item", removeItemsFromCart);
+//checkout
+router.get("/checkout", verifyUser, renderCheckoutPage);
+router.post("/place-order", verifyUser, placeOrder);
 module.exports = router;

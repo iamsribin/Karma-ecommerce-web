@@ -1,0 +1,288 @@
+<section style="background-color: #eee">
+  <div class="container">
+    <div class="row justify-content-center">
+      <!-- Profile Card -->
+      <div class="col-lg-4 d-flex justify-content-center">
+        <div class="card mb-4" style="width: 100%;">
+          <div class="card-body text-center">
+            <img
+              src="<%= userDetalis.profilePicture %>"
+              alt="avatar"
+              class="rounded-circle img-fluid"
+              style="width: 110px"
+            />
+            <h5 class="my-3"><%= userDetalis.name %></h5>
+            <div class="d-flex justify-content-center mb-2">
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-toggle="modal"
+                data-target="#editProfileModal"
+              >
+                Edit Profile
+              </button>
+              <!-- &nbsp; &nbsp;
+              <button
+                type="button"
+                class="btn btn-outline-danger  text-white"
+                style="background-color: red"
+              >
+                Logout
+              </button> -->
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- User Details Card -->
+      <div class="col-lg-8 d-flex align-content-center flex-wrap">
+        <div class="card mb-4" style="width: 100%;">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-sm-12">
+                <p class="mb-0 te"><strong>Full Name:</strong> &nbsp; <%= userDetalis.name %></p>
+              </div>
+            </div>
+            <hr />
+            <div class="row">
+              <div class="col-sm-12">
+                <p class="mb-0"><strong>Email:</strong> &nbsp; <%= userDetalis.email %></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Edit Profile Modal -->
+<div
+  class="modal fade"
+  id="editProfileModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="editProfileModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form id="editProfileForm" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="profilePicture">Profile Picture</label>
+            <input
+              type="file"
+              class="form-control"
+              id="profilePicture"
+              name="image"
+              accept="image/*"
+            />
+            <img
+              src="<%= userDetalis.profilePicture %>"
+              id="imageView"
+              style="width: 200px; height: 200px; border-radius: 50%; margin-top: 10px;"
+            />
+          </div>
+          <div class="form-group">
+            <label for="fullName">Full Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="fullName"
+              name="name"
+              data-id="<%= userDetalis._id %>"
+              value="<%= userDetalis.name %>"
+              placeholder="Full Name"
+            />
+            <span id="error-message-product-name"></span>
+          </div>
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              name="email"
+              class="form-control"
+              id="email"
+              readonly
+              value="<%= userDetalis.email %>"
+              placeholder="Email"
+            />
+            <!-- <span id="error-message-email"></span> -->
+          </div>
+          <!-- <div class="form-group">
+            <label for="phone">Phone</label>
+            <input
+              type="number"
+              class="form-control"
+              id="number"
+              name="phone"
+              value="<%= userDetalis.number ? userDetalis.number : 'NULL' %>"
+              placeholder="Phone"
+            />
+            <span id="error-message-number"></span>
+          </div> -->
+          <button type="submit" id="updateButton" class="btn btn-primary">
+            Update Account
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  document.getElementById("profilePicture").addEventListener("change", function (event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById("imageView").src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  // Utility function to check if a string contains only spaces
+  function isOnlySpaces(str) {
+    return str.trim().length === 0;
+  }
+
+  // Function to validate individual fields
+  function validateField(fieldId, errorMessageId, validationFn, errorMessage) {
+    const field = document.getElementById(fieldId);
+    const errorMessageElement = document.getElementById(errorMessageId);
+    if (validationFn(field.value)) {
+      errorMessageElement.textContent = errorMessage;
+      field.classList.add('is-invalid');
+      return false;
+    } else {
+      errorMessageElement.textContent = "";
+      field.classList.remove('is-invalid');
+      return true;
+    }
+  }
+
+  // Form validation function
+  function validateForm() {
+    let isValid = true;
+
+    isValid &= validateField(
+      "fullName",
+      "error-message-product-name",
+      isOnlySpaces,
+      "*Please enter a valid name*"
+    );
+    // isValid &= validateField(
+    //   "email",
+    //   "error-message-email",
+    //   (value) => !value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    //   "Please enter a valid email."
+    // );
+    // isValid &= validateField(
+    //   "number",
+    //   "error-message-number",
+    //   (value) => value === "" || isNaN(value) || value.length !== 10,
+    //   "Please enter a 10-digit number"
+    // );
+
+    return isValid;
+  }
+
+  // Event listeners for input fields to remove error messages while typing
+  const fieldsToValidate = [
+    {
+      fieldId: "fullName",
+      errorMessageId: "error-message-product-name",
+      validationFn: isOnlySpaces || value.length <= 5,
+      errorMessage: "*Please enter a valid name*",
+    },
+    // {
+    //   fieldId: "email",
+    //   errorMessageId: "error-message-email",
+    //   validationFn: (value) => !value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
+    //   errorMessage: "Please enter a valid email.",
+    // },
+    // {
+    //   fieldId: "number",
+    //   errorMessageId: "error-message-number",
+    //   validationFn: (value) => value === "" || isNaN(value) || value.length !== 10,
+    //   errorMessage: "Please enter a 10-digit number.",
+    // },
+  ];
+
+  fieldsToValidate.forEach(
+    ({ fieldId, errorMessageId, validationFn, errorMessage }) => {
+      document.getElementById(fieldId).addEventListener("input", function () {
+        validateField(fieldId, errorMessageId, validationFn, errorMessage);
+      });
+    }
+  );
+
+  // Submit form
+  document.getElementById("editProfileForm").addEventListener("submit", async function (event) {
+    event.preventDefault();
+    if (validateForm()) {
+      const formData = new FormData(this);
+      const userId = document.getElementById("fullName").getAttribute("data-id");
+
+      try {
+        const response = await fetch(`/edit-user-personal-info/${userId}`, {
+          method: "PATCH",
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Profile updated successfully:", data);
+          Swal.fire({
+            title: "Successfully updated",
+            icon: "success",
+            showCancelButton: false,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          }).then(async (result) => {
+            window.location.reload();
+          });
+        } else {
+          const data = await response.json();
+          Swal.fire({
+            title: `${data.message}`,
+            icon: "error",
+            showCancelButton: false,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          }).then(async (result) => {
+            window.location.reload();
+          });
+          console.error("Failed to update profile:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error updating profile:", error);
+        Swal.fire({
+          title: "Something went wrong",
+          icon: "error",
+          showCancelButton: false,
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        }).then(async (result) => {
+          window.location.reload();
+        });
+      }
+    }
+  });
+</script>
+
+

@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const passport = require("passport");
 const userController = require("../../controller/userController/googleAuthController");
+const {createError} = require("../../utils/errors")
 
 router.get("/login/sucess", userController.googleLoginSucess);
 router.get("/login/failed", userController.googleLoginFaild);
@@ -10,10 +11,6 @@ router.get("/google/callback", (req, res, next) => {
   try {
     passport.authenticate("google", (err, user) => {
       if (err) {
-
-        if (err instanceof InternalOAuthError) {
-          return next(createError(503, "Network error occurred!"));
-        }
 
         return next(createError(401, "OOPS somting went wrong! try again"));
       }

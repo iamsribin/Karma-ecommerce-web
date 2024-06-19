@@ -19,6 +19,7 @@ exports.find = async (req, res, next) => {
 
     req.session.user = user.name;
     req.session.userGmail = user.email;
+    req.session.userId = user._id;
 
     return res.status(200).json({ name: user.name });
   } catch (error) {

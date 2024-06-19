@@ -6,6 +6,7 @@ const {createError} = require("../../utils/errors");
 exports.googleLoginSucess = async (req, res, next) => {
   try {
     if (req.user) {
+      console.log(req.user);
       const { displayName: name, photos, emails, id: googleId } = req.user;
       const photo = photos && photos.length > 0 ? photos[0].value : null;
       const email = emails && emails.length > 0 ? emails[0].value : null;
@@ -19,13 +20,13 @@ exports.googleLoginSucess = async (req, res, next) => {
 
       if (existingUser) {
         req.login(existingUser, (err) => {
-
           if (err) {
             return next(createError(null,null));
           }
 
           req.session.user = name;
           req.session.userGmail = email;
+          req.session.userId = existingUser._id;
           return res.redirect("/");
 
         }); 
@@ -47,6 +48,7 @@ exports.googleLoginSucess = async (req, res, next) => {
           
           req.session.user = name;
           req.session.userGmail = email;
+          req.session.userId = savedUser._id;
 
           return res.redirect("/");
         });
@@ -55,6 +57,7 @@ exports.googleLoginSucess = async (req, res, next) => {
      return next(createError(403, "Not Authorized!"));
     }
   } catch (error) {
+    console.log("googl",error);
    return next(createError(null, null));
   }
 };

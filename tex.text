@@ -1,0 +1,85 @@
+
+
+
+ <!-- <div class="billing-address">
+                        <h2>Delivery Address</h2>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Name</label>
+                                <input class="form-control" type="text" placeholder="Name">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Mobile No</label>
+                                <input class="form-control" type="text" placeholder="Mobile No">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Pincode</label>
+                                <input class="form-control" type="text" placeholder="Pincode">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Locality</label>
+                                <input class="form-control" type="text" placeholder="Locality">
+                            </div>
+                            <div class="col-md-12">
+                                <label>Address</label>
+                                <textarea class="form-control" rows="3" type="text" placeholder="Address  (Area and Street)"></textarea>
+                            </div>
+                            <div class="col-md-6">State 
+                                 <select class="custom-select">
+                                    <option selected>Kerala</option>
+                                    <option>Thamil nadu</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label>City</label>
+                                <input class="form-control" type="text" placeholder="City/District/Town">
+                            </div>
+                            <div class="col-md-6">
+                                <label>Landmark</label>
+                                <input class="form-control" type="text" placeholder="Landmark (optional)">
+                            </div>
+                            <label for="address-type" class="col-md-12">Address type</label>
+                            <div class="col-md-6 d-flex justify-content-around pb-3">
+                              <div class="form-check">
+                                <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  name="addressType"
+                                  id="editHomeAddress"
+                                  value="home"
+                                />
+                                <label class="form-check-label" for="editHomeAddress"
+                                  >HOME</label
+                                >
+                              </div>
+                              <div class="form-check">
+                                <input
+                                  class="form-check-input"
+                                  type="radio"
+                                  name="addressType"
+                                  id="editWorkAddress"
+                                  value="work"
+                                />
+                                <label class="form-check-label" for="editWorkAddress"
+                                  >WORK</label
+                                >
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label>Hose Number</label>
+                                <input class="form-control" type="text" placeholder="Hose Number">
+                            </div>
+                            <div class="col-md-12">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="newaccount">
+                                    <label class="custom-control-label" for="newaccount">Deliver here</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" class="custom-control-input" id="shipto">
+                                    <label class="custom-control-label" for="shipto">add address</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div> -->

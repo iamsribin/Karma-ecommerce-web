@@ -1,16 +1,39 @@
 const multer = require("multer");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/products/");
-  },
-  filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
-  },
-});
+// product storage
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/products/");
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+    },
+  });
+  
+  const upload = multer({ storage: storage });
 
-const upload = multer({ storage: storage });
-module.exports = upload;
+
+//user profile storage
+    const userProfileStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "uploads/userProfile/");
+    },
+    filename: (req, file, cb) => {
+      cb(null, `${Date.now()}-${file.originalname}`);
+    },
+  });
+  
+  const profileUpload = multer({ storage: userProfileStorage });
+
+
+  module.exports = {
+    upload,
+    profileUpload,
+  }
+
+
+
+
 
 // function removeVariant(button) {
 //   const container = document.getElementById("variants-container");

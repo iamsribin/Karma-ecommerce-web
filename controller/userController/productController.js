@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const { createError } = require("../../utils/errors");
 const productDB = require("../../models/adminModels/product");
 const userDB = require("../../models/userModels/userModel")
+const cartDB = require("../../models/userModels/cartModel");
 
 // get single product
 exports.getProduct = async (req, res, next) => {
@@ -11,7 +12,8 @@ exports.getProduct = async (req, res, next) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.render( "errorPages/404");``
     }
-
+    const cart = await cartDB.findOne({userId: req.session.userId});
+    cartLength = cart?.cart?.length;
     // Fetch the single product along with its brand and category
     const product = await productDB
       .findOne({ _id: id })
@@ -44,6 +46,7 @@ exports.getProduct = async (req, res, next) => {
     res.render("user/pages/product", {
       user: userDetalis,
       product: product,
+      cartLength,
       relatedProducts: relatedProducts,
       title: "Single Product",
     });
@@ -54,7 +57,6 @@ exports.getProduct = async (req, res, next) => {
   }
 };
 
-
 //categories page
 exports.renderCategoryPage = async (req, res) => {
   const products = await productDB
@@ -62,5 +64,10 @@ exports.renderCategoryPage = async (req, res) => {
     .populate("brand")
     .populate("category");
 const userDetalis = await userDB.findOne({email: req.session.userGmail});
-  return res.render("user/pages/category", {      user: userDetalis, products, title: "Category" });
+
+let cartLength = 0;
+const cart = await cartDB.findOne({userId: req.session.userId});
+ cartLength = cart?.cart?.length;
+
+  return res.render("user/pages/category", { cartLength,  user: userDetalis, products, title: "Category" });
 };

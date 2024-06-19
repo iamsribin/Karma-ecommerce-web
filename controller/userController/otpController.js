@@ -45,6 +45,7 @@ const sendOTP = async (req, res, next) => {
 
     req.session.otpverfication = true;
     req.session.userGmail = email;
+    req.session.userId = newUser._id;
 
     //deleting the document if didn't enter the otp
     setTimeout(async () => {
@@ -56,6 +57,7 @@ const sendOTP = async (req, res, next) => {
           await User.deleteOne({ otp: { $exists: true } });
           req.session.userGmail = null;
           req.session.user = null;
+          req.session.userId = null;
           delete req.session.otpverfication;
         }
 
@@ -184,6 +186,7 @@ const ForgotOtpPage = async (req, res, next) => {
       if (OTP) {
         await User.findOneAndUpdate({ email: email }, { $unset: { otp: "" } });
         req.session.userGmail = null;
+        req.session.userId = null;
         delete req.session.otpverfication;
 
       } 
@@ -193,6 +196,7 @@ const ForgotOtpPage = async (req, res, next) => {
   }, 3 * 60 * 1000);
 
   req.session.userGmail = email;
+  req.session.userId = existUser._id;
   req.session.passwordChange = true;
   
   return res.redirect("/getotp-forgot-password");

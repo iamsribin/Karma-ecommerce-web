@@ -1,434 +1,509 @@
 <%- include('../userPartials/header'); %>
 
-<!-- Start Banner Area -->
-<section class="banner-area organic-breadcrumb">
-  <div class="container">
-    <div
-      class="breadcrumb-banner d-flex flex-wrap align-items-center justify-content-end"
-    >
-      <div class="col-first">
-        <h1>Product Details Page</h1>
-        <nav class="d-flex align-items-center">
-          <a href="/">Home<span class="lnr lnr-arrow-right"></span></a>
-          <a href="/category">Shop<span class="lnr lnr-arrow-right"></span></a>
-          <a href="">Product Details</a>
-        </nav>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End Banner Area -->
-
-<!-- Single Product Area -->
-<div class="product_image_area">
-  <div class="container">
-    <div class="row s_product_inner">
-      <div class="col-lg-5">
-        <!-- Include the Etalage files -->
-        <link rel="stylesheet" href="/css/etalage.css" />
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-        <script src="/js/jquery.etalage.min.js"></script>
-        <script>
-          jQuery(document).ready(function ($) {
-            $("#etalage").etalage({
-              thumb_image_width: 400,
-              thumb_image_height: 400,
-              source_image_width: 900,
-              source_image_height: 1000,
-              show_hint: true,
-            });
-          });
-        </script>
-        <!-- Etalage image gallery -->
-        <ul id="etalage">
-          <% product.imagePaths.forEach((imagePath) => { %>
-          <li>
-            <img
-              class="etalage_thumb_image"
-              src="<%= imagePath %>"
-              alt="Product Image Thumbnail"
-            />
-            <img
-              class="etalage_source_image"
-              src="<%= imagePath %>"
-              alt="Product Image"
-            />
-          </li>
-          <% }); %>
-        </ul>
-      </div>
-      <div class="col-lg-5 offset-lg-1">
-        <div class="s_product_text">
-          <h3><%= product.name %></h3>
-          <% if (product.offerAmount) { %>
-          <div>
-            <b style="color: #000">OFFER PRICE</b>:
-            <b style="color: black">$<%= product.offerAmount %></b>
-          </div>
-          <div>
-            <b style="color: #000">PRICE</b>:
-            <b style="color: rgb(255, 0, 0); text-decoration: line-through"
-              >$<%= product.basePrice %></b
-            >
-          </div>
-          <% } else { %>
-          <div>
-            <b style="color: #000">PRICE &nbsp; : </b>
-            <b style="color: black">$<%= product.basePrice %></b>
-          </div>
-          <% } %>
-          <ul class="list">
-            <li>
-              <span><b style="color: black">CATEGORY &nbsp; : </b></span>
-              <b style="color: #000"><%= product.category.name %></b>
-            </li>
-            <li>
-              <span><b style="color: black">BRAND &nbsp; : </b></span>
-              <b style="color: #000"><%= product.brand.name %></b>
-            </li>
-            <li>
-              <span><b style="color: black">AVAILABILITY &nbsp; : </b></span> <%
-              if (product.totalQuantity < 10) { %>
-              <b style="color: rgb(255, 136, 0)">Limited Stock</b>
-              <% } else if (product.totalQuantity === 0) { %>
-              <b style="color: red">Out of Stock</b>
-              <% } else { %>
-              <b style="color: rgb(0, 255, 17)">In Stock</b>
-              <% } %>
-            </li>
-            <li>
-              <select
-                class="tm-select-accounts"
-                name="color[]"
-                style="background-color: white; color: black"
-              >
-                <% product.variants.forEach((variant, index) => { %>
-                   <% if(index===0){%>
-                <option selected value="<%= variant.size._id %>">
-                  <%= variant.size.size %>
-                </option>
-                <%}else{%>
-                <option value="<%= variant.size._id %>">
-                  <%= variant.size.size %>
-                </option>
-                <%}%> <% }) %>
-              </select>
-            </li>
-          </ul>
-          <br />
-          <p>
-            <b style="color: black">Description &nbsp; : </b> <%=
-            product.description %>
-          </p>
-          <div class="product_count">
-            <label for="qty">Quantity:</label>
-            <input
-              type="text"
-              name="qty"
-              id="sst"
-              maxlength="12"
-              value="1"
-              title="Quantity:"
-              class="input-text qty"
-            />
-            <button
-              onclick="incrementQuantity()"
-              class="increase items-count"
-              type="button"
-            >
-              <i class="lnr lnr-chevron-up"></i>
-            </button>
-            <button
-              onclick="decrementQuantity()"
-              class="reduced items-count"
-              type="button"
-            >
-              <i class="lnr lnr-chevron-down"></i>
-            </button>
-          </div>
-          <div class="card_area d-flex align-items-center">
-            <a class="primary-btn" href="#">Add to Cart</a>
-            <a class="icon_btn" href="#"><i class="lnr lnr-diamond"></i></a>
-            <a class="icon_btn" href="#"><i class="lnr lnr-heart"></i></a>
-          </div>
-        </div>
-      </div>
-    </div>
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-wrap">
+  <div class="container-fluid">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item"><a href="#">Products</a></li>
+      <li class="breadcrumb-item active">Product Detail</li>
+    </ul>
   </div>
 </div>
-<!-- End Single Product Area -->
+<!-- Breadcrumb End -->
 
-<!-- Product Description Area -->
-<section class="product_description_area">
-  <div class="container">
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          id="home-tab"
-          data-toggle="tab"
-          href="#home"
-          role="tab"
-          aria-controls="home"
-          aria-selected="true"
-          >Related products</a
-        >
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link"
-          id="profile-tab"
-          data-toggle="tab"
-          href="#profile"
-          role="tab"
-          aria-controls="profile"
-          aria-selected="false"
-          >Specification</a
-        >
-      </li>
-      <li class="nav-item">
-        <a
-          class="nav-link active"
-          id="review-tab"
-          data-toggle="tab"
-          href="#review"
-          role="tab"
-          aria-controls="review"
-          aria-selected="false"
-          >Reviews</a
-        >
-      </li>
-    </ul>
-    <div class="tab-content" id="myTabContent">
-      <!-- Related Products Tab -->
-      <div
-        class="tab-pane fade"
-        id="home"
-        role="tabpanel"
-        aria-labelledby="home-tab"
-      >
-        <div class="single-product-slider">
-          <div class="container">
-            <div class="row">
-              <% relatedProducts.forEach((relatedProduct) => { %>
-              <div class="col-lg-3 col-md-6">
-                <!-- <div class="col-lg-4 col-md-6 col-sm-12"> -->
-                <div class="single-product">
-                  <div class="product-image-wrapper">
-                    <a href="/product/<%= relatedProduct._id %>">
-                      <img
-                        class="img-fluid"
-                        src="<%= relatedProduct.imagePaths[0] %>"
-                        alt=""
-                      />
-                      <div class="image-overlay">
-                        <a href="" class="social-info">
-                          <span class="ti-bag"></span>
-                          <p class="hover-text">add to bag</p>
-                        </a>
-                        <a href="" class="social-info">
-                          <span class="lnr lnr-heart"></span>
-                          <p class="hover-text">Wishlist</p>
-                        </a>
-                        <a
-                          href="/product/<%= relatedProduct._id %>"
-                          class="social-info"
-                        >
-                          <span class="lnr lnr-move"></span>
-                          <p class="hover-text">view more</p>
-                        </a>
-                      </div>
-                    </a>
+<!-- Product Detail Start -->
+<div class="product-detail">
+  <div class="container-fluid">
+    <div class="row">
+      <!-- Main Product Details -->
+      <div class="col-lg-8 ">
+        <div class="product-detail-top d-flex justify-content-between">
+          <div class="row align-items-center" style="width: 100%; padding: 0px; margin: 0px;">
+            <!-- Column for Product Images -->
+            <div class="col-md-6">
+              <ul id="etalage">
+                <% product.imagePaths.forEach((imagePath) => { %>
+                <li>
+                  <a href="#">
+                    <img class="etalage_thumb_image" src="<%= imagePath %>" alt="Product Image Thumbnail" />
+                    <img class="etalage_source_image" src="<%= imagePath %>" alt="Product Image" />
+                  </a>
+                </li>
+                <% }); %>
+              </ul>
+            </div>
+            <!-- Column for Product Details -->
+            <div class="col-md-5" style="height: 100%; width: 100%; padding: 0px; margin: 0px;">
+              <div class="product-content" style="padding: 30px; width: 120%;">
+                <div class="title d-flex justify-content-between align-items-center mb-3">
+                  <h2 style="margin-bottom: 0; font-size: 20px"><%= product.name %></h2>
+                  <% if (product.totalQuantity < 10) { %>
+                  <b style="color: rgb(255, 136, 0)">Limited Stock</b>
+                  <% } else if (product.totalQuantity === 0) { %>
+                  <b style="color: red">Out of Stock</b>
+                  <% } else { %>
+                  <b style="color: rgb(0, 255, 17)">In Stock</b>
+                  <% } %>
+                </div>
+                <div class="ratting mb-3">
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                </div>
+                <div class="product-info mb-3">
+                  <p class="mb-1">
+                    <span><b style="color: black">BRAND:</b></span>
+                    <b style="color: #000; margin-left: 10px;"><%= product.brand.name %></b>
+                  </p>
+                  <p class="mb-0">
+                    <span><b style="color: black">CATEGORY:</b></span>
+                    <b style="color: #000; margin-left: 10px;"><%= product.category.name %></b>
+                  </p>
+                </div>
+                <div class="price mb-4">
+                  <h4 class="mb-2">Price:</h4>
+                  <% if (product.offerAmount) { %>
+                  <p>
+                    $<%= product.offerAmount %>
+                    <span style="text-decoration: line-through; margin-left: 10px;">$<%= product.basePrice %></span>
+                  </p>
+                  <% } else { %>
+                  <p>$<%= product.basePrice %></p>
+                  <% } %>
+                </div>
+                <div class="quantity mb-4">
+                  <h4 id="getQuntity" data-id="<%=product.totalQuantity%>" class="mb-2">Quantity:</h4>
+                  <div class="qty">
+                    <button class="btn-minus" disabled style="margin-right: 10px;">
+                      <i class="fa fa-minus"></i>
+                    </button>
+                    <input type="text" id="quantity" value="1" style="width: 50px; text-align: center;" />
+                    <button class="btn-plus" style="margin-left: 10px;">
+                      <i class="fa fa-plus"></i>
+                    </button>
                   </div>
-                  <div class="product-details">
-                    <h6><%= relatedProduct.name %></h6>
-                    <h5>BRAND : <%= relatedProduct.brand.name %></h5>
-                    <h5>CATEGORY : <%= relatedProduct.category.name %></h5>
-                    <div class="price">
-                      <% if (relatedProduct.offerAmount) { %>
-                      <h6>$<%= relatedProduct.offerAmount %></h6>
-                      <h6 class="l-through">
-                        $<%= relatedProduct.basePrice %>
-                      </h6>
-                      <% } else { %>
-                      <h6>$<%= relatedProduct.basePrice %></h6>
-                      <% } %> <% if (relatedProduct.quantity < 10) { %>
-                      <h6 style="color: rgb(255, 136, 0)">Limited Stock</h6>
-                      <% } else if (relatedProduct.quantity == 0) { %>
-                      <h6 style="color: red">Out of Stock</h6>
-                      <% } else { %>
-                      <h6 style="color: rgb(0, 255, 17)">In Stock</h6>
-                      <% } %>
+                </div>
+
+                <div class="p-size mb-4">
+                  <h4 class="mb-2">Size:</h4>
+                  <div class="btn-group btn-group-sm" id="size-buttons">
+                    <% product.variants.forEach((variant) => { %>
+                    <button type="button" class="btn size-button" data-size="<%= variant.size._id %>" style="margin-right: 5px;">
+                      <%= variant.size.size %>
+                    </button>
+                    <% }) %>
+                  </div>
+                </div>
+                <div class="action">
+                  <a class="btn btn-primary mr-2" href="" id="addToCart" data-id="<%= product._id %>" style="margin-right: 10px;">
+                    <i class="fa fa-shopping-cart"></i> Add to Cart
+                  </a>
+                  <a class="btn btn-success">
+                    <i class="fa fa-heart"></i> Add to Wishlist
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Product Description, Specifications, and Reviews -->
+        <div class="row product-detail-bottom">
+          <div class="col-lg-12">
+            <ul class="nav nav-pills nav-justified">
+              <li class="nav-item">
+                <a class="nav-link active" data-toggle="pill" href="#description">Description</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="#specification">Specification</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-toggle="pill" href="#reviews">Reviews (1)</a>
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div id="description" class="container tab-pane active">
+                <h4>Product description</h4>
+                <p><%= product.description %></p>
+              </div>
+              <div id="specification" class="container tab-pane fade">
+                <h4>Product specification</h4>
+                <div class="table-responsive">
+                  <table class="table">
+                    <tbody>
+                      <tr>
+                        <td><h6>TYPE</h6></td>
+                        <td><h6><%= product.tag.tagName %></h6></td>
+                      </tr>
+                      <tr>
+                        <td><h6>MIDSOLE DROP</h6></td>
+                        <td><h6><%= product.midsoleDrop %> mm</h6></td>
+                      </tr>
+                      <tr>
+                        <td><h6>FOREFOOT</h6></td>
+                        <td><h6><%= product.foreFoot %> mm</h6></td>
+                      </tr>
+                      <tr>
+                        <td><h6>HEEL</h6></td>
+                        <td><h6><%= product.heel %> mm</h6></td>
+                      </tr>
+                      <tr>
+                        <td><h6>WEIGHT</h6></td>
+                        <td><h6><%= product.weight %> gm</h6></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div id="reviews" class="container tab-pane fade">
+                <div class="reviews-submitted">
+                  <div class="reviewer">Phasellus Gravida - <span>01 Jan 2020</span></div>
+                  <div class="ratting">
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                  </div>
+                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+                </div>
+                <div class="reviews-submit">
+                  <h4>Give your Review:</h4>
+                  <div class="ratting">
+                    <i class="far fa-star"></i>
+                    <i class="far fa-star"></i>
+                    <i class="far fa-star"></i>
+                    <i class="far fa-star"></i>
+                    <i class="far fa-star"></i>
+                  </div>
+                  <div class="row form">
+                    <div class="col-sm-6">
+                      <input type="text" placeholder="Name" />
+                    </div>
+                    <div class="col-sm-6">
+                      <input type="email" placeholder="Email" />
+                    </div>
+                    <div class="col-sm-12">
+                      <textarea placeholder="Review"></textarea>
+                    </div>
+                    <div class="col-sm-12">
+                      <button>Submit</button>
                     </div>
                   </div>
                 </div>
               </div>
-              <% }) %>
             </div>
           </div>
         </div>
-      </div>
-      <!-- Specification Tab -->
-      <div
-        class="tab-pane fade"
-        id="profile"
-        role="tabpanel"
-        aria-labelledby="profile-tab"
-      >
-        <div class="table-responsive">
-          <table class="table">
-            <tbody>
-              <tr>
-                <td><h5>TYPE</h5></td>
-                <td><h5><%= product.tag.tagName %></h5></td>
-              </tr>
-              <tr>
-                <td><h5>MIDSOLE DROP </h5></td>
-                <td><h5><%= product.midsoleDrop %> mm</h5></td>
-              </tr>
-              <tr>
-                <td><h5>FOREFOOT</h5></td>
-                <td><h5><%= product.foreFoot %> mm</h5></td>
-              </tr>
-              <tr>
-                <td><h5>HEEL</h5></td>
-                <td><h5><%= product.heel %> mm</h5></td>
-              </tr>
-              <tr>
-                <td><h5>WIGHT</h5></td>
-                <td><h5><%= product.weight %> gm</h5></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <!-- Reviews Tab -->
-      <div
-        class="tab-pane fade show active"
-        id="review"
-        role="tabpanel"
-        aria-labelledby="review-tab"
-      >
-        <div class="row">
-          <div class="col-lg-6">
-            <div class="row total_rate">
-              <div class="col-6">
-                <div class="box_total">
-                  <h5>Overall</h5>
-                  <h4>4.0</h4>
-                  <h6>(03 Reviews)</h6>
+
+        <!-- Related Products Section -->
+        <div class="product">
+          <div class="section-header">
+            <h1>Related Products</h1>
+          </div>
+          <div class="row align-items-center product-slider product-slider-3">
+            <% relatedProducts.forEach((relatedProduct) => { %>
+            <div class="col-lg-3" style="width: 450px">
+              <div class="product-item">
+                <div class="product-title">
+                  <div class="text-left">
+                    <a href="#"><%= relatedProduct.name %></a>
+                  </div>
+                  <div class="ratting d-flex justify-content-between">
+                    <div>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                    <% if (relatedProduct.totalQuantity < 10) { %>
+                    <i style="background-color: rgb(255, 174, 0); color: rgb(0, 0, 0); border-radius: 7px;">&nbsp; Limited Stock &nbsp;</i>
+                    <% } else if (relatedProduct.totalQuantity == 0) { %>
+                    <i style="background-color: rgb(255, 0, 0); color: rgb(0, 0, 0); border-radius: 7px;">&nbsp; Out Of Stock &nbsp;</i>
+                    <% } else { %>
+                    <i style="background-color: greenyellow; color: rgb(0, 0, 0); border-radius: 7px;">&nbsp; In Stock &nbsp;</i>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="product-image">
+                  <a href="product-detail.html">
+                    <img src="<%= relatedProduct.imagePaths[0] %>" alt="Product Image" />
+                  </a>
+                  <div class="product-action">
+                    <!-- <a href="#" data-id="<%= relatedProduct._id %>" tabindex="0" data-toggle="tooltip" title="Add to cart">
+                      <i class="fa fa-cart-plus"></i>
+                    </a> -->
+                    <a href="#" tabindex="0" data-toggle="tooltip" title="wishlist">
+                      <i class="fa fa-heart"></i>
+                    </a>
+                    <a href="/product/<%= relatedProduct._id %>" tabindex="0" data-toggle="tooltip" title="view">
+                      <i class="fa fa-search"></i>
+                    </a>
+                    <!-- <a href="#" tabindex="0" data-toggle="tooltip" title="buy now">
+                      <i class="fa fa-shopping-cart"></i>
+                    </a> -->
+                  </div>
+                </div>
+                <div class="product-price">
+                  <div class="text-white">
+                    <span><b>BRAND : &nbsp;&nbsp;&nbsp;</b></span>
+                    <span class="text-capitalize"><%= relatedProduct.brand.name %></span><br />
+                    <span><b>Category : &nbsp;</b></span>
+                    <span><%= relatedProduct.category.name %></span>
+                  </div>
+                  <% if (relatedProduct.offerAmount) { %>
+                  <h5 class="text-white">
+                    $ <%= relatedProduct.offerAmount %>&nbsp;&nbsp;
+                    <span style="text-decoration: line-through; color: crimson"><%= relatedProduct.basePrice %></span>
+                  </h5>
+                  <% } else { %>
+                  <h3 class=""><span>$</span><%= relatedProduct.basePrice %></h3>
+                  <% } %>
                 </div>
               </div>
             </div>
-            <div class="review_list">
-              <% for (let i = 1; i <= 3; i++) { %>
-              <div class="review_item">
-                <div class="media">
-                  <div class="d-flex">
-                    <img
-                      src="img/product/review-<%= i %>.png"
-                      alt="Review Image"
-                    />
-                  </div>
-                  <div class="media-body">
-                    <h4>Blake Ruiz</h4>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                  </div>
-                </div>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed
-                  do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                </p>
-              </div>
-              <% } %>
-            </div>
-          </div>
-          <div class="col-lg-6">
-            <div class="review_box">
-              <h4>Add a Review</h4>
-              <form
-                class="row contact_form"
-                action="contact_process.php"
-                method="post"
-                id="contactForm"
-                novalidate="novalidate"
-              >
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="name"
-                      name="name"
-                      placeholder="Your Full Name"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <input
-                      type="email"
-                      class="form-control"
-                      id="email"
-                      name="email"
-                      placeholder="Email Address"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="number"
-                      name="number"
-                      placeholder="Phone Number"
-                    />
-                  </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="form-group">
-                    <textarea
-                      class="form-control"
-                      name="message"
-                      id="message"
-                      rows="1"
-                      placeholder="Review"
-                    ></textarea>
-                  </div>
-                </div>
-                <div class="col-md-12 text-right">
-                  <button type="submit" class="primary-btn">Submit Now</button>
-                </div>
-              </form>
-            </div>
+            <% }) %>
           </div>
         </div>
       </div>
+
+      <!-- Side Bar Start -->
+      <div class="col-lg-4 sidebar">
+        <div class="sidebar-widget category">
+          <h2 class="title">Category</h2>
+          <nav class="navbar bg-light">
+            <ul class="navbar-nav">
+              <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa fa-female"></i>Fashion & Beauty</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa fa-child"></i>Kids & Babies Clothes</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa fa-tshirt"></i>Men & Women Clothes</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa fa-mobile-alt"></i>Gadgets & Accessories</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#"><i class="fa fa-microchip"></i>Electronics & Accessories</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+
+        <div class="sidebar-widget widget-slider">
+          <div class="sidebar-slider normal-slider">
+            <% relatedProducts.forEach((relatedProduct) => { %>
+            <div class="product-item">
+              <div class="product-item">
+                <div class="product-title">
+                  <div class="text-left">
+                    <a href="#"><%= relatedProduct.name %></a>
+                  </div>
+                  <div class="ratting d-flex justify-content-between">
+                    <div>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                    <% if (relatedProduct.totalQuantity < 10) { %>
+                    <i style="background-color: rgb(255, 174, 0); color: rgb(0, 0, 0); border-radius: 7px;">&nbsp; Limited Stock &nbsp;</i>
+                    <% } else if (relatedProduct.totalQuantity == 0) { %>
+                    <i style="background-color: rgb(255, 0, 0); color: rgb(0, 0, 0); border-radius: 7px;">&nbsp; Out Of Stock &nbsp;</i>
+                    <% } else { %>
+                    <i style="background-color: greenyellow; color: rgb(0, 0, 0); border-radius: 7px;">&nbsp; In Stock &nbsp;</i>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="product-image">
+                  <a href="product-detail.html">
+                    <img src="<%= relatedProduct.imagePaths[0] %>" alt="Product Image" />
+                  </a>
+                  <div class="product-action">
+                    <!-- <a href="#" data-id="<%= relatedProduct._id %>" tabindex="0" data-toggle="tooltip" title="Add to cart">
+                      <i class="fa fa-cart-plus"></i>
+                    </a> -->
+                    <a href="#" tabindex="0" data-toggle="tooltip" title="wishlist">
+                      <i class="fa fa-heart"></i>
+                    </a>
+                    <a href="/product/<%= relatedProduct._id %>" tabindex="0" data-toggle="tooltip" title="view">
+                      <i class="fa fa-search"></i>
+                    </a>
+                    <!-- <a href="#" tabindex="0" data-toggle="tooltip" title="buy now">
+                      <i class="fa fa-shopping-cart"></i>
+                    </a> -->
+                  </div>
+                </div>
+                <div class="product-price">
+                  <div class="text-white">
+                    <span><b>BRAND : &nbsp;&nbsp;&nbsp;</b></span>
+                    <span class="text-capitalize"><%= relatedProduct.brand.name %></span><br />
+                    <span><b>Category : &nbsp;</b></span>
+                    <span><%= relatedProduct.category.name %></span>
+                  </div>
+                  <% if (relatedProduct.offerAmount) { %>
+                  <h3 class="">
+                    $ <%= relatedProduct.offerAmount %>&nbsp;&nbsp;
+                    <span style="text-decoration: line-through; color: crimson"><%= relatedProduct.basePrice %></span>
+                  </h3>
+                  <% } else { %>
+                  <h3 class=""><span>$</span><%= relatedProduct.basePrice %></h3>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            <% }) %>
+          </div>
+        </div>
+
+        <div class="sidebar-widget brands">
+          <h2 class="title">Our Brands</h2>
+          <ul>
+            <li><a href="#">Nulla </a><span>(45)</span></li>
+            <li><a href="#">Curabitur </a><span>(34)</span></li>
+            <li><a href="#">Nunc </a><span>(67)</span></li>
+            <li><a href="#">Ullamcorper</a><span>(74)</span></li>
+            <li><a href="#">Fusce </a><span>(89)</span></li>
+            <li><a href="#">Sagittis</a><span>(28)</span></li>
+          </ul>
+        </div>
+
+        <div class="sidebar-widget tag">
+          <h2 class="title">Tags Cloud</h2>
+          <a href="#">Lorem ipsum</a>
+          <a href="#">Vivamus</a>
+          <a href="#">Phasellus</a>
+          <a href="#">pulvinar</a>
+          <a href="#">Curabitur</a>
+          <a href="#">Fusce</a>
+          <a href="#">Sem quis</a>
+          <a href="#">Mollis metus</a>
+          <a href="#">Sit amet</a>
+          <a href="#">Vel posuere</a>
+          <a href="#">orci luctus</a>
+          <a href="#">Nam lorem</a>
+        </div>
+      </div>
+      <!-- Side Bar End -->
     </div>
   </div>
-</section>
-<!-- End Product Description Area -->
+</div>
+<!-- Product Detail End -->
+
+<!-- Brand Start -->
+<div class="brand">
+  <div class="container-fluid">
+    <div class="brand-slider">
+      <div class="brand-item"><img src="img/brand-1.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-2.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-3.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-4.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-5.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-6.png" alt="" /></div>
+    </div>
+  </div>
+</div>
+<!-- Brand End -->
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Quantity Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const quantityInput = document.getElementById("quantity");
+const getQuntity = document.getElementById("getQuntity");
+const totalQuantity = getQuntity.getAttribute("data-id");
+    const updateButtons = () => {
+      document.querySelector(".btn-plus").disabled = parseInt(quantityInput.value) >= parseInt(totalQuantity);
+      document.querySelector(".btn-minus").disabled = parseInt(quantityInput.value) < 2;
+    };
+
+    document.querySelector(".btn-plus").addEventListener("click", () => {
+      let quantity = parseInt(quantityInput.value);
+      if (quantity < parseInt(totalQuantity)) quantityInput.value = quantity + 1;
+      updateButtons();
+
+    });
+
+    document.querySelector(".btn-minus").addEventListener("click", () => {
+      let quantity = parseInt(quantityInput.value);
+      if (quantity > 2) quantityInput.value = quantity - 1;
+      updateButtons();
+
+    });
+
+    // Highlight selected size
+    let selectedSize = null;
+    document.getElementById("size-buttons").addEventListener("click", (e) => {
+      if (e.target.classList.contains("size-button")) {
+        document.querySelectorAll(".size-button").forEach(button => button.classList.remove("selected"));
+        e.target.classList.add("selected");
+        selectedSize = e.target.getAttribute("data-size");
+      }
+    });
+
+    // Add to Cart
+    const addToCartButton = document.getElementById("addToCart");
+    addToCartButton.addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const productId = addToCartButton.getAttribute("data-id");
+      const quantity = quantityInput.value;
+      const size = selectedSize;
+      if (!size) {
+        Swal.fire({
+          icon: "error",
+          title: "Please select a size",
+          showConfirmButton: true,
+        });
+        return;
+      }
+
+      try {
+        const response = await fetch("/add-to-cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId, size, quantity }),
+        });
+
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: "Product added to cart successfully",
+            showConfirmButton: false,
+            timer: 1500,
+          }).then(() => {
+            window.location.reload();
+          })
+        } else {
+          const errorData = await response.json();
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: errorData.message,
+            showConfirmButton: true,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        Swal.fire({
+          icon: "error",
+          title: "An error occurred",
+          text: error.message,
+          showConfirmButton: true,
+        });
+      }
+    });
+  });
+</script>
 
 <%- include('../userPartials/footer'); %>
-
-<script>
-  // JavaScript for incrementing/decrementing the quantity
-  function incrementQuantity() {
-    var quantity = parseInt(document.getElementById("sst").value);
-    if (quantity < 10) {
-      document.getElementById("sst").value = quantity + 1;
-    }
-  }
-
-  function decrementQuantity() {
-    var quantity = parseInt(document.getElementById("sst").value);
-    if (quantity > 1) {
-      document.getElementById("sst").value = quantity - 1;
-    }
-  }
-</script>

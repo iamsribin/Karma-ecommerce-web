@@ -161,7 +161,7 @@ document.addEventListener("DOMContentLoaded", () => {
       showLoadingScreen();
       const formData = new FormData(signUpForm);
       const name = formData.get("name");
-      const email = formData.get("email");
+      const email = formData.get("email");  
       const password1 = formData.get("password1");
  
       try {

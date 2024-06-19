@@ -11,10 +11,10 @@ exports.userExit = async (req, res, next) => {
 };
 
 exports.verifyUser = async(req, res, next) => {
-  if(req.session.user){
-    next()
+  if(req.session.userId){
+   return next()
   }else{
-    res.redirect("/login");
+     res.redirect("/login");
   }
 }
 

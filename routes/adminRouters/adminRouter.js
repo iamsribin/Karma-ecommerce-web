@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const upload = require("../../connetion/multerStorage");
+const {upload} = require("../../connetion/multerStorage");
 
 //auth controller
 const {

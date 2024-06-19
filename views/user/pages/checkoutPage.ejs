@@ -1,0 +1,290 @@
+<%- include('../userPartials/header'); %>
+<style>
+  .error-message{
+    color: red;
+  }
+</style>
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-wrap">
+  <div class="container-fluid">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item"><a href="#">Products</a></li>
+      <li class="breadcrumb-item active">Checkout</li>
+    </ul>
+  </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Checkout Start -->
+<div class="checkout">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="checkout-inner">
+          <!-- address start -->
+          <div id="address-container">
+            <% if (addresses) { %>
+              <% addresses.forEach((address, index) => { %>
+                <div class="row address-item">
+                  <div class="col-md-12 p-4 border mb-3" style="background-color: #ffffff">
+                    <div class="col-md-12 d-flex justify-content-end">
+                      <div class="custom-control custom-radio">
+                        <input
+                          type="radio"
+                          class="custom-control-input"
+                          id="address<%=index%>"
+                          value="<%= address._id %>"
+                          name="addressRadio"
+                        />
+                        <label class="custom-control-label" for="address<%=index%>">Deliver Here</label>
+                      </div>
+                    </div>
+                    <b class="address-type" style="text-transform: uppercase; font-size: 11px; color: #878787; vertical-align: middle; padding: 4px 7px; padding-bottom: 3px; border-radius: 2px; background-color: #f0f0f0; font-weight: 500; margin-right: 15px;">
+                      <%= address.addressType %>
+                    </b>
+                    <p>
+                      <b><%= address.fullName %> &nbsp; &nbsp; &nbsp; <%= address.phoneNumber %></b>
+                    </p>
+                    <p>
+                      <%= address.houseNo %>, <%= address.address %>, <%= address.district %>, <%= address.state %> - <%= address.pincode %>
+                    </p>
+                  </div>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div id="no-address-alert" class="alert alert-warning text-center" role="alert">No address found!</div>
+            <% } %>
+          </div>
+          <!-- address end -->
+
+          <div class="col-md-12">
+            <div class="custom-control custom-radio">
+              <input
+                type="radio"
+                class="custom-control-input"
+                id="shipto"
+                value="newAddress"
+                name="addressRadio"
+              />
+              <label class="custom-control-label" for="shipto">Deliver another Address</label>
+            </div>
+          </div>
+          <div class="shipping-address">
+            <h2>Delivery Address</h2>
+            <form id="newAddressForm">
+              <div class="row">
+                <div class="col-md-6">
+                  <label>First Name</label>
+                  <input class="form-control" type="text" name="name" placeholder="First Name" />
+                  <div class="error-message" id="error-name"></div>
+                </div>
+                <div class="col-md-6">
+                  <label>Mobile No</label>
+                  <input class="form-control" name="number" type="number" placeholder="Mobile No" />
+                  <div class="error-message" id="error-number"></div>
+                </div>
+                <div class="col-md-6">
+                  <label>Pincode</label>
+                  <input class="form-control" type="number" name="pincode" placeholder="Pincode" />
+                  <div class="error-message" id="error-pincode"></div>
+                </div>
+                <div class="col-md-6">
+                  <label>Locality</label>
+                  <input class="form-control" name="locality" type="text" placeholder="Locality" />
+                  <div class="error-message" id="error-locality"></div>
+                </div>
+                <div class="col-md-12">
+                  <label>Address</label>
+                  <input class="form-control" name="address" type="text" placeholder="Address(area and street)" />
+                  <div class="error-message" id="error-address"></div>
+                </div>
+                <div class="col-md-6">
+                  <label>State</label>
+                  <select name="state" class="custom-select">
+                    <option value="kerala" selected>Kerala</option>
+                    <option value="tamil nadu">Tamil Nadu</option>
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <label>City</label>
+                  <input class="form-control" name="city" type="text" placeholder="City/District/Town" />
+                  <div class="error-message" id="error-city"></div>
+                </div>
+                <div class="col-md-6">
+                  <label>Landmark</label>
+                  <input class="form-control" type="text" name="landmark" placeholder="Landmark" />
+                </div>
+                <div class="col-md-6">
+                  <label>Home NO</label>
+                  <input class="form-control" name="homeNo" type="number" placeholder="Home No" />
+                </div>
+                <label for="address-type" class="col-md-12">Address type</label>
+                <div class="col-md-6 d-flex justify-content-around pb-3">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="addressType" id="editHomeAddress" value="home" />
+                    <label class="form-check-label" for="editHomeAddress">HOME</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="addressType" id="editWorkAddress" value="work" />
+                    <label class="form-check-label" for="editWorkAddress">WORK</label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="checkout-inner">
+          <div class="checkout-summary">
+            <h5 class="text-center font-weight-bold">Total <%=totalItems%> items</h5>
+            <h1>Cart Total</h1>
+            <p>Sub Total<span>₹ <%=userCart.subTotal%></span></p>
+            <p>Shipping Cost<span>Free</span></p>
+            <p>Discount<span class="text-success">₹ <%=userCart.discount%></span></p>
+            <p>Tax<span>₹ <%=userCart.tax%></span></p>
+            <h2>Grand Total<span>₹ <%=userCart.grandTotal%></span></h2>
+          </div>
+          <div class="checkout-payment">
+            <div class="payment-methods">
+              <h1>Payment Methods</h1>
+              <div class="payment-method">
+                <div class="custom-control custom-radio">
+                  <input type="radio" class="custom-control-input" id="payment-1" name="payment" />
+                  <label class="custom-control-label" for="payment-1">Razorpay</label>
+                </div>
+              </div>
+              <div class="payment-method">
+                <div class="custom-control custom-radio">
+                  <input type="radio" class="custom-control-input" id="payment-2" name="payment" />
+                  <label class="custom-control-label" for="payment-2">Wallet</label>
+                </div>
+              </div>
+              <div class="payment-method">
+                <div class="custom-control custom-radio">
+                  <input type="radio" class="custom-control-input" id="payment-3" name="payment" />
+                  <label class="custom-control-label" for="payment-3">Cash on Delivery</label>
+                </div>
+              </div>
+            </div>
+            <div class="checkout-btn">
+              <button id="placeOrderBtn">Place Order</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Checkout End -->
+
+<%- include('../userPartials/footer'); %>
+
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const radioButtons = document.querySelectorAll('input[name="addressRadio"]');
+    const paymentMethods = document.querySelectorAll('input[name="payment"]');
+    const placeOrderBtn = document.querySelector("#placeOrderBtn");
+    let selectedAddress = null;
+    let selectedPayment = null;
+
+    radioButtons.forEach((radioButton) => {
+      radioButton.addEventListener("change", () => {
+        selectedAddress = radioButton.value;
+      });
+    });
+
+    paymentMethods.forEach((paymentMethod) => {
+      paymentMethod.addEventListener("change", () => {
+        selectedPayment = paymentMethod.id;
+      });
+    });
+
+    placeOrderBtn.addEventListener("click", async function (e) {
+      e.preventDefault();
+
+      if (selectedAddress === 'newAddress') {
+        const form = document.getElementById("newAddressForm");
+        if (!validateForm(form)) {
+          return;
+        }
+
+        const formData = new FormData(form);
+        const addressData = Object.fromEntries(formData.entries());
+
+        const response = await fetch("place-order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            address: addressData,
+            paymentMethod: selectedPayment,
+            addressId: null,
+          }),
+        });
+        const data = await response.json();
+        console.log(data);
+        window.location.reload();
+      } else {
+        const response = await fetch("/place-order", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            addressId: selectedAddress,
+            paymentMethod: selectedPayment,
+            address: null,
+          }),
+        });
+        const data = await response.json();
+        console.log(data);
+        window.location.reload();
+      }
+    });
+  });
+
+  function validateForm(form) {
+    let valid = true;
+    const formData = new FormData(form);
+    const fields = Object.fromEntries(formData.entries());
+    
+    const errors = {
+      name: "Enter valid name",
+      number: "Enter valid number",
+      pincode: "Pincode is required",
+      locality: "Locality is required",
+      address: "Address is required",
+      city: "City is required"
+    };
+
+    for (const [field, value] of Object.entries(fields)) {
+      const errorMessageElement = document.getElementById(`error-${field}`);
+      errorMessageElement.innerText = "";
+
+      switch (field) {
+        case 'name':
+          if (!value || value.length > 5 || /\d/.test(value)) {
+            errorMessageElement.innerText = errors[field];
+            valid = false;
+          }
+          break;
+        case 'number':
+          if (!/^[1-9]\d{9}$/.test(value)) {
+            errorMessageElement.innerText = errors[field];
+            valid = false;
+          }
+          break;
+        default:
+          if (!value && errors[field]) {
+            errorMessageElement.innerText = errors[field];
+            valid = false;
+          }
+          break;
+      }
+    }
+    return valid;
+  }
+</script>

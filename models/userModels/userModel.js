@@ -7,6 +7,7 @@ const userSchema = Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String },
   googleId: { type: String },
+  // number: { type: Number},
   status: { type: String, enum: ["active", "blocked"], default: "active" },
 
   profilePicture: {

@@ -1,224 +1,215 @@
 <!DOCTYPE html>
-<html lang="zxx" class="no-js">
+<html lang="en">
   <head>
-    <meta
-      name="viewport"
-      content="width=device-width, initial-scale=1, shrink-to-fit=no"
-    />
-    <!-- Favicon-->
+    <meta charset="utf-8" />
+    <title>karma</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="eCommerce HTML Template Free Download" name="keywords" />
+    <meta content="eCommerce HTML Template Free Download" name="description" />
+
+    <!-- Favicon -->
+    <!-- <link href="/img/favicon.ico" rel="icon" /> -->
     <link rel="shortcut icon" href="img/fav.png" />
 
-    <meta name="description" content="" />
+    <!-- Google Fonts -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Open+Sans:300,400|Source+Code+Pro:700,900&display=swap"
+      rel="stylesheet"
+    />
 
-    <meta name="keywords" content="" />
+    <!-- CSS Libraries -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link href="/lib/slick/slick.css" rel="stylesheet" />
+    <link href="/lib/slick/slick-theme.css" rel="stylesheet" />
 
-    <meta charset="UTF-8" />
+    <!-- Template Stylesheet -->
+    <link href="/css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/css/etalage.css" />
 
-    <title><%= locals.title %> </title>
-    <!--
-		CSS
-		============================================= -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="/css/linearicons.css" />
-    <link rel="stylesheet" href="/css/font-awesome.min.css" />
-    <link rel="stylesheet" href="/css/themify-icons.css" />
-    <link rel="stylesheet" href="/css/bootstrap.css" />
-    <link rel="stylesheet" href="/css/owl.carousel.css" />
-    <link rel="stylesheet" href="/css/nice-select.css" />
-    <link rel="stylesheet" href="/css/nouislider.min.css" />
-    <link rel="stylesheet" href="/css/ion.rangeSlider.css" />
-    <link rel="stylesheet" href="/css/ion.rangeSlider.skinFlat.css" />
-    <link rel="stylesheet" href="/css/magnific-popup.css" />
-    <link rel="stylesheet" href="/css/main.css" />
-  
-
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Etalage Plugin -->
+    <script src="/js2/jquery.etalage.min.js"></script>
+    
+    <script>
+      jQuery(document).ready(function ($) {
+        $('#etalage').etalage({
+          thumb_image_width: 380,
+          thumb_image_height: 400,
+          source_image_width: 900,
+          source_image_height: 1000,
+          show_hint: true
+        });
+      });
+    </script>
   </head>
-  <style>
-    .product-image-wrapper {
-      position: relative;
-    }
-    .image-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: rgba(0, 0, 0, 0.5);
-      opacity: 0;
-      transition: opacity 0.3s ease-in-out;
-    }
-    .product-image-wrapper:hover .image-overlay {
-      opacity: 1;
-    }
-    .social-info {
-      color: white;
-      margin: 10px 0;
-      text-align: center;
-    }
-    .social-info span {
-      font-size: 24px;
-    }
-    .social-info p.hover-text {
-      margin: 0;
-    }
-  </style>
-  <body>
-    <!-- Start Header Area -->
-    <header class="header_area sticky-header">
-      <div class="main_menu">
-        <nav class="navbar navbar-expand-lg navbar-light main_box">
-          <div class="container">
-            <!-- Brand and toggle get grouped for better mobile display -->
-            <a class="navbar-brand logo_h" href="/"
-              ><img src="img/logo.png" alt=""
-            /></a>
-            <button
-              class="navbar-toggler"
-              type="button"
-              data-toggle="collapse"
-              data-target="#navbarSupportedContent"
-              aria-controls="navbarSupportedContent"
-              aria-expanded="false"
-              aria-label="Toggle navigation"
-            >
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <!-- Collect the nav links, forms, and other content for toggling -->
-            <div
-              class="collapse navbar-collapse offset"
-              id="navbarSupportedContent"
-            >
-              <ul class="nav navbar-nav menu_nav ml-auto">
-                <li class="nav-item active">
-                  <a class="nav-link" href="/">Home</a>
-                </li>
-                <li class="nav-item ">
-                  <a class="nav-link" href="/category">Shop</a>
-                </li>
-                <!-- <li class="nav-item submenu dropdown">
-                  <a
-                    href="#"
-                    class="nav-link dropdown-toggle"
-                    data-toggle="dropdown"
-                    role="button"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                    >Shop</a
-                  >
-                  <ul class="dropdown-menu">
-                    <li class="nav-item">
-                      <a class="nav-link" href="category.html">Shop Category</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="single-product.html"
-                        >Product Details</a
-                      >
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="checkout.html"
-                        >Product Checkout</a
-                      >
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="cart.html">Shopping Cart</a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link" href="confirmation.html"
-                        >Confirmation</a
-                      >
-                    </li>
-                  </ul>
-                </li> -->
-                
-                <!-- <li class="nav-item submenu dropdown">
-								<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-								 aria-expanded="false">Pages</a>
-								<ul class="dropdown-menu">
-									<li class="nav-item"><a class="nav-link" href="login.html">Login</a></li>
-									<li class="nav-item"><a class="nav-link" href="tracking.html">Tracking</a></li>
-									<li class="nav-item"><a class="nav-link" href="elements.html">Elements</a></li>
-								</ul>
-							</li> -->
-                <li class="nav-item">
-                  <a class="nav-link" href="contact.html">Contact</a>
-                </li>
-              </ul>
-              <ul class="nav navbar-nav navbar-right">
-                <li class="nav-item">
-                  <a href="#" class="cart"><span class="ti-bag"></span></a>
-                </li>
-                <li class="nav-item">
-                  <button class="search">
-                    <span class="lnr lnr-magnifier" id="search"></span>
-                  </button>
-                </li>
 
-                <li class="nav-item d-flex align-items-center">
-                  <% if (locals.user) { %>
-                  <div class="dropdown">
-                    <a
-                      class="user-icon dropdown-toggle"
-                      href="/user-profile"
-                      role="button"
-                      id="userDropdown"
-                      data-toggle="dropdown"
-                      aria-haspopup="true"
-                      aria-expanded="false"
-                    >
-                      <img
-                        id="imagePreview"
-                        class="rounded-circle"
-                        src="<%= user.profilePicture %>"
-                        width="40"
-                        height="40"
-                        alt="Profile Image"
-                      />
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="userDropdown">
-                      <a class="dropdown-item" href="/user-profile">Profile</a>
-                      <a href="" class="dropdown-item logoutLink" style="color: red"
-                        >Logout</a
-                      >
-                    </div>
-                  </div>
-                  <% } else { %>
-                  <a href="/login" class="user-icon">
-                    <span>Login</span>
-                  </a>
-                  <% } %>
-                </li>
-              </ul>
+
+  <body>
+    <!-- Top bar Start -->
+    <div class="top-bar">
+      <div class="container-fluid">
+        <div class="row" style="margin-right: 30px;">
+          <div class="col-sm-6">
+            <i class="fa fa-envelope"></i>
+            support@email.com
+          </div>
+          <div class="col-sm-6">
+            <i class="fa fa-phone-alt"></i>
+            +012-345-6789
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Top bar End -->
+
+    <!-- Nav Bar Start -->
+    <div class="nav">
+      <div class="container-fluid">
+        <nav class="navbar navbar-expand-md bg-dark navbar-dark">
+          <a href="#" class="navbar-brand">MENU</a>
+          <button
+            type="button"
+            class="navbar-toggler"
+            data-toggle="collapse"
+            data-target="#navbarCollapse"
+          >
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div
+            class="collapse navbar-collapse justify-content-between"
+            id="navbarCollapse"
+          >
+            <div class="navbar-nav mr-auto">
+              <a href="/" class="nav-item nav-link active">Home</a>
+              <a href="/category" class="nav-item nav-link">Products</a>
+              <a href="/Contact" class="nav-item nav-link">Contact</a>
+              <% if (locals.user) { %>
+                <a href="/cart" class="nav-item nav-link">Cart</a>
+              <a href="/user-profile" class="nav-item nav-link">My Account</a>
+              <%}%>
             </div>
+
+            <% if (locals.user) { %>
+            <div class="dropdown">
+              <a
+                class="user-icon dropdown-toggle"
+                href="/user-profile"
+                role="button"
+                id="userDropdown"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+              >
+                <img
+                  id="imagePreview"
+                  class="rounded-circle"
+                  src="<%= user.profilePicture %>"
+                  width="40"
+                  height="40"
+                  alt="Profile Image"
+                />
+              </a>
+              <div class="dropdown-menu" aria-labelledby="userDropdown">
+                <a class="dropdown-item text-white" href="/user-profile"
+                  >Profile</a
+                >
+                <a href="" class="dropdown-item logoutLink text-white"
+                  >Logout</a
+                >
+              </div>
+            </div>
+            <% } else { %>
+            <a href="/login" class="text-white">
+              <span>Login</span>
+            </a>
+            <% } %>
           </div>
         </nav>
       </div>
-      <div class="search_input" id="search_input_box">
-        <div class="container">
-          <form class="d-flex justify-content-between">
-            <input
-              type="text"
-              class="form-control"
-              id="search_input"
-              placeholder="Search Here"
-            />
-            <button type="submit" class="btn"></button>
-            <span
-              class="lnr lnr-cross"
-              id="close_search"
-              title="Close Search"
-            ></span>
-          </form>
+    </div>
+    <!-- Nav Bar End -->
+
+    <!-- Bottom Bar Start -->
+    <div class="bottom-bar">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="col-md-3">
+            <div class="logo">
+              <a href="index.html">
+                <img src="/img/logo.png" alt="Logo" />
+              </a>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="search">
+              <input type="text" placeholder="Search" />
+              <button><i class="fa fa-search"></i></button>
+            </div>
+          </div>
+        <%  if (locals.user) { %>
+          <div class="col-md-3">
+            <div class="user">
+              <a href="/wishlist" class="btn wishlist">
+                <i class="fa fa-heart"></i>
+                <span>0</span>
+              </a>
+              <a href="/cart" class="btn cart">
+                <i class="fa fa-shopping-cart"></i>
+                <span><%=cartLength ? cartLength : 0 %></span>
+              </a>
+            </div>
+          </div>
+          <%}%>
         </div>
       </div>
-    </header>
-    <!-- End Header Area -->
+    </div>
+    <!-- Bottom Bar End -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+      const logoutLink = document.querySelector(".logoutLink");
+
+logoutLink.addEventListener("click", async (event) => {
+    event.preventDefault();
+    Swal.fire({
+        title: "Are you sure?",
+        text: "Do you want to logout?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Logout!"
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: "Successfully logged out",
+                icon: "success",
+                showCancelButton: false,
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    const response = await fetch("/auth/logout", {
+                        method: "POST",
+                    });
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                }
+            });
+        }
+    });
+});
+
+    </script>
   </body>
 </html>

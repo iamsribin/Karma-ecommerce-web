@@ -1,6 +1,4 @@
 
-
-
 const logoutLink = document.querySelector(".logoutLink");
 
 logoutLink.addEventListener("click", async (event) => {
@@ -34,3 +32,5 @@ logoutLink.addEventListener("click", async (event) => {
         }
     });
 });
+
+

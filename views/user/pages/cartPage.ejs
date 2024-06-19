@@ -1,0 +1,294 @@
+<%- include('../userPartials/header'); %>
+
+<div class="breadcrumb-wrap">
+  <div class="container-fluid">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item"><a href="#">Products</a></li>
+      <li class="breadcrumb-item active">Cart</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Cart Start -->
+<div class="cart-page">
+  <div class="container-fluid">
+    <% if(cartProducts){%>
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="cart-page-inner">
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Product</th>
+                  <th>Size</th>
+                  <th>Price</th>
+                  <th>Quantity</th>
+                  <th>Total</th>
+                  <th>Remove</th>
+                </tr>
+              </thead>
+              <tbody class="align-middle">
+                <% cartProducts.forEach((item) => { %>
+                <tr>
+                  <td>
+                    <div class="img">
+                      <a href="/product/<%= item.product._id %>"
+                        ><img
+                          src="<%= item.product.imagePaths[0] %>"
+                          alt="Image"
+                      /></a>
+                      <p><%= item.product.name %></p>
+                    </div>
+                  </td>
+                  <td>
+                    <p><%= item.size.size %></p>
+                  </td>
+                  <td>
+                    ₹ <%= item.product.offerAmount || item.product.basePrice %>
+                  </td>
+                  <td>
+                    <div class="qty">
+                      <button
+                      class="btn-minus"
+                      size-id="<%=item.size._id %>"
+                      data-id="<%=item.product._id %>" <%= item.quantity == 1 ? 'disabled' : '' %>
+                    >
+                      <i class="fa fa-minus"></i>
+                    </button>
+                      <input type="text" value="<%= item.quantity %>" />
+                      <button
+                        class="btn-plus"
+                        size-id="<%=item.size._id %>"
+                        data-id="<%=item.product._id %>"
+                        <%= item.quantity >= 10 ? 'disabled' : '' %> >
+                        <i class="fa fa-plus"></i>
+                      </button>
+                    </div>
+                  </td>
+                  <td><%= item.quantity * (item.product.offerAmount ?? item.product.basePrice) %></td>
+                  <td>
+                    <button
+                      class="btn-remove"
+                      data-id="<%=item.product._id %>"
+                      size-id="<%=item.size._id %>"
+                    >
+                      <i class="fa fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="cart-page-inner">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="coupon">
+                <input type="text" placeholder="Coupon Code" />
+                <button>Apply Code</button>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="cart-summary">
+                <div class="cart-content">
+                  <h1>Cart Summary</h1>
+                  <p>Sub Total<span>₹ <%=userCart.subTotal%></span></p>
+                  <p>Shipping Cost<span>Free</span></p>
+                  <p>
+                    Discount<span class="text-success"
+                      >₹ <%=userCart.discount%></span
+                    >
+                  </p>
+                  <p>Tax<span>₹ <%=userCart.tax%></span></p>
+                  <h2>Grand Total<span>₹ <%=userCart.grandTotal%></span></h2>
+                </div>
+                <div class="cart-btn">
+                  <!-- <button>Update Cart</button> -->
+                  <a href="/checkout" style="text-decoration: none">
+                    <button>checkout</button></a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <%}else{%>
+      <div
+        style="
+          height: 50vh;
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          flex-direction: column;
+        "
+      >
+        <div
+          id="no-address-alert"
+          class="alert alert-warning text-center"
+          role="alert"
+        >
+          Your cart is empt!
+        </div>
+        <div style="width: 100%; display: flex; justify-content: center">
+          <a href="/category" style="text-decoration: none">
+            <button type="button" class="btn btn-primary">
+              continue shoping
+            </button>
+          </a>
+        </div>
+      </div>
+      <%}%>
+    </div>
+  </div>
+</div>
+<!-- Cart End -->
+
+<%- include('../userPartials/footer'); %>
+<!-- incrementing quantity -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".btn-plus").forEach((button) => {
+      button.addEventListener("click", async function (e) {
+        const productId = this.getAttribute("data-id");
+        const size = this.getAttribute("size-id");
+        console.log(productId, size);
+        const response = await fetch("update-cart-quantity", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId,
+            action: "increment",
+            size,
+          }),
+        });
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
+    });
+  });
+</script>
+
+<!-- decrement quantity -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".btn-minus").forEach((button) => {
+      button.addEventListener("click", async function (e) {
+        const productId = this.getAttribute("data-id");
+        const size = this.getAttribute("size-id");
+        console.log(productId, size);
+        const response = await fetch("update-cart-quantity", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            productId,
+            action: "decrement",
+            size,
+          }),
+        });
+        if (response.ok) {
+          window.location.reload();
+        }
+      });
+    });
+  });
+</script>
+
+<!-- remove items from cart  -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll(".btn-remove").forEach((button) => {
+      button.addEventListener("click", async function (e) {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to detete this item?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete it!",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const productId = this.getAttribute("data-id");
+            const sizeId = this.getAttribute("size-id");
+
+            console.log(productId, sizeId);
+            const response = await fetch("/delete-cart-item", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                productId,
+                sizeId,
+              }),
+            });
+            console.log(response);
+            if (response.ok) { 
+            Swal.fire({
+              icon: "success",
+              title: "item successfully deleted",
+              showConfirmButton: false,
+              timer: 1500,
+            }).then(() => {
+              window.location.reload();
+            });
+           }else{
+            Swal.fire({
+          icon: "error",
+          title: "somthing went wrong",
+          // text: error.message,
+          showConfirmButton: true,
+        });
+           }
+          }
+        });
+      });
+    });
+  });
+</script>
+
+<!-- <script>
+//   document.addEventListener("DOMContentLoaded", () => {
+//     const quantityInput = document.getElementById("quantity");
+//     const getQuntity = document.getElementById("getQuntity");
+//     const totalQuantity = getQuntity.getAttribute("data-id");
+
+    // Handle quantity increment/decrement
+    // document.querySelectorAll(".btn-plus").forEach((btn) => {
+    //   btn.addEventListener("click", function () {
+    //     const input = this.parentNode.querySelector("input");
+    //     input.value = parseInt(input.value) + 1;
+    //   });
+    // });
+
+    // document.querySelectorAll(".btn-minus").forEach((btn) => {
+    //   btn.addEventListener("click", function () {
+    //     const input = this.parentNode.querySelector("input");
+    //     if (parseInt(input.value) > 1) {
+    //       input.value = parseInt(input.value) - 1;
+    //     }
+    //   });
+    // });
+
+    // Handle size change
+    // document.querySelectorAll(".dropdown-item").forEach((item) => {
+    //   item.addEventListener("click", function (event) {
+    //     event.preventDefault();
+    //     const newSizeId = this.getAttribute("data-size-id");
+    //     const productId = this.getAttribute("data-product-id");
+        // TODO: Add logic to update the size in the backend using AJAX
+//       });
+//     });
+//   });
+ </script>  -->
