@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Products</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+  <script src="https://kit.fontawesome.com/65b842e152.js" crossorigin="anonymous"></script>
+
+  <link href="https://fonts.googleapis.com/css?family=Poppins:100,200,300,400,500,600,700,800,900&display=swap"
+    rel="stylesheet">
+
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+
+  <link rel="stylesheet" type="text/css" href="/css/font-awesome.css">
+
+  <link rel="stylesheet" href="/css/templatemo-hexashop.css">
+
+  <link rel="stylesheet" href="/css/owl-carousel.css">
+
+  <link rel="stylesheet" href="/css/lightbox.css">
+
+  <script src="/js/customerAjax.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+  <style>
+    *::selection {
+      background-color: transparent;
+    }
+
+    * {
+      cursor: default;
+      box-sizing: border-box;
+    }
+
+
+
+
+
+    .contenir {
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-color: black;
+      margin-left: -175px;
+    }
+
+
+
+
+
+    .search {
+      box-shadow: 0px 0px 20px 1px #ffffff;
+      border: 0;
+      border-radius: 30px 0 0 30px;
+      padding: 0 10px 0 10px;
+      color: black;
+      height: 40px;
+      width: 400px;
+      font-size: 25px;
+      font-weight: 1000;
+      background-color: rgb(234, 234, 234);
+    }
+
+    .search::selection {
+      background-color: red;
+      color: white;
+    }
+
+    .search:focus {
+      border: 0;
+      outline: 0;
+    }
+
+    .search:hover {
+      cursor: text;
+    }
+
+
+
+
+
+    .search-btn {
+      transition: 0.2s ease-in-out;
+      border: 0;
+      border-radius: 0 30px 30px 0;
+      padding: 0 10px 0 10px;
+      text-align: center;
+      color: rgb(255, 255, 255);
+      position: relative;
+      background-color: rgb(15, 19, 9);
+      height: 40px;
+      width: 70px;
+      font-size: 25px;
+      font-weight: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .search-btn:hover {
+      transition: 0.2s ease-in-out;
+      font-size: 30px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+  </style>
+
+  <style>
+    .icon-hover:hover {
+      border-color: #3b71ca !important;
+      background-color: white !important;
+    }
+
+    .icon-hover:hover i {
+      color: #3b71ca !important;
+    }
+  </style>
+
+  <style>
+
+
+.inner-img {
+  transition: 0.3s;
+}
+
+.inner-img:hover {
+  transform: scale(1.1);
+}
+
+
+
+
+  </style>
+
+
+
+</head>
+
+<body>
+
+
+  <%- include('./layout/userHeaderNav') %>
+
+
+
+
+
+  <!-- sidebar + content -->
+  <section class="" style="margin-top: 300px;">
+    <div class="container">
+      <div class="row" style="margin: -130px;padding-bottom: 100px;">
+        <!-- sidebar -->
+        <div class="col-lg-3">
+          <!-- Toggle button -->
+          <button class="btn btn-outline-secondary mb-3 w-100 d-lg-none" type="button" data-mdb-toggle="collapse"
+            data-mdb-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span>Show filter</span>
+          </button>
+          <!-- Collapsible wrapper -->
+          <div class="collapse card d-lg-block mb-5" id="navbarSupportedContent">
+            <div class="accordion" id="accordionPanelsStayOpenExample">
+
+              <form id="filterForm" action="/applyfilter" >
+                <!-- Category Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingCategory">
+                        <button class="accordion-button text-dark bg-light" type="button" data-mdb-toggle="collapse"
+                            data-mdb-target="#panelsStayOpen-collapseCategory" aria-expanded="true"
+                            aria-controls="panelsStayOpen-collapseCategory">
+                            Category
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseCategory" class="accordion-collapse collapse show"
+                        aria-labelledby="headingCategory">
+                        <div class="accordion-body">
+                            <div>
+                                <!-- Checked checkbox -->
+                                <% catgCount.forEach((data) => { %>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                        id="categoryCheckbox<%-data.category._id-%>" name="categories"
+                                        value="<%-data.category._id-%>" />
+                                    <label class="form-check-label"
+                                        for="categoryCheckbox<%-data.category.categoryName-%>"><%-data.category.categoryName-%></label>
+                                    <span class="badge badge-secondary float-end"><%-data.count-%></span>
+                                </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Brands Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingBrands">
+                        <button class="accordion-button text-dark bg-light" type="button" data-mdb-toggle="collapse"
+                            data-mdb-target="#panelsStayOpen-collapseBrands" aria-expanded="true"
+                            aria-controls="panelsStayOpen-collapseBrands">
+                            Brands
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseBrands" class="accordion-collapse collapse show"
+                        aria-labelledby="headingBrands">
+                        <div class="accordion-body">
+                            <div>
+                                <!-- Checked checkbox -->
+                                <% count.forEach((data) => { %>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox"
+                                        id="brandCheckbox<%-data.brand._id-%>" name="brands"
+                                        value="<%-data.brand._id-%>" />
+                                    <label class="form-check-label"
+                                        for="brandCheckbox<%-data.brand.brandName-%>"><%-data.brand.brandName-%></label>
+                                    <span class="badge badge-secondary float-end"><%-data.count-%></span>
+                                </div>
+                                <% }) %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            
+                <!-- Price Section -->
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingThree">
+                        <button class="accordion-button text-dark bg-light" type="button" data-mdb-toggle="collapse"
+                            data-mdb-target="#panelsStayOpen-collapseThree" aria-expanded="false"
+                            aria-controls="panelsStayOpen-collapseThree">
+                            Price
+                        </button>
+                    </h2>
+                    <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse show"
+                        aria-labelledby="headingThree">
+                        <div class="accordion-body">
+                            <div class="range">
+                                <input type="range" class="form-range" id="priceRange" 
+                                    min="0" max="50000" oninput="updateMaxPrice()" />
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-6">
+                                    <p class="mb-0">Min</p>
+                                    <div class="form-outline">
+                                        <input type="number" id="minPrice" name="minPrice"
+                                            class="form-control" value="0" readonly />
+                                        <label class="form-label" for="minPrice">₹ 0</label>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <p class="mb-0">Max</p>
+                                    <div class="form-outline">
+                                        <input type="number" id="maxPrice" name="maxPrice"
+                                            class="form-control" value="50000" readonly />
+                                        <label class="form-label" for="maxPrice">₹ 50,000</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-white w-100 border border-secondary">Apply</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                  <button class="accordion-button text-dark bg-light" type="button" data-mdb-toggle="collapse"
+                    data-mdb-target="#panelsStayOpen-collapseFour" aria-expanded="false"
+                    aria-controls="panelsStayOpen-collapseFour">
+                    Size
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseFour" class="accordion-collapse collapse show"
+                  aria-labelledby="headingThree">
+                  <div class="accordion-body">
+                    <input type="checkbox" class="btn-check border justify-content-center" id="btn-check1" checked
+                      autocomplete="off" />
+                    <label class="btn btn-white mb-1 px-1" style="width: 60px;" for="btn-check1">XS</label>
+                    <input type="checkbox" class="btn-check border justify-content-center" id="btn-check2" checked
+                      autocomplete="off" />
+                    <label class="btn btn-white mb-1 px-1" style="width: 60px;" for="btn-check2">SM</label>
+                    <input type="checkbox" class="btn-check border justify-content-center" id="btn-check3" checked
+                      autocomplete="off" />
+                    <label class="btn btn-white mb-1 px-1" style="width: 60px;" for="btn-check3">LG</label>
+                    <input type="checkbox" class="btn-check border justify-content-center" id="btn-check4" checked
+                      autocomplete="off" />
+                    <label class="btn btn-white mb-1 px-1" style="width: 60px;" for="btn-check4">XXL</label>
+                  </div>
+                </div>
+              </div>
+              <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                  <button class="accordion-button text-dark bg-light" type="button" data-mdb-toggle="collapse"
+                    data-mdb-target="#panelsStayOpen-collapseFive" aria-expanded="false"
+                    aria-controls="panelsStayOpen-collapseFive">
+                    Ratings
+                  </button>
+                </h2>
+                <div id="panelsStayOpen-collapseFive" class="accordion-collapse collapse show"
+                  aria-labelledby="headingThree">
+                  <div class="accordion-body">
+                    <!-- Default checkbox -->
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked />
+                      <label class="form-check-label" for="flexCheckDefault">
+                        <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                          class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-warning"></i>
+                      </label>
+                    </div>
+                    <!-- Default checkbox -->
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked />
+                      <label class="form-check-label" for="flexCheckDefault">
+                        <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                          class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                      </label>
+                    </div>
+                    <!-- Default checkbox -->
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked />
+                      <label class="form-check-label" for="flexCheckDefault">
+                        <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                          class="fas fa-star text-warning"></i><i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                      </label>
+                    </div>
+                    <!-- Default checkbox -->
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault" checked />
+                      <label class="form-check-label" for="flexCheckDefault">
+                        <i class="fas fa-star text-warning"></i><i class="fas fa-star text-warning"></i><i
+                          class="fas fa-star text-secondary"></i><i class="fas fa-star text-secondary"></i>
+                        <i class="fas fa-star text-secondary"></i>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- sidebar -->
+        <!-- content -->
+        <div class="col-lg-9">
+          <header class="d-sm-flex align-items-center border-bottom mb-4 pb-3" >
+            <strong class="d-block py-2"><%-allproCount-%> Items found </strong>
+            <div class="ms-auto">
+              <select class="form-select d-inline-block w-auto border pt-1">
+                <option value="0">Best match</option>
+                <option value="1">Recommended</option>
+                <option value="2">High rated</option>
+                <option value="3">Randomly</option>
+              </select>
+              <div class="btn-group shadow-0 border">
+                <button class="btn btn-light" title="List view" onclick="toggleView('listView')">
+                  <i class="fa fa-bars fa-lg"></i>
+                </button>
+                <button class="btn btn-light active" title="Grid view" onclick="toggleView('gridView')">
+                  <i class="fa fa-th fa-lg"></i>
+                </button>
+              </div>
+              
+            </div>
+          </header>
+ 
+          
+
+          <div class="row" id="listViewSection" style="display: none;">
+            <% allPro.forEach(data => { %>
+
+              <div class="col-md-12 mb-3">
+                <div class="card shadow-0 border rounded-3">
+                  <div class="card-body">
+                    <div class="row g-0">
+                      <div class="col-xl-3 col-md-4 d-flex justify-content-center">
+                        <div class="bg-image hover-zoom ripple rounded ripple-surface me-md-3 mb-3 mb-md-0">
+                          <img src="/product_images/<%=data.images[0]%>" class="w-100" />
+                          <a href="#!">
+                            <div class="hover-overlay">
+                              <div class="mask" style="background-color: rgba(253, 253, 253, 0.15);"></div>
+                            </div>
+                          </a>
+                        </div>
+                      </div>
+                      <div class="col-xl-6 col-md-5 col-sm-7">
+                        <h5><%-data.productName-%></h5>
+                        <div class="d-flex flex-row">
+                          <div class="text-warning mb-1 me-2">
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fa fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                            <span class="ms-1">
+                              4.5
+                            </span>
+                          </div>
+                          <span class="text-muted"></span>
+                        </div>
+                        <p class="text mb-4 mb-md-0">
+                          <%-data.description-%>
+                        </p>
+                      </div>
+                      <div class="col-xl-3 col-md-3 col-sm-5">
+                        <div class="d-flex flex-row align-items-center mb-1">
+                          <h4 class="mb-1 me-1">₹ <%-data.DiscountAmount-%></h4>
+                          <span class="text-danger"><s>₹ <%-data.price-%></s></span>
+                        </div>
+                        <h6 class="text-success">Free shipping</h6>
+                        <div class="mt-4">
+                          <% if (locals.check) { %>
+                            <a href="/singleproduct/<%-data._id-%>" class="btn btn-outline-primary shadow-0" type="button">View</a>
+                          <% } else { %>
+                            <a href="/singleproductnouser/<%-data._id-%>" class="btn btn-outline-primary shadow-0" type="button">View</a>
+                          <% } %>
+                          <a class="btn btn-light border px-2 pt-2 icon-hover">
+                            <i class="fas fa-heart fa-lg px-1"></i>
+                          </a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% }) %>
+          </div>
+          
+
+            <div class="row" id="gridViewSection">
+              <% allPro.forEach(data => { %>
+                <div class="col-lg-4 col-md-6 col-sm-6 my-2">
+                  <div class="img-wrapper card shadow-2-strong">
+                    <% if (data.DiscountAmount!=data.price) { %>
+                      <button type="button" class="btn btn-danger"
+                        style="position: absolute; border-radius: 0px; font-size: x-small;">
+                        <% const discountPercentage=Math.round(((data.price - data.DiscountAmount) / data.price)
+                            * 100); %>
+                            <%= discountPercentage %>% OFF
+                    </button>
+                    <% } %>
+                    <% if (locals.check) { %> 
+                      <a href="/singleproduct/<%-data._id-%>"><img src="/product_images/<%= data.images[0] %>" class="inner-img card-img-top" /></a>
+                  <% } else { %>
+                    <a href="/singleproductnouser/<%-data._id-%>"><img src="/product_images/<%= data.images[0] %>" class="inner-img card-img-top" /></a>
+                  <% } %>
+                    
+                    <div class="card-body">
+                      <h6 style="font-size: 18px;"><%-data.productName-%></h6><br>
+                      <div class="d-flex flex-row">
+                        <h6 class="mb-1 me-1">₹ <%-data.DiscountAmount-%></h6>
+                        <span class="text-danger"><s>₹ <%-data.price-%></s></span>
+                      </div>
+
+                      <p class="card-text">Category:  <span style="margin-left: 10px"> <%-data.category_id.categoryName-%></span></p>
+
+                      <div class="d-flex justify-content-between " style="margin-top: 5px;">
+
+                            <div class="d-flex align-items-center">
+                              <p></p>
+                              <a href="" class="badge badge-secondary"><%= data.brand_id.brandName %></a>
+                          </div>
+
+                        
+                    
+                        <div class="d-flex justify-content-end">
+                            <% if (locals.check) { %> 
+                                <a href="/singleproduct/<%-data._id-%>" class="btn btn-outline-primary shadow-0 me-1">View</a>
+                            <% } else { %>
+                                <a href="/singleproductnouser/<%-data._id-%>" class="btn btn-outline-primary shadow-0 me-1">View</a>
+                            <% } %>
+                    
+                            <a class="btn btn-light border  icon-hover px-2 pt-2" onclick="addToWishlist('<%-data._id-%>')">
+                                <i class="fas fa-heart fa-lg text-secondary px-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                    </div>
+
+                  </div>
+                </div>
+              <% }) %>
+            </div>
+            
+
+              <!-- Pagination -->
+              <nav aria-label="Page navigation example" class="d-flex justify-content-center mt-3" style="margin-bottom: 110px ">
+                <ul class="pagination">
+                    <% for (let i = 1; i <= totalPages; i++) { %>
+                        <li class="page-item <%= currentPage === i ? 'active' : '' %>">
+                            <a class="page-link" href="?page=<%= i %>&perPage=<%= perPage %>"><%= i %></a>
+                        </li>
+                    <% } %>
+                </ul>
+            </nav>
+            
+              <!-- Pagination -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+
+
+
+  <!-- ***** Footer Start ***** -->
+  <footer>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3">
+          <div class="first-item">
+            <div class="logo">
+              <img src="/images/ds_wht.png" alt="hexashop ecommerce templatemo" style="max-width: 120px;">
+            </div>
+            <ul>
+              <li><a href="#">16501 Collins Ave, Sunny Isles Beach, FL 33160, India</a></li>
+              <li><a href="#">dropship@company.com</a></li>
+              <li><a href="#">010-020-0340</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-lg-3">
+          <h4>Shopping &amp; Categories</h4>
+          <ul>
+            <li><a href="#">Men’s Shopping</a></li>
+            <li><a href="#">Women’s Shopping</a></li>
+            <li><a href="#">Kid's Shopping</a></li>
+            <li><a href="#">Sports Shopping</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3">
+          <h4>Useful Links</h4>
+          <ul>
+            <li><a href="#">Homepage</a></li>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Help</a></li>
+            <li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-3">
+          <h4>Help &amp; Information</h4>
+          <ul>
+            <li><a href="#">Help</a></li>
+            <li><a href="#">FAQ's</a></li>
+            <li><a href="#">Shipping</a></li>
+            <li><a href="#">Tracking ID</a></li>
+          </ul>
+        </div>
+        <div class="col-lg-12">
+          <div class="under-footer">
+            <p>Copyright © 2022 HexaShop Co., Ltd. All Rights Reserved.
+
+              <br>
+            <ul>
+              <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+              <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+              <li><a href="#"><i class="fa fa-linkedin"></i></a></li>
+              <li><a href="#"><i class="fa fa-behance"></i></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+
+
+  <script>
+    const productsPerPage = 6; // Adjust as needed
+const allProducts = [allPro]; // Replace with your array of all products
+
+const productContainer = document.getElementById('gridViewSection');
+const paginationContainer = document.getElementById('pagination');
+
+function displayProducts(pageNumber) {
+  const startIndex = (pageNumber - 1) * productsPerPage;
+  const endIndex = startIndex + productsPerPage;
+  const displayedProducts = allProducts.slice(startIndex, endIndex);
+
+  // Clear existing content
+  productContainer.innerHTML = '';
+
+  // Display products
+  displayedProducts.forEach(product => {
+    // ... your existing product HTML creation logic ...
+  });
+}
+
+function displayPagination(totalPages) {
+  // Clear existing content
+  paginationContainer.innerHTML = '';
+
+  // Create pagination links
+  for (let i = 1; i <= totalPages; i++) {
+    const pageLink = document.createElement('li');
+    pageLink.className = 'page-item';
+    const link = document.createElement('a');
+    link.className = 'page-link';
+    link.href = '#';
+    link.textContent = i;
+
+    link.addEventListener('click', () => {
+      displayProducts(i);
+    });
+
+    pageLink.appendChild(link);
+    paginationContainer.appendChild(pageLink);
+  }
+}
+
+// Calculate total number of pages
+const totalPages = Math.ceil(allProducts.length / productsPerPage);
+
+// Initial display
+displayProducts(1);
+displayPagination(totalPages);
+
+  </script>
+
+  
+
+
+
+  <script>
+    function updateMaxPrice() {
+      const priceRange = document.getElementById('priceRange');
+      const maxPriceInput = document.getElementById('maxPrice');
+    
+      maxPriceInput.value = priceRange.value;
+      updateLabel(maxPriceInput);
+    }
+    
+    function updateLabel(input) {
+      const label = document.querySelector(`[for="${input.id}"]`);
+      label.textContent = `₹ ${input.value}`;
+    }
+    </script>
+
+
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+  <!-- jQuery -->
+  <script src="/js/jquery-2.1.0.min.js"></script>
+
+  <!-- Bootstrap -->
+  <script src="/js/popper.js"></script>
+  <script src="/js/bootstrap.min.js"></script>
+
+  <!-- Plugins -->
+  <script src="/js/owl-carousel.js"></script>
+  <script src="/js/accordions.js"></script>
+  <script src="/js/datepicker.js"></script>
+  <script src="/js/scrollreveal.min.js"></script>
+  <script src="/js/waypoints.min.js"></script>
+  <script src="/js/jquery.counterup.min.js"></script>
+  <script src="/js/imgfix.min.js"></script>
+  <script src="/js/slick.js"></script>
+  <script src="/js/lightbox.js"></script>
+  <script src="/js/isotope.js"></script>
+
+  <!-- Global Init -->
+  <script src="/js/custom.js"></script>
+
+  <script>
+
+    $(function () {
+      var selectedClass = "";
+      $("p").click(function () {
+        selectedClass = $(this).attr("data-rel");
+        $("#portfolio").fadeTo(50, 0.1);
+        $("#portfolio div").not("." + selectedClass).fadeOut();
+        setTimeout(function () {
+          $("." + selectedClass).fadeIn();
+          $("#portfolio").fadeTo(50, 1);
+        }, 500);
+
+      });
+    });
+
+
+
+  </script>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+<script>
+    function confirmLogout() {
+        Swal.fire({
+            title: 'Are you sure you want to logout?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, logout!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/logout';
+            }
+        });
+    }
+</script>
+
+
+
+<script>
+  function toggleView(view) {
+    if (view === 'listView') {
+      document.getElementById('gridViewSection').style.display = 'none';
+      document.getElementById('listViewSection').style.display = 'block';
+    } else {
+      document.getElementById('gridViewSection').style.display = 'block';
+      document.getElementById('listViewSection').style.display = 'none';
+    }
+  }
+</script>
+
+
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+    integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+    integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+    crossorigin="anonymous"></script>
+
+
+</body>
+
+</html>

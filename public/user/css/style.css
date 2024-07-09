@@ -19,6 +19,27 @@ a:focus {
     outline: none;
     text-decoration: none;
 }
+.tm-status-circle {
+    display: inline-block;
+    margin-right: 5px;
+    vertical-align: middle;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-top: -3px;
+  }
+.moving {
+    background-color: #9be64d;
+    box-shadow: 0 0 8px #9be64d, inset 0 0 8px #9be64d;
+  }
+  .pending {
+    background-color: #efc54b;
+    box-shadow: 0 0 8px #efc54b, inset 0 0 8px #efc54b;
+  }
+  .cancelled {
+    background-color: #da534f;
+    box-shadow: 0 0 8px #da534f, inset 0 0 8px #da534f;
+  }
 
 h1 {
     font-family: 'Source Code Pro', monospace;
@@ -686,7 +707,7 @@ h2 {
 .product-item .product-title {
     padding: 10px;
     text-align: center;
-    background: #7AB2B2;
+    background: #ffffff;
     transition: all .3s;
 }
 
@@ -800,7 +821,7 @@ h2 {
 
 .product-item .product-price {
     padding: 8px;
-    background: #7AB2B2;
+    background: #ffffff;
     transition: all .3s;
 }
 

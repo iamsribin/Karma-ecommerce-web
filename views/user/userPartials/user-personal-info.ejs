@@ -267,10 +267,8 @@
           }).then(async (result) => {
             window.location.reload();
           });
-          console.error("Failed to update profile:", response.statusText);
         }
       } catch (error) {
-        console.error("Error updating profile:", error);
         Swal.fire({
           title: "Something went wrong",
           icon: "error",

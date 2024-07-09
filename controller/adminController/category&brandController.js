@@ -107,16 +107,16 @@ if (!mongoose.Types.ObjectId.isValid(id)) {
   return res.status(404).render("errorPages/404");
 }
 
-// const existingCategory = await categoryDB.findOne({
-//   name : upperCategoryName,
-//   isActive: true,
-// });
+const existingCategory = await categoryDB.findOne({
+  name : upperCategoryName,
+  isActive: true,
+});
 
-// if (existingCategory) {
-//   return next(
-//     createError(400, "This category already exists and is active!")
-//   );
-// }
+if (existingCategory) {
+  return next(
+    createError(400, "This category already exists and is active!")
+  );
+}
 
 const category = await categoryDB.findOneAndUpdate(
   { _id: id },
@@ -226,6 +226,15 @@ if (!mongoose.Types.ObjectId.isValid(id)) {
 }
 
 const upperBrandName = name.toUpperCase()
+
+const existingBrand = await brandDB.findOne({
+  name: upperBrandName,
+  isActive: true,
+});
+
+if (existingBrand) {
+  return next(createError(400, "This brand already exists and is active!"));
+}
 
 const brand = await brandDB.findOneAndUpdate(
   { _id: id },

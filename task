@@ -1,0 +1,33 @@
+Pending Topics:
+<!-- Put an expiry limit for the otp -->
+<!-- edit address requires page reload. Reload is mandatory to get new data -->
+<!-- Password change is not completed in profile -->
+<!-- reduce the use of swal popup everywhere and use toast or toastify -->
+<!-- show disabled on hover on decrement btn in cart if qty is 1 -->
+<!-- final amt in cart round off -->
+<!-- clartity is needed on tax  calculation and final amt -->
+<!-- Search is pending -->
+<!-- Order Cancellation is pending from user side -->
+
+User side :
+<!-- Integrate online payment method(Razorpay or Paypal). The integration of multiple payment gateways will be an add-on.. -->
+<!-- Change order status(cancel,return etc.) -->
+Coupon Management (Apply Coupon, Remove Coupon) 
+<!-- Search, Category filtering -->
+<!-- Wishlist (Add, Remove) -->
+<!-- Wallet (for canceled orders) -->
+
+Admin side : 
+Offer module(Product offer, Category offer, Referral offer).
+<!-- Coupon Management (Create, Delete) -->
+    <!-- Sales report(Daily, Weekly, Yearly, Custom date)
+    Generate sales report 
+    Should be able to filter based on  
+    Custom date range 
+    1 Day / week / month 
+    Show discount and coupons deduction in sales report 
+    Overall sales count  
+    Overall order amount 
+    Overall discount -->
+
+    <!-- Report download (Pdf, Excel) -->

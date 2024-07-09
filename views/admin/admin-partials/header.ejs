@@ -6,7 +6,6 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Dashboard</title>
     <link rel="shortcut icon" href="/img/fav.png" />
-    <!-- <link rel="shortcut icon" href="/img/logo.png" /> -->
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css?family=Roboto:400,700"
@@ -22,14 +21,13 @@
     <link rel="stylesheet" href="/adminpublic/css/templatemo-style.css" />
     <link rel="stylesheet" href="/adminpublic/css/fontawesome.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
     <link rel="stylesheet" href="/adminpublic/cropper/cropper.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
       .nav-link.active {
         color: #ffffff !important;
       }
-
       .nav-link.active::after {
         content: "";
         display: block;
@@ -40,71 +38,97 @@
         bottom: 0;
         left: 0;
       }
-
       .nav-item {
         position: relative;
       }
-
-      /* Style for search bar */
       .input-group {
         width: 100%;
       }
-      /* Style for action buttons */
       .btn {
         margin-bottom: 10px;
       }
-
-      /* Style for table image */
       .product-image {
         max-width: 100px;
         height: auto;
       }
-
-      /* Style for status badge */
       .badge {
         font-size: 12px;
         padding: 6px 8px;
         border-radius: 4px;
       }
-
-      /*  */
-      /* Change search bar color to white */
       .input-group input[type="text"] {
         color: #fff;
       }
-
-      /* Style for action buttons */
       .action-buttons .btn {
         width: 100%;
       }
-
-      /* Style for table image */
       .product-image {
         max-width: 100px;
         height: auto;
       }
-
-      /* Style for status badge */
       .badge {
         font-size: 12px;
         padding: 6px 8px;
         border-radius: 4px;
       }
-
-      /* Responsive adjustments */
       @media (max-width: 768px) {
         .action-buttons .btn {
           margin-top: 10px;
         }
       }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  </head>
 
+<style>
+  /* ... (existing styles) ... */
+  .sales-report-section {
+      background-color: #435c70;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 10px;
+  }
+  .sales-report-section h2 {
+      color: #fff;
+      margin-bottom: 20px;
+  }
+  .filter-options {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+  }
+  .filter-options select, .filter-options input {
+      padding: 5px;
+      border-radius: 5px;
+  }
+  .sales-summary {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+  }
+  .summary-item {
+      background-color: #4e657a;
+      padding: 15px;
+      border-radius: 5px;
+      color: #fff;
+      text-align: center;
+  }
+  .summary-item h3 {
+      margin: 0;
+      font-size: 24px;
+  }
+  .summary-item p {
+      margin: 5px 0 0;
+      font-size: 14px;
+  }
+  #salesChart {
+      background-color: #fff;
+      border-radius: 5px;
+      padding: 15px;
+  }
+</style>
+  </head>
   <body id="reportsPage">
     <nav class="navbar navbar-expand-xl">
       <div class="container h-100" style="margin: 20px">
-        <!-- <a class="navbar-brand logo_h"><img src="/img/logo.png" alt="" /></a> -->
         <button
           class="navbar-toggler ml-auto mr-0"
           type="button"
@@ -187,10 +211,8 @@
           confirmButtonText: "Yes!",
         }).then((result) => {
           if (result.isConfirmed) {
-            window.location.href = "/admin/logout";
+            location.href = "/admin/logout";
           }
         });
-      })
+      });
     </script>
-  </body>
-</html>

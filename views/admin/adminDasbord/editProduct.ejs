@@ -5,9 +5,7 @@
     <div class="col-lg col-md-12 col-sm-12 mx-auto">
       <div class="row">
         <div class="col-12">
-          <h2 class="tm-block-title d-inline-block" style="width: fit-content">
-            Edit Product
-          </h2>
+          <h2 class="tm-block-title d-inline-block" style="width: fit-content">Edit Product</h2>
           <% if(successMessage && successMessage.length > 0) { %>
           <script>
             Swal.fire({
@@ -22,7 +20,8 @@
               }
             });
           </script>
-          <% } %> <% if(errorMessage && errorMessage.length > 0) { %>
+          <% } %> 
+          <% if(errorMessage && errorMessage.length > 0) { %>
           <script>
             Swal.fire({
               title: "OOPS...",
@@ -33,53 +32,28 @@
           <% } %>
         </div>
       </div>
-      <form
-        id="editProductForm"
-        action="/admin/edit-product/<%= product._id %>"
-        method="post"
-        enctype="multipart/form-data"
-      >
-        <label for="image">Image:</label><br />
+      <form id="editProductForm" action="/admin/edit-product/<%= product._id %>" method="post" enctype="multipart/form-data">
+        <label for="image">Edit image:</label><br />
         <div class="col-lg-12 col-md-12 col-sm-12">
           <div class="form-group mb-3 d-flex">
             <% product.imagePaths.forEach((img, idx) => { %>
             <div class="image-container" style="margin-right: 10px">
-              <input
-                id="productImage<%= idx %>"
-                type="file"
-                class="form-control-file"
-                onchange="previewImage(event, 'imagePreview<%= idx %>', '<%= idx %>');"
-                accept="image/*"
-              />
-              <img
-                id="imagePreview<%= idx %>"
-                name="productImage<%= idx %>"
-                src="<%= img %>"
-                style="width: 100px; height: 100px; object-fit: cover"
-              />
-              <button
-                type="button"
-                onclick="cropImage('<%= idx %>');"
-                class="btn btn-primary"
-              >
-                Crop
-              </button>
-              <input
-                type="hidden"
-                id="croppedImage<%= idx %>"
-                name="croppedImages[<%= idx %>]"
-              />
+              <input id="productImage<%= idx %>" type="file" class="form-control-file" onchange="previewImage(event, 'imagePreview<%= idx %>', '<%= idx %>');" accept="image/*" />
+              <img id="imagePreview<%= idx %>" name="productImage<%= idx %>" src="<%= img %>" style="width: 100px; height: 100px; object-fit: cover" />
+              <button id="deleteBtn<%=idx%>" type="button" onclick="deleteImg('<%= idx %>');" class="btn btn-danger">delete</button>
+              <button id="cropBtn<%=idx%>" style="display: none" type="button" onclick="cropImage('<%= idx %>');" class="btn btn-primary">Crop</button>
+              <input type="hidden" id="croppedImage<%= idx %>" name="croppedImages[<%= idx %>]" />
             </div>
             <% }) %>
           </div>
           <div id="error-message-image1" style="color: red"></div>
+
+          <label for="image">Add image:</label><br />
+          <input type="file" id="images" name="images" accept="image/*" multiple onchange="displaySelectedImages(this)" />
+          <div class="selected-images-container" id="selectedImagesContainer"></div>
         </div>
-        <div
-          class="selected-images-container"
-          id="selectedImagesContainer"
-        ></div>
-        <span class="error-message" id="images-error" style="color: red"></span
-        ><br />
+        <div class="selected-images-container" id="selectedImagesContainer"></div>
+        <span class="error-message" id="images-error" style="color: red"></span><br />
         <hr />
         <div class="row tm-edit-product-row">
           <div class="col-lg-6 col-md-6 col-sm-12">
@@ -88,39 +62,15 @@
                 <label for="name" style="color: white">Product Name</label>
                 <span id="title-available1" class="font-size-bold"></span>
               </div>
-              <input
-                id="name"
-                name="name"
-                type="text"
-                value="<%= product.name %>"
-                class="form-control validate"
-                style="background-color: white; color: black"
-                oninput="clearError('name-error')"
-              />
-              <div
-                class="error-message"
-                id="name-error"
-                style="color: red"
-              ></div>
+              <input id="name" name="name" type="text" data-id="<%=product._id%>" value="<%= product.name %>" class="form-control validate" style="background-color: white; color: black" oninput="clearError('name-error')" />
+              <div class="error-message" id="name-error" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
               <label for="basePrice" style="color: white">Base Price</label>
-              <input
-                id="basePrice"
-                name="basePrice"
-                type="number"
-                value="<%= product.basePrice %>"
-                class="form-control validate"
-                style="background-color: white; color: black"
-                oninput="clearError('basePrice-error')"
-              />
-              <div
-                class="error-message"
-                id="basePrice-error"
-                style="color: red"
-              ></div>
+              <input id="basePrice" name="basePrice" type="number" value="<%= product.basePrice %>" class="form-control validate" style="background-color: white; color: black" oninput="clearError('basePrice-error')" />
+              <div class="error-message" id="basePrice-error" style="color: red"></div>
             </div>
           </div>
         </div>
@@ -129,45 +79,22 @@
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
               <label for="tag" style="color: white">Tag</label>
-              <select
-                class="custom-select tm-select-accounts"
-                id="tag"
-                name="tag"
-                style="background-color: white; color: black"
-                onchange="clearError('tag-error')"
-              >
-                <option selected value="<%= product.tag._id %>">
-                  <%= product.tag.tagName %>
-                </option>
-                <% tags.forEach((tag) => { %> <% if (tag.isActive) { %>
+              <select class="custom-select tm-select-accounts" id="tag" name="tag" style="background-color: white; color: black" onchange="clearError('tag-error')">
+                <option selected value="<%= product.tag._id %>"><%= product.tag.tagName %></option>
+                <% tags.forEach((tag) => { %> 
+                <% if (tag.isActive) { %>
                 <option value="<%= tag._id %>"><%= tag.tagName %></option>
-                <% } %> <% }); %>
+                <% } %> 
+                <% }); %>
               </select>
-              <div
-                id="tag-error"
-                class="error-message"
-                style="color: red"
-              ></div>
+              <div id="tag-error" class="error-message" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
               <label for="description" style="color: white">Description</label>
-              <textarea
-                class="form-control validate"
-                rows="2"
-                id="description"
-                name="description"
-                style="background-color: white; color: black"
-                oninput="clearError('description-error')"
-              >
-<%= product.description %></textarea
-              >
-              <div
-                class="error-message"
-                id="description-error"
-                style="color: red"
-              ></div>
+              <textarea class="form-control validate" rows="2" id="description" name="description" style="background-color: white; color: black" oninput="clearError('description-error')"><%= product.description %></textarea>
+              <div class="error-message" id="description-error" style="color: red"></div>
             </div>
           </div>
         </div>
@@ -176,71 +103,36 @@
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="brand" style="color: white">Brand</label>
-              <select
-                class="custom-select tm-select-accounts"
-                id="brand"
-                name="brand"
-                style="background-color: white; color: black"
-                onchange="clearError('brand-error')"
-              >
-                <option selected value="<%= product.brand._id %>">
-                  <%= product.brand.name %>
-                </option>
-                <% brands.forEach((brand) => { %> <% if (brand.isActive) { %>
+              <select class="custom-select tm-select-accounts" id="brand" name="brand" style="background-color: white; color: black" onchange="clearError('brand-error')">
+                <option selected value="<%= product.brand._id %>"><%= product.brand.name %></option>
+                <% brands.forEach((brand) => { %> 
+                <% if (brand.isActive) { %>
                 <option value="<%= brand._id %>"><%= brand.name %></option>
-                <% } %> <% }); %>
+                <% } %> 
+                <% }); %>
               </select>
-              <div
-                id="brand-error"
-                class="error-message"
-                style="color: red"
-              ></div>
+              <div id="brand-error" class="error-message" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="category" style="color: white">Category</label>
-              <select
-                class="custom-select tm-select-accounts"
-                id="category"
-                name="category"
-                style="background-color: white; color: black"
-                onchange="clearError('category-error')"
-              >
-                <option selected value="<%= product.category._id %>">
-                  <%= product.category.name %>
-                </option>
-                <% categories.forEach((category) => { %> <% if
-                (category.isActive) { %>
-                <option value="<%= category._id %>">
-                  <%= category.name %>
-                </option>
-                <% } %> <% }); %>
+              <select class="custom-select tm-select-accounts" id="category" name="category" style="background-color: white; color: black" onchange="clearError('category-error')">
+                <option selected value="<%= product.category._id %>"><%= product.category.name %></option>
+                <% categories.forEach((category) => { %> 
+                <% if (category.isActive) { %>
+                <option value="<%= category._id %>"><%= category.name %></option>
+                <% } %> 
+                <% }); %>
               </select>
-              <div
-                id="category-error"
-                class="error-message"
-                style="color: red"
-              ></div>
+              <div id="category-error" class="error-message" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="weight" style="color: white">Weight (gm)</label>
-              <input
-                id="weight"
-                name="weight"
-                type="number"
-                value="<%= product.weight %>"
-                class="form-control validate"
-                style="background-color: white; color: black"
-                oninput="clearError('weight-error')"
-              />
-              <div
-                id="weight-error"
-                class="error-message"
-                style="color: red"
-              ></div>
+              <input id="weight" name="weight" type="number" value="<%= product.weight %>" class="form-control validate" style="background-color: white; color: black" oninput="clearError('weight-error')" />
+              <div class="error-message" id="weight-error" style="color: red"></div>
             </div>
           </div>
         </div>
@@ -248,61 +140,23 @@
         <div class="row tm-edit-product-row">
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
-              <label for="midsoleDrop" style="color: white"
-                >Midsole Drop (mm)</label
-              >
-              <input
-                id="midsoleDrop"
-                name="midsoleDrop"
-                type="number"
-                value="<%= product.midsoleDrop %>"
-                class="form-control validate"
-                style="background-color: white; color: black"
-                oninput="clearError('midsoleDrop-error')"
-              />
-              <div
-                id="midsoleDrop-error"
-                class="error-message"
-                style="color: red"
-              ></div>
+              <label for="midsoleDrop" style="color: white">Midsole Drop (mm)</label>
+              <input id="midsoleDrop" name="midsoleDrop" type="number" value="<%= product.midsoleDrop %>" class="form-control validate" style="background-color: white; color: black" oninput="clearError('midsoleDrop-error')" />
+              <div class="error-message" id="midsoleDrop-error" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="heel" style="color: white">Heel (mm)</label>
-              <input
-                id="heel"
-                name="heel"
-                type="number"
-                value="<%= product.heel %>"
-                class="form-control validate"
-                style="background-color: white; color: black"
-                oninput="clearError('heel-error')"
-              />
-              <div
-                id="heel-error"
-                class="error-message"
-                style="color: red"
-              ></div>
+              <input id="heel" name="heel" type="number" value="<%= product.heel %>" class="form-control validate" style="background-color: white; color: black" oninput="clearError('heel-error')" />
+              <div class="error-message" id="heel-error" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-4 col-md-4 col-sm-12">
             <div class="form-group mb-3">
               <label for="foreFoot" style="color: white">ForeFoot (mm)</label>
-              <input
-                id="foreFoot"
-                name="foreFoot"
-                type="number"
-                value="<%= product.foreFoot %>"
-                class="form-control validate"
-                style="background-color: white; color: black"
-                oninput="clearError('foreFoot-error')"
-              />
-              <div
-                id="foreFoot-error"
-                class="error-message"
-                style="color: red"
-              ></div>
+              <input id="foreFoot" name="foreFoot" type="number" value="<%= product.foreFoot %>" class="form-control validate" style="background-color: white; color: black" oninput="clearError('foreFoot-error')" />
+              <div class="error-message" id="foreFoot-error" style="color: red"></div>
             </div>
           </div>
         </div>
@@ -315,110 +169,47 @@
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
               <label for="offerAmount" style="color: white">Offer Amount</label>
-              <input
-                id="offerAmount"
-                name="offerAmount"
-                type="number"
-                value="<%= product.offerAmount ? product.offerAmount : '' %>"
-                class="form-control validate"
-                style="background-color: white; color: black"
-                oninput="clearError('offerAmount-error')"
-              />
-              <div
-                id="offerAmount-error"
-                class="error-message"
-                style="color: red"
-              ></div>
+              <input id="offerAmount" name="offerAmount" type="number" value="<%= product.offerAmount ? product.offerAmount : '' %>" class="form-control validate" style="background-color: white; color: black" oninput="clearError('offerAmount-error')" />
+              <div class="error-message" id="offerAmount-error" style="color: red"></div>
             </div>
           </div>
           <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="form-group mb-3">
-              <label for="offerExpiryDate" style="color: white"
-                >Offer Expiry Date</label
-              >
-              <input
-                id="offerExpiryDate"
-                name="offerExpiryDate"
-                type="date"
-                value="<%= product.offerExpiryDate ? new Date(product.offerExpiryDate).toISOString().slice(0, 10) : '' %>"
-                class="form-control validate"
-                style="background-color: white; color: black"
-                oninput="clearError('offerExpiryDate-error')"
-              />
-              <div
-                id="offerExpiryDate-error"
-                class="error-message"
-                style="color: red"
-              ></div>
+              <label for="offerExpiryDate" style="color: white">Offer Expiry Date</label>
+              <input id="offerExpiryDate" name="offerExpiryDate" type="date" value="<%= product.offerExpiryDate ? new Date(product.offerExpiryDate).toISOString().slice(0, 10) : '' %>" class="form-control validate" style="background-color: white; color: black" oninput="clearError('offerExpiryDate-error')" />
+              <div class="error-message" id="offerExpiryDate-error" style="color: red"></div>
             </div>
           </div>
         </div>
         <hr />
         <div class="mb-3 d-flex justify-content-end">
-          <button
-            onclick="addVariant()"
-            type="button"
-            class="btn btn-warning my-3 px-5 py-2 text-white font-size-bold"
-          >
-            Add Variant
-          </button>
+          <button onclick="addVariant()" type="button" class="btn btn-warning my-3 px-5 py-2 text-white font-size-bold">Add Variant</button>
         </div>
         <div class="container" id="variants-container">
           <% product.variants.forEach((variant) => { %>
           <div class="row variant border rounded-3 mb-3">
             <div class="col-sm-3 col-md-5 py-2">
-              <select
-                class="custom-select tm-select-accounts"
-                name="size[]"
-                style="background-color: white; color: black"
-                required
-              >
-                <option value="<%= variant.size._id %>" selected>
-                  <%= variant.size.size %>
-                </option>
-                <% sizes.forEach((size) => { %> <% if (size._id.toString() !==
-                variant.size._id.toString()) { %>
+              <select class="custom-select tm-select-accounts" name="size[]" style="background-color: white; color: black" required>
+                <option value="<%= variant.size._id %>" selected><%= variant.size.size %></option>
+                <% sizes.forEach((size) => { %> 
+                <% if (size._id.toString() !== variant.size._id.toString()) { %>
                 <option value="<%= size._id %>"><%= size.size %></option>
-                <% } %> <% }); %>
+                <% } %> 
+                <% }); %>
               </select>
             </div>
             <div class="col-sm-3 col-md-5 py-2">
-              <input
-                type="number"
-                placeholder="Enter quantity"
-                class="form-control bg-white font-size quantity m-0"
-                id="quantity"
-                name="quantity[]"
-                style="color: black"
-                required
-                oninput="validateInputQty(this)"
-                value="<%= variant.quantity %>"
-              />
+              <input type="number" placeholder="Enter quantity" class="form-control bg-white font-size quantity m-0" id="quantity" name="quantity[]" style="color: black" required oninput="validateInputQty(this)" value="<%= variant.quantity %>" />
             </div>
             <div class="col-sm-1 col-md-1 py-2 text-center">
-              <button
-                type="button"
-                onclick="removeVariant(this)"
-                class="btn btn-outline-danger m-0 font-size-bold"
-              >
-                X
-              </button>
+              <button type="button" onclick="removeVariant(this)" class="btn btn-outline-danger m-0 font-size-bold">X</button>
             </div>
           </div>
           <% }) %>
         </div>
         <hr />
-        <div
-          class="col-lg-12 col-md-12 col-sm-12"
-          style="display: flex; justify-content: center; gap: 10px"
-        >
-          <button
-            type="submit"
-            id="submit-btn"
-            class="btn btn-primary text-uppercase"
-          >
-            Update Product
-          </button>
+        <div class="col-lg-12 col-md-12 col-sm-12" style="display: flex; justify-content: center; gap: 10px">
+          <button type="submit" id="submit-btn" class="btn btn-primary text-uppercase">Update Product</button>
           <a href="/admin/products" class="btn btn-primary">Cancel</a>
         </div>
       </form>
@@ -449,6 +240,8 @@
   function addVariant() {
     const container = document.getElementById("variants-container");
     const newVariant = container.children[0].cloneNode(true);
+    newVariant.querySelector('input[name="quantity[]"]').value = '';
+    newVariant.querySelector('select[name="size[]"]').selectedIndex = 0;
     container.appendChild(newVariant);
 
     const deleteButtons = container.querySelectorAll(".delete-variant");
@@ -499,13 +292,9 @@
     const foreFoot = document.getElementById("foreFoot").value.trim();
     const images = document.querySelectorAll(".form-control-file");
     const offerAmount = document.getElementById("offerAmount").value.trim();
-    const offerExpiryDate = document
-      .getElementById("offerExpiryDate")
-      .value.trim();
+    const offerExpiryDate = document.getElementById("offerExpiryDate").value.trim();
 
-    document
-      .querySelectorAll(".error-message")
-      .forEach((element) => (element.innerHTML = ""));
+    document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
 
     if (!name || !isNaN(parseInt(name, 10))) {
       valid = false;
@@ -514,14 +303,12 @@
 
     if (!basePrice || isNaN(basePrice) || basePrice <= 0) {
       valid = false;
-      document.getElementById("basePrice-error").innerText =
-        errorMessages.basePrice;
+      document.getElementById("basePrice-error").innerText = errorMessages.basePrice;
     }
 
     if (!description) {
       valid = false;
-      document.getElementById("description-error").innerText =
-        errorMessages.description;
+      document.getElementById("description-error").innerText = errorMessages.description;
     }
 
     if (!brand || brand === "Select brand") {
@@ -536,8 +323,7 @@
 
     if (!category || category === "Select category") {
       valid = false;
-      document.getElementById("category-error").innerText =
-        errorMessages.category;
+      document.getElementById("category-error").innerText = errorMessages.category;
     }
 
     if (!weight || isNaN(weight) || weight <= 0) {
@@ -547,8 +333,7 @@
 
     if (!midsoleDrop || isNaN(midsoleDrop) || midsoleDrop <= 0) {
       valid = false;
-      document.getElementById("midsoleDrop-error").innerText =
-        errorMessages.midsoleDrop;
+      document.getElementById("midsoleDrop-error").innerText = errorMessages.midsoleDrop;
     }
 
     if (!heel || isNaN(heel) || heel <= 0) {
@@ -558,8 +343,7 @@
 
     if (!foreFoot || isNaN(foreFoot) || foreFoot <= 0) {
       valid = false;
-      document.getElementById("foreFoot-error").innerText =
-        errorMessages.foreFoot;
+      document.getElementById("foreFoot-error").innerText = errorMessages.foreFoot;
     }
 
     let imageSelected = false;
@@ -576,13 +360,11 @@
     if (offerAmount) {
       if (isNaN(offerAmount) || offerAmount <= 0 || offerAmount.trim() === "") {
         valid = false;
-        document.getElementById("offerAmount-error").innerText =
-          errorMessages.offerAmount;
+        document.getElementById("offerAmount-error").innerText = errorMessages.offerAmount;
       }
       if (!offerExpiryDate) {
         valid = false;
-        document.getElementById("offerExpiryDate-error").innerText =
-          errorMessages.offerExpiryDate;
+        document.getElementById("offerExpiryDate-error").innerText = errorMessages.offerExpiryDate;
       }
     }
 
@@ -603,6 +385,8 @@
         imagePreview.classList.add("selected-image");
         cropIndex = index;
         initCropper(imagePreview);
+        document.getElementById(`cropBtn${index}`).style.display = "inline-block";
+        document.getElementById(`deleteBtn${index}`).style.display = "none";
       } else {
         console.error("Image preview element not found.");
       }
@@ -622,8 +406,7 @@
         minContainerHeight: 300,
         ready() {
           document.querySelector(".cropper-container").style.maxWidth = "400px";
-          document.querySelector(".cropper-container").style.maxHeight =
-            "400px";
+          document.querySelector(".cropper-container").style.maxHeight = "400px";
         },
       });
     } else {
@@ -632,55 +415,188 @@
   }
 
   function cropImage(index) {
-    if (cropper) {
-      const canvas = cropper.getCroppedCanvas({
-        width: 100,
-        height: 100,
-      });
-      document.getElementById(`croppedImage${index}`).value =
-        canvas.toDataURL();
-      cropper.destroy();
+  if (cropper) {
+    const canvas = cropper.getCroppedCanvas({
+      // Adjust the width and height to maintain higher resolution
+      width: cropper.getImageData().naturalWidth,
+      height: cropper.getImageData().naturalHeight,
+    });
+    document.getElementById(`croppedImage${index}`).value = canvas.toDataURL('image/png', 1.0); // 1.0 for high quality
+    cropper.destroy();
+    document.getElementById(`cropBtn${index}`).style.display = 'none';
+    document.getElementById(`deleteBtn${index}`).style.display = 'inline-block';
+  }
+}
+
+  async function deleteImg(index) {
+    let titleEl = document.getElementById("name");
+    let id = titleEl.getAttribute("data-id");
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to delete this image?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes"
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const response = await fetch("/admin/deleteImage", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            index,
+            id,
+          }),
+        });
+
+        if (response.ok) {
+          Swal.fire({
+            title: "Successfully deleted",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.reload();
+            }
+          });
+        } else {
+          const data = await response.json();
+          Swal.fire({
+            title: data.message,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.reload();
+            }
+          });
+        }
+      }
+    });
+  }
+
+  function displaySelectedImages(input) {
+    const selectedImagesContainer = document.getElementById("selectedImagesContainer");
+    selectedImagesContainer.innerHTML = "";
+
+    for (let i = 0; i < input.files.length; i++) {
+      const file = input.files[i];
+      const reader = new FileReader();
+      const cropContainer = document.createElement("div");
+      cropContainer.classList.add("image-crop-container");
+      cropContainer.innerHTML = `
+        <div class="image-container">
+          <img id="newImage${i}" src="" alt="Select an image to crop">
+        </div>
+        <button class="crop-button" id="cropButton${i}">Crop Image ${i + 1}</button>
+      `;
+      selectedImagesContainer.appendChild(cropContainer);
+
+      const image = cropContainer.querySelector(`#newImage${i}`);
+      const cropButton = cropContainer.querySelector(`#cropButton${i}`);
+
+      reader.onload = () => {
+        image.src = reader.result;
+        let cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+        });
+
+        cropButton.addEventListener("click", (event) => {
+          event.preventDefault();
+          if (cropper) {
+            const canvas = cropper.getCroppedCanvas({
+              width: 300,
+              height: 300,
+            });
+            const croppedImageDataURL = canvas.toDataURL();
+            image.src = croppedImageDataURL;
+            const croppedImageFile = dataURLToFile(croppedImageDataURL, file.name);
+            const currentFiles = Array.from(input.files);
+            currentFiles[i] = croppedImageFile;
+
+            const newFileList = createFileList(currentFiles);
+            input.files = newFileList;
+            cropper.destroy();
+            cropper = null;
+          } else {
+            cropper = new Cropper(image, {
+              aspectRatio: 1,
+              viewMode: 1,
+            });
+          }
+        });
+      };
+      reader.readAsDataURL(file);
     }
   }
-</script>
 
-<script>
+  function dataURLToFile(dataUrl, filename) {
+    const arr = dataUrl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, { type: mime });
+  }
+
+  function createFileList(currentList) {
+    const dataTransfer = new DataTransfer();
+    currentList.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+    return dataTransfer.files;
+  }
+
   let titleEl = document.getElementById("name");
   let message = document.getElementById("title-available1");
   let targetButton = document.getElementById("submit-btn");
-
+  let id = titleEl.getAttribute("data-id");
   const sendDebounceTextToBackend = debounce((text) => {
     let url = "/admin/admin-add-product-check";
     (text = text.toUpperCase()),
-      fetch(url, {
-        method: "POST",
-        body: JSON.stringify({
-          text,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error("Network response was not ok.");
-          }
-        })
-        .then((data) => {
-          if (data.status) {
-            message.innerHTML = data.message;
-            message.style.color = "rgb(0, 255, 38)";
-          } else {
-            message.innerHTML = data.message;
-            message.style.color = "red";
-            targetButton.setAttribute("disabled", "disabled");
-          }
-        })
-        .catch((error) => {
-          console.error("Error sending data to backend:", error);
-        });
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        text,
+        id,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    .then((response) => {
+      if (response.ok) {
+        return response.json();
+      } else {
+        throw new Error("Network response was not ok.");
+      }
+    })
+    .then((data) => {
+      console.log(data.status);
+      if (data.status) {
+        message.innerHTML = data.message;
+        message.style.color = "rgb(0, 255, 38)";
+        targetButton.removeAttribute("disabled");
+      } else {
+        message.innerHTML = data.message;
+        message.style.color = "red";
+        targetButton.setAttribute("disabled", "disabled");
+      }
+    })
+    .catch((error) => {
+      console.error("Error sending data to backend:", error);
+    });
   });
 
   titleEl.addEventListener("input", (e) => {

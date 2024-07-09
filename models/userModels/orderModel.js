@@ -7,72 +7,47 @@ const Size = require("../adminModels/size");
 const { Schema } = mongoose;
 
 const AddressSchema = new Schema({
-	fullName: {
-		type: String,
-		required: true
-	},
-	phoneNumber: {
-		type: String,
-		required: true
-	},
-	address: {
-		type: String,
-		required: true
-	},
-	locality: {
-		type: String,
-		required: true
-	},
-	pincode: {
-		type: Number,
-		required: true
-	},
-	state: {
-		type: String,
-		required: true
-	},
-	district: {
-		type: String,
-		required: true
-	},
-	landMark: {
-		type: String,
-	},
-	houseNo: {
-		type: String,
-	},
-	addressType: {
-	 type: String,
-	 enum: ["home", "work", "other"],
-	},
-	user: {
-		type: Schema.Types.ObjectId,
-		ref: User,
-		required: true,
-	  },
-});
-
-const ProductSchema = new Schema({
-  productId: {
+  fullName: {
+    type: String,
+    required: true,
+  },
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
+  address: {
+    type: String,
+    required: true,
+  },
+  locality: {
+    type: String,
+    required: true,
+  },
+  pincode: {
+    type: Number,
+    required: true,
+  },
+  state: {
+    type: String,
+    required: true,
+  },
+  district: {
+    type: String,
+    required: true,
+  },
+  landMark: {
+    type: String,
+  },
+  houseNo: {
+    type: String,
+  },
+  addressType: {
+    type: String,
+    enum: ["home", "work", "other"],
+  },
+  userId: {
     type: Schema.Types.ObjectId,
-    ref: Product,
-    required: true,
-  },
-  quantity: {
-    type: Number,
-    required: true,
-  },
-  totalPrice: {
-    type: Number,
-    required: true,
-  },
-  size: {
-	type: Schema.Types.ObjectId,
-	ref: Size,
-	required: true,
-  },
-  price: {
-    type: Number,
+    ref: User,
     required: true,
   },
 });
@@ -98,10 +73,55 @@ const StatusHistorySchema = new Schema({
     type: Date,
     default: Date.now,
   },
-  description: {
+  reason: {
     type: String,
   },
-  reason: {
+});
+
+const ProductSchema = new Schema({
+  productId: {
+    type: Schema.Types.ObjectId,
+    ref: Product,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+  totalPrice: {
+    type: Number,
+    required: true,
+  },
+  size: {
+    type: Schema.Types.ObjectId,
+    ref: Size,
+    required: true,
+  },
+  price: {
+    type: Number,
+    required: true,
+  },
+  offerPrice: {
+    type: Number,
+  },
+  status: {
+    type: String,
+    enum: [
+      "pending",
+      "processing",
+      "shipped",
+      "delivered",
+      "canceled",
+      "return request",
+      "return approved",
+      "return rejected",
+      "pickup completed",
+      "returned",
+    ],
+    default: "pending",
+  },
+  statusHistory: [StatusHistorySchema],
+  resone: {
     type: String,
   },
 });
@@ -112,29 +132,11 @@ const OrderSchema = new Schema(
       type: Number,
       unique: true,
     },
-    user: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: User,
       required: true,
     },
-    status: {
-      type: String,
-      required: true,
-      enum: [
-        "pending",
-        "processing",
-        "shipped",
-        "delivered",
-        "canceled",
-        "return request",
-        "return approved",
-        "return rejected",
-        "pickup completed",
-        "returned",
-      ],
-      default: "pending",
-    },
-    statusHistory: [StatusHistorySchema],
     address: AddressSchema,
     deliveryDate: {
       type: Date,
@@ -155,16 +157,16 @@ const OrderSchema = new Schema(
       required: true,
     },
     products: [ProductSchema],
-	paymentMethod: {
+    paymentMethod: {
       type: String,
       required: true,
-      enum: ["cashOnDelivery", "razorPay", "myWallet"],
+      enum: ["cashOnDelivery", "razorPay", "wallet"],
     },
     totalQuantity: {
       type: Number,
       min: 0,
     },
-    notes: {
+    status: {
       type: String,
     },
     coupon: {

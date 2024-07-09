@@ -22,12 +22,16 @@ const cartSchema = new mongoose.Schema({
                 required: true,
                 min: 1,
             },
-            // coupon: {
-            //     type: mongoose.Schema.Types.ObjectId,
-            // },
             productStatus: {
                 type: String,
                 default: 'pending'
+            },
+            price: {
+                type: Number,
+                required: true,
+            },
+            offerPrice:{
+                    type: Number,
             }
         }
     ],
@@ -38,7 +42,6 @@ const cartSchema = new mongoose.Schema({
     subTotal:  { type: Number,default:0 },
     grandTotal: { type: Number,default:0 },
     discount: { type: Number, default: 0},
-    tax: {type: Number, default: 0},
     cartStatus: {
         type: String,
         default: 'pending'

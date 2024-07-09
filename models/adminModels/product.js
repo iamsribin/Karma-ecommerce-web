@@ -20,7 +20,8 @@ const productSchema = new mongoose.Schema(
     weight: { type: Number },
     imagePaths: [{ type: String }],
     numberOfReviews: { type: Number },
-    rating: { type: String },
+    rating: { type: Number },
+   
     tag: { type: Schema.Types.ObjectId, ref: Tag },
     variants: [
       {
@@ -31,7 +32,17 @@ const productSchema = new mongoose.Schema(
           quantity: {
               type: Number,
               min: 0
-          }
+          },
+          status: {
+            type: String,
+            enum: [
+              "draft",
+              "published",
+              "out of stock",
+              "low quantity",
+              "unpublished",  
+            ],
+          },
       }
   ],
   totalQuantity: { type: Number},
@@ -39,7 +50,8 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-  },
+    status: { type: String },
+      },
   { timestamps: true }
 );
 

@@ -4,6 +4,16 @@ const cartDB = require("../../models/userModels/cartModel");
 //render home page
 exports.home = async (req, res) => {
   try {
+    if(req.session.otpverfication){
+      await userDB.deleteOne({ otp: { $exists: true } });
+      req.session.destroy((err) => {
+        if (err) {
+    
+          return next(createError(null, null));
+        }
+        // return res.json({ loggedIn: false, redirectTo: "/" });
+      });
+    }
     const user = req.session?.userGmail;
 
     let userDetalis = null;
@@ -19,7 +29,7 @@ exports.home = async (req, res) => {
     const products = await productDB.find({})
     .populate('brand')
     .populate('category')
-
+    .populate('tag')
     return res.render("user/pages/home", {
       user: userDetalis,
       products: products,

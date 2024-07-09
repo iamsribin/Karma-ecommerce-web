@@ -1,171 +1,335 @@
 <%- include('../admin-partials/header'); %>
-        <div class="container">
-            <div class="row">
-                <div class="col">
-                    <p class="text-white mt-5 mb-5">Welcome back, <b>Admin</b></p>
-                </div>
-            </div>
-            <!-- row -->
-            <div class="row tm-content-row">
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
-                    <div class="tm-bg-primary-dark tm-block">
-                        <h2 class="tm-block-title">Latest Hits</h2>
-                        <canvas id="lineChart"></canvas>
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.2/toastify.min.css"
+  rel="stylesheet"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.2/toastify.min.js"></script>
+<style>
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+  }
+  .text-white {
+    color: white;
+  }
+  .download-btn {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+  }
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+  }
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .close:hover {
+    color: #000;
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  .form-group input,
+  .form-group select {
+    width: 100%;
+    padding: 5px;
+  }
+  .download-modal-btn {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+</style>
+
+<div class="container">
+  <body>
+    <div class="row" style="padding: auto;">
+      <div>
+        <p class="text-white mt-5 mb-5">Welcome back, <b>Admin</b></p>
+      </div>
+      <div>
+        <button class="download-btn" onclick="openModal()">
+          Download Sales Reports
+        </button>
+      </div>
+    </div>
+    <!-- row -->
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="sales-report-section">
+                    <h2>Sales Report</h2>
+                    <div class="filter-options">
+                        <select id="timeFilter">
+                            <option value="daily" selected>Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                            <option value="yearly">Yearly</option>
+                            <option value="custom">Custom Date Range</option>
+                        </select>
+                        <div id="customDateRange" style="display: none;">
+                            <input type="date" id="startDate">
+                            <input type="date" id="endDate">
+                        </div>
+                        <button id="generateReport" class="btn btn-primary">Generate Report</button>
                     </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
-                    <div class="tm-bg-primary-dark tm-block">
-                        <h2 class="tm-block-title">Performance</h2>
-                        <canvas id="barChart"></canvas>
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
-                    <div class="tm-bg-primary-dark tm-block tm-block-taller">
-                        <h2 class="tm-block-title">Storage Information</h2>
-                        <div id="pieChartContainer">
-                            <canvas id="pieChart" class="chartjs-render-monitor" width="200" height="200"></canvas>
-                        </div>                        
-                    </div>
-                </div>
-                <div class="col-sm-12 col-md-12 col-lg-6 col-xl-6 tm-block-col">
-                    <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-overflow">
-                        <h2 class="tm-block-title">Notification List</h2>
-                        <div class="tm-notification-items">
-                            <div class="media tm-notification-item">
-                                <div class="tm-gray-circle"><img src="img/notification-01.jpg" alt="Avatar Image" class="rounded-circle"></div>
-                                <div class="media-body">
-                                    <p class="mb-2"><b>Jessica</b> and <b>6 others</b> sent you new <a href="#"
-                                            class="tm-notification-link">product updates</a>. Check new orders.</p>
-                                    <span class="tm-small tm-text-color-secondary">6h ago.</span>
-                                </div>
-                            </div>
-                            <div class="media tm-notification-item">
-                                <div class="tm-gray-circle"><img src="img/notification-02.jpg" alt="Avatar Image" class="rounded-circle"></div>
-                                <div class="media-body">
-                                    <p class="mb-2"><b>Oliver Too</b> and <b>6 others</b> sent you existing <a href="#"
-                                            class="tm-notification-link">product updates</a>. Read more reports.</p>
-                                    <span class="tm-small tm-text-color-secondary">6h ago.</span>
-                                </div>
-                            </div>
-                            <div class="media tm-notification-item">
-                                <div class="tm-gray-circle"><img src="img/notification-03.jpg" alt="Avatar Image" class="rounded-circle"></div>
-                                <div class="media-body">
-                                    <p class="mb-2"><b>Victoria</b> and <b>6 others</b> sent you <a href="#"
-                                            class="tm-notification-link">order updates</a>. Read order information.</p>
-                                    <span class="tm-small tm-text-color-secondary">6h ago.</span>
-                                </div>
-                            </div>
-                            <div class="media tm-notification-item">
-                                <div class="tm-gray-circle"><img src="img/notification-01.jpg" alt="Avatar Image" class="rounded-circle"></div>
-                                <div class="media-body">
-                                    <p class="mb-2"><b>Laura Cute</b> and <b>6 others</b> sent you <a href="#"
-                                            class="tm-notification-link">product records</a>.</p>
-                                    <span class="tm-small tm-text-color-secondary">6h ago.</span>
-                                </div>
-                            </div>
-                            <div class="media tm-notification-item">
-                                <div class="tm-gray-circle"><img src="img/notification-02.jpg" alt="Avatar Image" class="rounded-circle"></div>
-                                <div class="media-body">
-                                    <p class="mb-2"><b>Samantha</b> and <b>6 others</b> sent you <a href="#"
-                                            class="tm-notification-link">order stuffs</a>.</p>
-                                    <span class="tm-small tm-text-color-secondary">6h ago.</span>
-                                </div>
-                            </div>
-                            <div class="media tm-notification-item">
-                                <div class="tm-gray-circle"><img src="img/notification-03.jpg" alt="Avatar Image" class="rounded-circle"></div>
-                                <div class="media-body">
-                                    <p class="mb-2"><b>Sophie</b> and <b>6 others</b> sent you <a href="#"
-                                            class="tm-notification-link">product updates</a>.</p>
-                                    <span class="tm-small tm-text-color-secondary">6h ago.</span>
-                                </div>
-                            </div>
-                            <div class="media tm-notification-item">
-                                <div class="tm-gray-circle"><img src="img/notification-01.jpg" alt="Avatar Image" class="rounded-circle"></div>
-                                <div class="media-body">
-                                    <p class="mb-2"><b>Lily A</b> and <b>6 others</b> sent you <a href="#"
-                                            class="tm-notification-link">product updates</a>.</p>
-                                    <span class="tm-small tm-text-color-secondary">6h ago.</span>
-                                </div>
-                            </div>
-                            <div class="media tm-notification-item">
-                                <div class="tm-gray-circle"><img src="img/notification-02.jpg" alt="Avatar Image" class="rounded-circle"></div>
-                                <div class="media-body">
-                                    <p class="mb-2"><b>Amara</b> and <b>6 others</b> sent you <a href="#"
-                                            class="tm-notification-link">product updates</a>.</p>
-                                    <span class="tm-small tm-text-color-secondary">6h ago.</span>
-                                </div>
-                            </div>
-                            <div class="media tm-notification-item">
-                                <div class="tm-gray-circle"><img src="img/notification-03.jpg" alt="Avatar Image" class="rounded-circle"></div>
-                                <div class="media-body">
-                                    <p class="mb-2"><b>Cinthela</b> and <b>6 others</b> sent you <a href="#"
-                                            class="tm-notification-link">product updates</a>.</p>
-                                    <span class="tm-small tm-text-color-secondary">6h ago.</span>
-                                </div>
-                            </div>
+                    <div class="sales-summary">
+                        <div class="summary-item">
+                            <h3 id="totalSales">$0</h3>
+                            <p>Total Sales</p>
+                        </div>
+                        <div class="summary-item">
+                            <h3 id="totalOrders">0</h3>
+                            <p>Total Orders</p>
+                        </div>
+                        <div class="summary-item">
+                            <h3 id="totalDiscount">$0</h3>
+                            <p>Total Discount</p>
                         </div>
                     </div>
-                </div>
-                <div class="col-12 tm-block-col">
-                  <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
-                    <h2 class="tm-block-title">Order List</h2>
-                    <table class="table">
-                      <thead>
-                        <tr>
-                          <th scope="col">ORDER ID.</th>
-                          <th scope="col">STATUS</th>
-                          <th scope="col">PRODUCT</th>
-                          <th scope="col">CUSTOMER</th>
-                          <th scope="col">UPDATE</th>
-                          <th scope="col">PAYMENT</th>
-                          <th scope="col">PAYMENT METHOD</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <th scope="row"><b>1</b></th>
-                          <td>
-                            <div class="tm-status-circle moving"></div>
-                            Delivered
-                          </td>
-                          <td><b>Nike Gamma Force </b></td>
-                          <td><b>Jacob Miller</b></td>
-                          <td><b>1 min ago</b></td>
-                          <td>$900</td>
-                          <td><b>Razor pay</b></td>
-                        </tr>
-                        <tr>
-                          <th scope="row"><b>2</b></th>
-                          <td>
-                            <div class="tm-status-circle cancelled"></div>
-                            Processing
-                          </td>
-                          <td>Nike Air Force</td>
-                          <td><b>George Wilson</b></td>
-                          <td><b>7 min ago</b></td>
-                          <td>$700</td>
-                          <td><b>Razor Pay</b></td>
-                        </tr>
-                        <tr>
-                          <th scope="row"><b>4</b></th>
-                          <td>
-                            <div class="tm-status-circle pending"></div>
-                            Shiped
-                          </td>
-                
-                          <!-- <td><img width="50" height="60" src="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=" class="tm-profile-photo rounded-circle" alt="Profile Photo"><b> Nike Full Force</b></td> -->
-                          <td>Nike Full Force</td>
-                          <td><b>Harry Ryan</b></td>
-                          <td><b>9 min ago</b></td>
-                          <td><b>$500</b></td>
-                          <td><b>COD</b></td>
-                        </tr>
-                      </tbody>
-                    </table>
-                  </div>
+                    <canvas id="salesChart"></canvas>
                 </div>
             </div>
         </div>
     </div>
 
+
+
+    <!-- modal  -->
+    <div id="downloadModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Download Sales Report</h2>
+        <form id="downloadForm">
+          <div class="form-group">
+            <label for="startDate">Start Date:</label>
+            <input type="date" id="startingDate" name="startDate" required />
+          </div>
+          <div class="form-group">
+            <label for="endDate">End Date:</label>
+            <input type="date" id="endingDate" name="endDate" required />
+          </div>
+          <div class="form-group">
+            <label for="fileType">File Type:</label>
+            <select id="fileType" name="fileType" required>
+              <option value="">Select file type</option>
+              <option value="excel">Excel</option>
+              <option value="pdf">PDF</option>
+              <option value="csv">CSV</option>
+            </select>
+          </div>
+          <button type="submit" class="download-modal-btn">Download</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function openModal() {
+        document.getElementById("downloadModal").style.display = "block";
+      }
+
+      function closeModal() {
+        document.getElementById("downloadModal").style.display = "none";
+      }
+
+      document
+        .getElementById("downloadForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+          const startingDate = document.getElementById("startingDate").value;
+          const endingDate = document.getElementById("endingDate").value;
+          const fileType = document.getElementById("fileType").value;
+
+          if (!startingDate || !endingDate || !fileType) {
+            showToast("Please fill in all fields", "error");
+            return;
+          }
+
+          if (new Date(startingDate) > new Date(endingDate)) {
+            showToast("Start date must be before end date", "error");
+            return;
+          }
+
+          let url;
+          let fileName;
+          switch (fileType) {
+            case "excel":
+              url = "/admin/order-generate-excel";
+              fileName = "sales_report.xlsx";
+              break;
+            case "pdf":
+              url = "/admin/order-generate-pdf";
+              fileName = "sales_report.pdf";
+              break;
+            case "csv":
+              url = "/admin/order-generate-csv";
+              fileName = "sales_report.csv";
+              break;
+          }
+
+          try {
+            const response = await fetch(url, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ startingDate, endingDate }),
+            });
+
+            if (response.ok) {
+            showToast("Downloading...", "info");
+              const blob = await response.blob();
+              downloadFile(blob, fileName);
+              closeModal();
+            } else {
+              showToast("Error occurred while downloading", "error");
+            }
+          } catch (error) {
+            showToast("Network error occurred", "error");
+          }
+        });
+
+      function downloadFile(blob, fileName) {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.style.display = "none";
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      }
+
+      function showToast(message, type) {
+        Toastify({
+          text: message,
+          duration: 3000,
+          close: true,
+          gravity: "top",
+          position: "right",
+          backgroundColor:
+            type === "error"
+              ? "#ff0000"
+              : type === "info"
+              ? "#0000ff"
+              : "#4CAF50",
+        }).showToast();
+      }
+    </script>
+
+<script>
+    // Sales Report Functionality
+    document.addEventListener('DOMContentLoaded', function() {
+            const timeFilter = document.getElementById('timeFilter');
+            const customDateRange = document.getElementById('customDateRange');
+            const startDate = document.getElementById('startDate');
+            const endDate = document.getElementById('endDate');
+            const generateReportBtn = document.getElementById('generateReport');
+            let salesChart;
+
+            // Initial sales data from the server
+            const initialSalesData = <%- JSON.stringify(initialSalesData) %>;
+
+            timeFilter.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customDateRange.style.display = 'block';
+                } else {
+                    customDateRange.style.display = 'none';
+                }
+            });
+
+            generateReportBtn.addEventListener('click', generateSalesReport);
+
+            function generateSalesReport() {
+                const filterType = timeFilter.value;
+                let url = '/admin/sales-report';
+                const params = new URLSearchParams();
+
+                params.append('filterType', filterType);
+                if (filterType === 'custom') {
+                    params.append('startDate', startDate.value);
+                    params.append('endDate', endDate.value);
+                }
+
+                fetch(`${url}?${params.toString()}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        updateSalesSummary(data.summary);
+                        updateSalesChart(data.chartData);
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+
+            function updateSalesSummary(summary) {
+                document.getElementById('totalSales').textContent = `$${summary.totalSales.toFixed(2)}`;
+                document.getElementById('totalOrders').textContent = summary.totalOrders;
+                document.getElementById('totalDiscount').textContent = `$${summary.totalDiscount.toFixed(2)}`;
+            }
+
+            function updateSalesChart(chartData) {
+                const ctx = document.getElementById('salesChart').getContext('2d');
+                
+                if (salesChart) {
+                    salesChart.destroy();
+                }
+
+                salesChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.labels,
+                        datasets: [{
+                            label: 'Sales',
+                            data: chartData.sales,
+                            borderColor: 'rgb(75, 192, 192)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize with daily sales data
+            updateSalesSummary(initialSalesData.summary);
+            updateSalesChart(initialSalesData.chartData);
+        });
+</script>
     <%- include('../admin-partials/footer'); %>
+  </body>
+</div>

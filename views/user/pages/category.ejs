@@ -1,327 +1,572 @@
 <%- include('../userPartials/header'); %>
-        <!-- Breadcrumb Start -->
-        <div class="breadcrumb-wrap">
-          <div class="container-fluid">
-              <ul class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li class="breadcrumb-item"><a href="#">Products</a></li>
-                  <li class="breadcrumb-item active">Product List</li>
-              </ul>
-          </div>
-      </div>
+<style>
+  .sidebar-wrapper {
+    background-color: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+  }
+
+  .filter-title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .filter-group {
+    margin-bottom: 20px;
+  }
+
+  .filter-group h5 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: #555;
+  }
+
+  .filter-list {
+    list-style-type: none;
+    padding-left: 0;
+  }
+
+  .filter-list li {
+    margin-bottom: 5px;
+  }
+
+  .filter-list label {
+    display: inline-block;
+    margin-left: 5px;
+    color: #666;
+  }
+
+  .filter-list span {
+    color: #999;
+    font-size: 0.9rem;
+  }
+
+  .size-list {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .size-list li {
+    margin-right: 10px;
+  }
+
+  .price-range {
+    display: flex;
+    align-items: center;
+  }
+
+  .price-slider {
+    width: 100%;
+    margin-right: 10px;
+  }
+
+  .apply-filters-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .apply-filters-btn:hover {
+    background-color: #0056b3;
+  }
+</style>
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-wrap">
+  <div class="container-fluid">
+    <ul class="breadcrumb">
+      <li class="breadcrumb-item"><a href="#">Home</a></li>
+      <li class="breadcrumb-item"><a href="#">Products</a></li>
+      <li class="breadcrumb-item active">Product List</li>
+    </ul>
+  </div>
+</div>
 <!-- Product List Start -->
 <div class="product-view">
   <div class="container-fluid">
-      <div class="row">
-          <div class="col-lg-9">
+    <div class="row">
+      <div class="col-lg-9">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="product-view-top">
               <div class="row">
-                  <div class="col-md-12">
-                      <div class="product-view-top">
-                          <div class="row">
-                              <div class="col-md-4">
-                                  <div class="product-search">
-                                      <input type="email" value="Search">
-                                      <button><i class="fa fa-search"></i></button>
-                                  </div>
-                              </div>
-                              <div class="col-md-4">
-                                  <div class="product-short">
-                                      <div class="dropdown">
-                                          <div class="dropdown-toggle" data-toggle="dropdown">Product short by</div>
-                                          <div class="dropdown-menu dropdown-menu-right">
-                                              <a href="#" class="dropdown-item">Newest</a>
-                                              <a href="#" class="dropdown-item">Popular</a>
-                                              <a href="#" class="dropdown-item">Most sale</a>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div class="col-md-4">
-                                  <div class="product-price-range">
-                                      <div class="dropdown">
-                                          <div class="dropdown-toggle" data-toggle="dropdown">Product price range</div>
-                                          <div class="dropdown-menu dropdown-menu-right">
-                                              <a href="#" class="dropdown-item">$0 to $50</a>
-                                              <a href="#" class="dropdown-item">$51 to $100</a>
-                                              <a href="#" class="dropdown-item">$101 to $150</a>
-                                              <a href="#" class="dropdown-item">$151 to $200</a>
-                                              <a href="#" class="dropdown-item">$201 to $250</a>
-                                              <a href="#" class="dropdown-item">$251 to $300</a>
-                                              <a href="#" class="dropdown-item">$301 to $350</a>
-                                              <a href="#" class="dropdown-item">$351 to $400</a>
-                                              <a href="#" class="dropdown-item">$401 to $450</a>
-                                              <a href="#" class="dropdown-item">$451 to $500</a>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
+                <div class="col-md-4">
+                  <div class="product-short">
+                    <div class="dropdown">
+                      <div class="dropdown-toggle" data-toggle="dropdown">
+                        Product short by
                       </div>
+                      <div class="dropdown-menu dropdown-menu-right">
+                        <a href="#" class="dropdown-item">Newest</a>
+                        <a href="#" class="dropdown-item">Popular</a>
+                        <a href="#" class="dropdown-item">Most sale</a>
+                      </div>
+                    </div>
                   </div>
-                  
-                  
-                  <% locals.products.forEach((product)=>{ %> <% if(
-                    product.isActive===true){%>
-                      <div class="col-lg-4" style="width: 450px">
-                        <div class="product-item">
-                          <div class="product-title">
-                            <div class="text-left">
-                              <a href="#"><%= product.name %></a>
-                            </div>
-                
-                            <div class="ratting d-flex justify-content-between">
-                              <div>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                                <i class="fa fa-star"></i>
-                              </div>
-                              <% if (product.totalQuantity < 10) { %>
-                              <i
-                                style="
-                                  background-color: rgb(255, 174, 0);
-                                  color: rgb(0, 0, 0);
-                                  border-radius: 7px;
-                                "
-                                >&nbsp; Limited Stock &nbsp;</i
-                              >
-                              <% } else if (product.totalQuantity == 0) { %>
-                              <i
-                                style="
-                                  background-color: rgb(255, 0, 0);
-                                  color: rgb(0, 0, 0);
-                                  border-radius: 7px;
-                                "
-                                >&nbsp; Out Of Stock &nbsp;</i
-                              >
-                              <% } else { %>
-                              <i
-                                style="
-                                  background-color: greenyellow;
-                                  color: rgb(0, 0, 0);
-                                  border-radius: 7px;
-                                "
-                                >&nbsp; In Stock &nbsp;</i
-                              >
-                              <% } %>
-                            </div>
-                          </div>
-                          <div class="product-image">
-                            <a href="product-detail.html">
-                              <img src="<%= product.imagePaths[0] %>" alt="Product Image" />
-                            </a>
-                            <div class="product-action">
-                              <a href="#" tabindex="0" data-toggle="tooltip" title="wishlist"
-                                ><i class="fa fa-heart"></i
-                              ></a>
-                              <a
-                                href="/product/<%= product._id %>"
-                                tabindex="0"
-                                data-toggle="tooltip"
-                                title="view"
-                                ><i class="fa fa-search"></i
-                              ></a>
-                            </div>
-                          </div>
-                          <div class="product-price">
-                            <div class="text-dark" style="font-size: 15px;">
-                              <span><b>BRAND : &nbsp;&nbsp;&nbsp;</b></span>
-                              <span class="text-capitalize"> <%= product.brand.name %></span
-                              ><br />
-                              <span><b>Category : &nbsp;</b></span>
-                              <span><%= product.category.name %></span>
-                            </div>
-                            <% if (product.offerAmount) { %>
-                            <h5 class="text-white">
-                              $ <%= product.offerAmount %>&nbsp;&nbsp;
-                              <span style="text-decoration: line-through; color: crimson"
-                                ><%= product.basePrice %></span
-                              >
-                            </h5>
-                            <% } else { %>
-                            <h5 class="text-white"><span>$</span><%= product.basePrice %></h5>
-                            <% } %>
-                            <!-- <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a> -->
-                          </div>
-                        </div>
-                      </div>
-                  <%}%> <%})%>
+                </div>
               </div>
-              
-              <!-- Pagination Start -->
-              <div class="col-md-12">
-                  <nav aria-label="Page navigation example">
-                      <ul class="pagination justify-content-center">
-                          <li class="page-item disabled">
-                              <a class="page-link" href="#" tabindex="-1">Previous</a>
-                          </li>
-                          <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                          <li class="page-item"><a class="page-link" href="#">2</a></li>
-                          <li class="page-item"><a class="page-link" href="#">3</a></li>
-                          <li class="page-item">
-                              <a class="page-link" href="#">Next</a>
-                          </li>
-                      </ul>
-                  </nav>
-              </div>
-              <!-- Pagination Start -->
-          </div>           
-          
-          <!-- Side Bar Start -->
-          <div class="col-lg-3 sidebar">
-              <div class="sidebar-widget category">
-                  <h2 class="title">Category</h2>
-                  <nav class="navbar bg-light">
-                      <ul class="navbar-nav">
-                          <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fa fa-female"></i>Fashion & Beauty</a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fa fa-child"></i>Kids & Babies Clothes</a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fa fa-tshirt"></i>Men & Women Clothes</a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fa fa-mobile-alt"></i>Gadgets & Accessories</a>
-                          </li>
-                          <li class="nav-item">
-                              <a class="nav-link" href="#"><i class="fa fa-microchip"></i>Electronics & Accessories</a>
-                          </li>
-                      </ul>
-                  </nav>
-              </div>
-              
-              <!-- <div class="sidebar-widget widget-slider">
-                  <div class="sidebar-slider normal-slider">
-                      <div class="product-item">
-                          <div class="product-title">
-                              <a href="#">Product Name</a>
-                              <div class="ratting">
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                              </div>
-                          </div>
-                          <div class="product-image">
-                              <a href="product-detail.html">
-                                  <img src="img/product-10.jpg" alt="Product Image">
-                              </a>
-                              <div class="product-action">
-                                  <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                  <a href="#"><i class="fa fa-heart"></i></a>
-                                  <a href="#"><i class="fa fa-search"></i></a>
-                              </div>
-                          </div>
-                          <div class="product-price">
-                              <h3><span>$</span>99</h3>
-                              <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a>
-                          </div>
-                      </div>
-                      <div class="product-item">
-                          <div class="product-title">
-                              <a href="#">Product Name</a>
-                              <div class="ratting">
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                              </div>
-                          </div>
-                          <div class="product-image">
-                              <a href="product-detail.html">
-                                  <img src="img/product-9.jpg" alt="Product Image">
-                              </a>
-                              <div class="product-action">
-                                  <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                  <a href="#"><i class="fa fa-heart"></i></a>
-                                  <a href="#"><i class="fa fa-search"></i></a>
-                              </div>
-                          </div>
-                          <div class="product-price">
-                              <h3><span>$</span>99</h3>
-                              <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a>
-                          </div>
-                      </div>
-                      <div class="product-item">
-                          <div class="product-title">
-                              <a href="#">Product Name</a>
-                              <div class="ratting">
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                                  <i class="fa fa-star"></i>
-                              </div>
-                          </div>
-                          <div class="product-image">
-                              <a href="product-detail.html">
-                                  <img src="img/product-8.jpg" alt="Product Image">
-                              </a>
-                              <div class="product-action">
-                                  <a href="#"><i class="fa fa-cart-plus"></i></a>
-                                  <a href="#"><i class="fa fa-heart"></i></a>
-                                  <a href="#"><i class="fa fa-search"></i></a>
-                              </div>
-                          </div>
-                          <div class="product-price">
-                              <h3><span>$</span>99</h3>
-                              <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a>
-                          </div>
-                      </div>
-                  </div>
-              </div> -->
-              
-              <div class="sidebar-widget brands">
-                  <h2 class="title">Our Brands</h2>
-                  <ul>
-                      <li><a href="#">Nulla </a><span>(45)</span></li>
-                      <li><a href="#">Curabitur </a><span>(34)</span></li>
-                      <li><a href="#">Nunc </a><span>(67)</span></li>
-                      <li><a href="#">Ullamcorper</a><span>(74)</span></li>
-                      <li><a href="#">Fusce </a><span>(89)</span></li>
-                      <li><a href="#">Sagittis</a><span>(28)</span></li>
-                  </ul>
-              </div>
-              
-              <div class="sidebar-widget tag">
-                  <h2 class="title">Tags Cloud</h2>
-                  <a href="#">Lorem ipsum</a>
-                  <a href="#">Vivamus</a>
-                  <a href="#">Phasellus</a>
-                  <a href="#">pulvinar</a>
-                  <a href="#">Curabitur</a>
-                  <a href="#">Fusce</a>
-                  <a href="#">Sem quis</a>
-                  <a href="#">Mollis metus</a>
-                  <a href="#">Sit amet</a>
-                  <a href="#">Vel posuere</a>
-                  <a href="#">orci luctus</a>
-                  <a href="#">Nam lorem</a>
-              </div>
+            </div>
           </div>
-          <!-- Side Bar End -->
+
+          <div id="product-list" class="row col-md-12">
+            <% if (locals.products.length === 0) { %>
+            <p>No product found</p>
+            <% } else { %> <% locals.products.forEach((product) => { %> <% if
+            (product.isActive === true) { %>
+            <div class="col-lg-4 col-md-6 col-sm-12">
+              <div class="product-item">
+                <div class="product-title rounded-top">
+                  <div class="ratting d-flex justify-content-between">
+                    <div>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                      <i class="fa fa-star"></i>
+                    </div>
+                    <% if (product.totalQuantity == 0) { %>
+                    <span class="badge badge-danger">Out Of Stock</span>
+                    <% } else if (product.totalQuantity < 10) { %>
+                    <span class="badge badge-warning">Limited Stock</span>
+                    <% } else { %>
+                    <span class="badge badge-success">In Stock</span>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="product-image">
+                  <a href="product-detail.html">
+                    <img
+                      src="<%= product.imagePaths[0] %>"
+                      alt="Product Image"
+                    />
+                  </a>
+                  <div class="product-action">
+                    <a
+                      href=""
+                      tabindex="0"
+                      class="addToWishlist"
+                      data-id="<%= product._id %>"
+                      data-toggle="tooltip"
+                      title="wishlist"
+                    >
+                      <i class="fa fa-heart"></i>
+                    </a>
+                    <a
+                      href="/product/<%= product._id %>"
+                      tabindex="0"
+                      data-toggle="tooltip"
+                      title="view"
+                      ><i class="fa fa-search"></i
+                    ></a>
+                  </div>
+                </div>
+                <div class="product-price rounded-bottom">
+                  <div class="">
+                    <div>
+                      <span><b><%= product.name %></b></span>
+                    </div>
+                  </div>
+                  <div class="text-dark d-flex justify-content-between">
+                    <div>
+                      <% function capitalizeFirstLetter(string) { return
+                      string.charAt(0).toUpperCase() + string.slice(1); } %>
+                      <span
+                        ><%=
+                        product.tag.tagName.toLowerCase()
+                        %>'s <%=
+                        product.category.name.toLowerCase()
+                        %> shoe</span
+                      >
+                    </div>
+
+                    <div>
+                      <span class="badge badge-light"
+                        ><%= product.brand.name %></span
+                      >
+                    </div>
+                  </div>
+                  <% if (product.offerAmount) { %>
+                  <h6 class="text-dark">
+                    $ <%= product.offerAmount %>&nbsp;&nbsp;
+                    <span style="text-decoration: line-through; color: crimson"
+                      ><%= product.basePrice %></span
+                    >
+                  </h6>
+                  <% } else { %>
+                  <h6 class="text-dark">
+                    <span>$</span><%= product.basePrice %>
+                  </h6>
+                  <% } %>
+                </div>
+              </div>
+            </div>
+            <% } %> <% }) %> <% } %>
+          </div>
+
+          <!-- Pagination Start -->
+          <div class="col-md-12">
+            <nav aria-label="Page navigation example">
+              <ul class="pagination justify-content-center">
+                <%for(let i = 1; i <= totalPages; i++ ){%>
+                <li class="page-item">
+                  <a class="page-link" href="/filter?page=<%= i %>"><%=i%></a>
+                </li>
+                <%}%>
+                <!-- <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1">Previous</a>
+                  </li>
+                  <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                  <li class="page-item"><a class="page-link" href="#">2</a></li>
+                  <li class="page-item"><a class="page-link" href="#">3</a></li>
+                  <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                  </li> -->
+              </ul>
+            </nav>
+          </div>
+        </div>
       </div>
+
+      <!-- Side Bar Start -->
+      <div class="col-lg-3">
+        <div class="sidebar-wrapper">
+          <div class="sidebar-filter">
+            <h4 class="filter-title">Product Filters</h4>
+
+            <!-- Gender Filter -->
+            <div class="filter-group">
+              <h5>Gender</h5>
+              <ul class="filter-list">
+                <% tags.forEach((tag) => { %>
+                <li>
+                  <input
+                    name="gender"
+                    value="<%= tag._id %>"
+                    type="checkbox"
+                    id="men"
+                  />
+                  <label for="men"><%= tag.tagName %> <span>(29)</span></label>
+                </li>
+                <% }) %>
+              </ul>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="filter-group">
+              <h5>Category</h5>
+              <ul class="filter-list">
+                <% categorys.forEach((category) => { %>
+                <li>
+                  <input
+                    name="category"
+                    value="<%= category._id %>"
+                    type="checkbox"
+                    id="men"
+                  />
+                  <label for="men"
+                    ><%= category.name %> <span>(29)</span></label
+                  >
+                </li>
+                <% }) %>
+              </ul>
+            </div>
+
+            <!-- Brand Filter -->
+            <div class="filter-group">
+              <h5>Brands</h5>
+              <ul class="filter-list">
+                <% brands.forEach((brand) => { %>
+                <li>
+                  <input
+                    name="brand"
+                    value="<%= brand._id %>"
+                    type="checkbox"
+                    id="men"
+                  />
+                  <label for="men"><%= brand.name %> <span>(29)</span></label>
+                </li>
+                <% }) %>
+              </ul>
+            </div>
+
+            <!-- Size Filter -->
+            <div class="filter-group">
+              <h5>Size</h5>
+              <ul class="filter-list size-list">
+                <% sizes.forEach((size) => { %>
+                <li>
+                  <input
+                    name="size"
+                    value="<%= size._id %>"
+                    type="checkbox"
+                    id="men"
+                  />
+                  <label for="men"><%= size.size %> <span>(29)</span></label>
+                </li>
+                <% }) %>
+              </ul>
+            </div>
+
+            <!-- Price Range Filter -->
+            <div class="filter-group">
+              <h5>Price Range</h5>
+              <div class="price-range">
+                <input
+                  type="range"
+                  min="500"
+                  max="20000"
+                  value="250"
+                  class="price-slider"
+                  id="priceRange"
+                />
+                <p>$<span id="priceValue">500</span></p>
+              </div>
+            </div>
+
+            <!-- Apply Filters Button -->
+            <button class="apply-filters-btn">Apply Filters</button>
+          </div>
+        </div>
+      </div>
+      <!-- Side Bar End -->
+
+      <script>
+        const priceRange = document.getElementById("priceRange");
+        const priceValue = document.getElementById("priceValue");
+
+        priceRange.addEventListener("input", function () {
+          priceValue.textContent = this.value;
+        });
+      </script>
+    </div>
   </div>
 </div>
-<!-- Product List End -->  
+
+<!-- Product List End -->
 
 <!-- Brand Start -->
 <div class="brand">
   <div class="container-fluid">
-      <div class="brand-slider">
-          <div class="brand-item"><img src="img/brand-1.png" alt=""></div>
-          <div class="brand-item"><img src="img/brand-2.png" alt=""></div>
-          <div class="brand-item"><img src="img/brand-3.png" alt=""></div>
-          <div class="brand-item"><img src="img/brand-4.png" alt=""></div>
-          <div class="brand-item"><img src="img/brand-5.png" alt=""></div>
-          <div class="brand-item"><img src="img/brand-6.png" alt=""></div>
-      </div>
+    <div class="brand-slider">
+      <div class="brand-item"><img src="img/brand-1.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-2.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-3.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-4.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-5.png" alt="" /></div>
+      <div class="brand-item"><img src="img/brand-6.png" alt="" /></div>
+    </div>
   </div>
 </div>
 <!-- Brand End -->
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"
+/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<!-- <script>
+  const showInfoToast = (message) => {
+    toastr.options = {
+      positionClass: "toast-top-center",
+      timeOut: "3000",
+      closeButton: true,
+    };
+    toastr.info(message);
+  };
+
+  const showErrorToast = (message) => {
+    toastr.options = {
+      positionClass: "toast-top-center",
+      timeOut: "3000",
+      closeButton: true,
+    };
+    toastr.error(message);
+  };
+
+  const showSuccessToast = (message) => {
+    toastr.options = {
+      positionClass: "toast-top-center",
+      timeOut: "3000",
+      closeButton: true,
+    };
+    toastr.success(message);
+  };
+</script> -->
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const applyFiltersBtn = document.querySelector(".apply-filters-btn");
+
+    applyFiltersBtn.addEventListener("click", async function () {
+      // Collect filter values
+      const gender = Array.from(
+        document.querySelectorAll('input[name="gender"]:checked')
+      ).map((el) => el.value);
+      const category = Array.from(
+        document.querySelectorAll('input[name="category"]:checked')
+      ).map((el) => el.value);
+      const brand = Array.from(
+        document.querySelectorAll('input[name="brand"]:checked')
+      ).map((el) => el.value);
+      const size = Array.from(
+        document.querySelectorAll('input[name="size"]:checked')
+      ).map((el) => el.value);
+      const priceRange = document.getElementById("priceRange").value;
+
+      // Construct query string
+      const queryParams = new URLSearchParams({
+        tag: gender.join(","),
+        category: category.join(","),
+        brand: brand.join(","),
+        size: size.join(","),
+        maxPrice: priceRange,
+      });
+
+      try {
+        const response = await fetch(`/filter?${queryParams.toString()}`, {
+          method: "GET",
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          updateProductList(data);
+        } else {
+          console.log("else:", response);
+        }
+      } catch (error) {
+        console.log("error:", error);
+      }
+      // Fetch filtered products
+
+      //   .then(response => response.json())
+      //   .then(data => {
+      //     // Update product list
+      //     console.log("data",data);
+      //     updateProductList(data);
+      //   })
+      //   .catch(error => {
+      //     console.error('Error fetching filtered products:', error);
+      //   });
+    });
+
+    function updateProductList(data) {
+      const productList = document.getElementById("product-list");
+      productList.innerHTML = "";
+
+      if (data.products.length === 0) {
+        productList.innerHTML = "<p>No product found</p>";
+      } else {
+        data.products.forEach((product) => {
+          const productHTML = `
+          <div class="col-lg-4" style="width: 450px;">
+            <div class="product-item">
+              <div class="product-title rounded-top">
+                <div class="ratting d-flex justify-content-between">
+                  <div>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                    <i class="fa fa-star"></i>
+                  </div>
+                  ${
+                    product.totalQuantity === 0
+                      ? '<span class="badge badge-danger">Out Of Stock</span>'
+                      : product.totalQuantity < 10
+                      ? '<span class="badge badge-warning">Limited Stock</span>'
+                      : '<span class="badge badge-success">In Stock</span>'
+                  }
+                </div>
+              </div>
+              <div class="product-image">
+                <a href="product-detail.html">
+                  <img src="${product.imagePaths[0]}" alt="Product Image" />
+                </a>
+                <div class="product-action">
+
+                  <a href="#" tabindex="0" class="addToWishlist" data-id="${
+                    product._id
+                  }" data-toggle="tooltip" title="wishlist">
+                <i class="fa fa-heart"></i></a>
+
+                  <a href="/product/${
+                    product._id
+                  }" tabindex="0" data-toggle="tooltip" title="view"><i class="fa fa-search"></i></a>
+                </div>
+              </div>
+              <div class="product-price rounded-bottom">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <span><b>${product.name}</b></span>
+                  </div>
+                  <div>
+                    <span class="badge badge-light">${product.brand.name}</span>
+                  </div>
+                </div>
+                <div class="text-dark">
+                  <span>${capitalizeFirstLetter(
+                    product.tag.tagName.toLowerCase()
+                  )}'s ${capitalizeFirstLetter(
+            product.category.name.toLowerCase()
+          )} Shoe</span>
+                </div>
+                ${
+                  product.offerAmount
+                    ? `<h6 class="text-dark">$ ${product.offerAmount}&nbsp;&nbsp;<span style="text-decoration: line-through; color: crimson">${product.basePrice}</span></h6>`
+                    : `<h6 class="text-dark"><span>$</span>${product.basePrice}</h6>`
+                }
+              </div>
+            </div>
+          </div>
+        `;
+          productList.innerHTML += productHTML;
+        });
+      }
+    }
+
+    function capitalizeFirstLetter(string) {
+      
+      return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+  });
+
+  const addToWishlistButtons = document.querySelectorAll(".addToWishlist");
+            addToWishlistButtons.forEach((item) => {
+                item.addEventListener("click", async (e) => {
+                    e.preventDefault();
+                    const productId = item.dataset.id;
+                    try {
+                        const response = await fetch("/add-wishlist", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify({ productId }),
+                        });
+
+                        const data = await response.json();
+                        if (response.ok) {
+                            showSuccessToast("Item added to wishlist ");
+                        } else {
+                            showErrorToast(data.message);
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        showErrorToast("Failed to add to wishlist");
+                    }
+                });
+            });
+
+
+</script>
+
+
 <%- include('../userPartials/footer'); %>

@@ -46,23 +46,27 @@
                     <p><%= item.size.size %></p>
                   </td>
                   <td>
-                    ₹ <%= item.product.offerAmount || item.product.basePrice %>
+                    <%if(item.product.offerAmount ){%>
+                    ₹ <%= item.product.offerAmount %> <span style="text-decoration: line-through; color: red;"><%=item.product.basePrice %></span>
+                    <%}else{%>
+                      ₹ <%= item.product.basePrice %> 
+                      <%}%>
                   </td>
                   <td>
                     <div class="qty">
                       <button
                       class="btn-minus"
                       size-id="<%=item.size._id %>"
-                      data-id="<%=item.product._id %>" <%= item.quantity == 1 ? 'disabled' : '' %>
+                      data-id="<%=item.product._id %>" 
                     >
                       <i class="fa fa-minus"></i>
                     </button>
-                      <input type="text" value="<%= item.quantity %>" />
+                      <input type="text" value="<%= item.quantity %>" readonly />
                       <button
                         class="btn-plus"
                         size-id="<%=item.size._id %>"
                         data-id="<%=item.product._id %>"
-                        <%= item.quantity >= 10 ? 'disabled' : '' %> >
+                        <%= item.quantity %> >
                         <i class="fa fa-plus"></i>
                       </button>
                     </div>
@@ -104,7 +108,7 @@
                       >₹ <%=userCart.discount%></span
                     >
                   </p>
-                  <p>Tax<span>₹ <%=userCart.tax%></span></p>
+                  <!-- <p>Tax<span>₹ <%=userCart.tax%></span></p> -->
                   <h2>Grand Total<span>₹ <%=userCart.grandTotal%></span></h2>
                 </div>
                 <div class="cart-btn">
@@ -150,14 +154,38 @@
 <!-- Cart End -->
 
 <%- include('../userPartials/footer'); %>
-<!-- incrementing quantity -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
 <script>
   document.addEventListener("DOMContentLoaded", () => {
+    const showInfoToast = (message) => {
+      toastr.options = {
+        "positionClass": "toast-top-center",
+        "timeOut": "3000",
+        "closeButton": true,
+      };
+      toastr.info(message);
+    };
+
+    // Increment quantity
     document.querySelectorAll(".btn-plus").forEach((button) => {
       button.addEventListener("click", async function (e) {
         const productId = this.getAttribute("data-id");
         const size = this.getAttribute("size-id");
-        console.log(productId, size);
+        const quantityInput = this.previousElementSibling;
+        let quantity = parseInt(quantityInput.value);
+
+        if (quantity >= 11) {
+          showInfoToast("You can only add 10 items");
+          quantityInput.value = 10;
+          // this.disabled = true;
+          return;
+        }
+        
+        quantityInput.value = quantity + 1;
+
         const response = await fetch("update-cart-quantity", {
           method: "PUT",
           headers: {
@@ -169,22 +197,33 @@
             size,
           }),
         });
-        if (response.ok) {
+
+        if (!response.ok) {
+          // Revert the quantity change in case of an error
+          quantityInput.value = quantity;
+        } else {
           window.location.reload();
         }
       });
     });
-  });
-</script>
 
-<!-- decrement quantity -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
+    // Decrement quantity
     document.querySelectorAll(".btn-minus").forEach((button) => {
       button.addEventListener("click", async function (e) {
         const productId = this.getAttribute("data-id");
         const size = this.getAttribute("size-id");
-        console.log(productId, size);
+        const quantityInput = this.nextElementSibling;
+        let quantity = parseInt(quantityInput.value);
+
+        if (quantity == 0) {
+          showInfoToast("One item needed");
+          quantityInput.value = 1;
+          // this.disabled = true;
+          return;
+        }
+        
+        quantityInput.value = quantity - 1;
+
         const response = await fetch("update-cart-quantity", {
           method: "PUT",
           headers: {
@@ -196,13 +235,18 @@
             size,
           }),
         });
-        if (response.ok) {
+
+        if (!response.ok) {
+          // Revert the quantity change in case of an error
+          quantityInput.value = quantity;
+        } else {
           window.location.reload();
         }
       });
     });
   });
 </script>
+
 
 <!-- remove items from cart  -->
 <script>

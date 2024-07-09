@@ -3,29 +3,70 @@ const sendEmail = require("../../utils/email");
 const bcrypt = require("bcrypt");
 const User = require("../../models/userModels/userModel");
 const { createError } = require("../../utils/errors");
-const { AUTH_EMAIL } = process.env;
 
-//sent otp and storing user data
+const { AUTH_EMAIL } = process.env;
+const MAX_OTP_COUNT = 4;
+let CurrentCount = 0;
+let flag = false;
+
+
+async function maxOtpExceeded() {
+  try {
+
+    const userWithOtp = await User.findOne({ otp: { $exists: true } });
+    console.log("user with otp: " + userWithOtp);
+    if (userWithOtp) {
+      await User.deleteOne({ _id: userWithOtp._id });
+      return true; 
+    }
+    return false;
+  } catch (error) {
+    console.error("Error in maxOtpExceeded:", error);
+    throw error; 
+  }
+}
+
+async function deleteOtp(email) {
+  try {
+    CurrentCount++;
+    console.log("current coutn:",CurrentCount);
+    if (CurrentCount === MAX_OTP_COUNT) {
+      const userDeleted = await maxOtpExceeded();
+      if (userDeleted) {
+        CurrentCount = 0;
+        flag = true;
+      }
+    }
+    setTimeout(async () => {
+      await User.findOneAndUpdate({ email: email }, { $unset: { otp: "" } });
+    }, 60000);
+  } catch (error) {
+    console.error("Error in deleteOtp:", error);
+  }
+}
+
 const sendOTP = async (req, res, next) => {
   const { name, email, password1 } = req.body;
 
   try {
     const existingUser = await User.findOne({ email });
-
-    if (existingUser)
+    if (existingUser) {
       return next(createError(401, `Email '${email}' is already registered`));
+    }
+
 
     const generatedOTP = await generateOTP();
-    console.log("genarated otp:", generatedOTP);
+    console.log("generated otp:", generatedOTP);
 
     const mailOptions = {
       from: AUTH_EMAIL,
       to: email,
       subject: "Verify the email using this OTP",
-      html: `<p>Hello new user, use this OTP to verify your email and continue:</p>
-             <p style="color:tomato;font-size:25px;letter-spacing:2px;">
-             <b>${generatedOTP}</b></p>
-             <p>OTP will expire in <b>3 minute(s)</b>.</p>`,
+      html: `
+        <p>Hello new user, use this OTP to verify your email and continue:</p>
+        <p style="color:tomato;font-size:25px;letter-spacing:2px;"><b>${generatedOTP}</b></p>
+        <p>OTP will expire in <b>1 minute</b>.</p>
+      `,
     };
 
     await sendEmail(mailOptions);
@@ -43,11 +84,21 @@ const sendOTP = async (req, res, next) => {
 
     await newUser.save();
 
-    req.session.otpverfication = true;
-    req.session.userGmail = email;
-    req.session.userId = newUser._id;
+    if (flag) {
+      req.session.userGmail = null;
+      req.session.user = null;
+      req.session.userId = null;
+      delete req.session.otpverfication;
 
-    //deleting the document if didn't enter the otp
+      flag = false;
+    } else {
+      req.session.otpverfication = true;
+      req.session.userGmail = email;
+      req.session.userId = newUser._id;
+    }
+
+    await deleteOtp(email);
+
     setTimeout(async () => {
       try {
 
@@ -64,25 +115,20 @@ const sendOTP = async (req, res, next) => {
       } catch (error) {
         console.error("Error deleting user document:", error);
       }   
-    }, 3 * 60 * 1000);
+    }, 5 * 60 * 1000);
 
     return res.status(200).json({ name: name });
   } catch (err) {
-
-    next(createError(null, null));
+    next(createError(500, "Server error while sending OTP"));
   }
 };
 
-//render otp
 const renderotpPage = async (req, res, next) => {
   const email = req.session.userGmail;
   return res.render("user/registration/getOtp", { email: email });
 };
 
-//verify user
 const verifyOtp = async (req, res, next) => {
-  console.log("entered verifyOtp");
-
   const otp = req.body.otp;
   const email = req.session.userGmail;
 
@@ -92,40 +138,35 @@ const verifyOtp = async (req, res, next) => {
 
     const isMatch = await bcrypt.compare(otp, user.otp);
     if (!isMatch) return next(createError(401, "Invalid OTP"));
-
+     CurrentCount =0;
     await User.findOneAndUpdate({ email: user.email }, { $unset: { otp: "" } });
 
     if (!req.session.passwordChange) {
-      
       req.session.userGmail = user.email;
       req.session.user = user.name;
       req.session.userId = user._id;
-
       delete req.session.otpverfication;
-
     }
     return res.status(200).json({ name: user.name });
   } catch (error) {
-
-    return next(createError(null, null));
+    return next(createError(500, "Server error while verifying OTP"));
   }
 };
 
-//resend otp
 const resendOtp = async (req, res) => {
   try {
-
     const generatedOTP = await generateOTP();
-    console.log("re genarated otp:", generatedOTP);
+    console.log("re generated otp:", generatedOTP);
     const email = req.session.userGmail;
 
     const mailOptions = {
       from: AUTH_EMAIL,
       to: email,
       subject: "Verify the email using this OTP",
-      html: `<p>Hello new user, use this OTP to verify your email and continue:</p>
-              <p style="color:tomato;font-size:25px;letter-spacing:2px;">
-              <b>${generatedOTP}</b></p>`,
+      html: `
+        <p>Hello user, use this OTP to verify your email and continue:</p>
+        <p style="color:tomato;font-size:25px;letter-spacing:2px;"><b>${generatedOTP}</b></p>
+      `,
     };
 
     const salt = await bcrypt.genSalt(10);
@@ -134,78 +175,63 @@ const resendOtp = async (req, res) => {
     await User.findOneAndUpdate({ email: email }, { otp: hashedOTP });
 
     await sendEmail(mailOptions);
-
-    return;
+    deleteOtp(email);
+    return res.status(200).json({ message: "success" });
   } catch (err) {
-
-    res.status(null).json(null);
+    res.status(500).json({ message: "error" });
   }
 };
 
-//forgot password otp
+//forgot otp
+
 const ForgotOtpPage = async (req, res, next) => {
   const email = req.body.email;
 
-  const existUser = await User.findOne({ email });
-  const googleUser = await User.findOne({ googleId: { $exists: true } });
+  try {
+    const existUser = await User.findOne({ email });
+    const googleUser = await User.findOne({ googleId: { $exists: true } });
 
-  if (!existUser) {
-    return next(createError(401, "this email not exist in the database"));
-
-  } else if (googleUser) {
-    return next(
-      createError(
-        401,
-        "Oops! It seems you've signed in with Google. Please note that password changes are not allowed for Google sign-ins."
-      )
-    );
-  }
-
-  const generatedOTP = await generateOTP();
-
-  const mailOptions = {
-    from: AUTH_EMAIL,
-    to: email,
-    subject: "Verify the email using this OTP",
-    html: `<p>Hello new user, use this OTP to verify your email and continue:</p>
-           <p style="color:tomato;font-size:25px;letter-spacing:2px;">
-           <b>${generatedOTP}</b></p>
-           <p>OTP will expire in <b>3 minute(s)</b>.</p>`,
-  };
-
-  await sendEmail(mailOptions);
-
-  const salt = await bcrypt.genSalt(10);
-  const hashedOTP = await bcrypt.hash(generatedOTP, salt);
-  await User.findOneAndUpdate({ email: email }, { otp: hashedOTP });
-
-  setTimeout(async () => {
-    try {
-      const OTP = await User.findOne({ otp: { $exists: true } });
-
-      if (OTP) {
-        await User.findOneAndUpdate({ email: email }, { $unset: { otp: "" } });
-        req.session.userGmail = null;
-        req.session.userId = null;
-        delete req.session.otpverfication;
-
-      } 
-    } catch (error) {
-      console.error("Error deleting user document:", error);
+    if (!existUser) {
+      return next(createError(401, "This email does not exist in the database"));
+    } else if (googleUser) {
+      return next(createError(401, "Password changes are not allowed for Google sign-ins."));
     }
-  }, 3 * 60 * 1000);
 
-  req.session.userGmail = email;
-  req.session.userId = existUser._id;
-  req.session.passwordChange = true;
-  
-  return res.redirect("/getotp-forgot-password");
+    const generatedOTP = await generateOTP();
+    console.log("generatedOTP forgot otp:", generatedOTP);
+
+    const mailOptions = {
+      from: AUTH_EMAIL,
+      to: email,
+      subject: "Verify the email using this OTP",
+      html: `
+        <p>Hello user, use this OTP to verify your email and continue:</p>
+        <p style="color:tomato;font-size:25px;letter-spacing:2px;"><b>${generatedOTP}</b></p>
+        <p>OTP will expire in <b>1 minute</b>.</p>
+      `,
+    };
+
+    await sendEmail(mailOptions);
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedOTP = await bcrypt.hash(generatedOTP, salt);
+    await User.findOneAndUpdate({ email: email }, { otp: hashedOTP });
+
+    deleteOtp(email);
+
+    req.session.userGmail = email;
+    req.session.userId = existUser._id;
+    req.session.passwordChange = true;
+    
+    return res.redirect("/getotp-forgot-password");
+  } catch (error) {
+    return next(createError(500, "Server error while handling forgot password OTP"));
+  }
 };
 
 const renderNewPasswordPage = async (req, res) => {
-  res.render("user/registration/forgotPassword");
-};
-
+  res.render("user/registration/forgotPasswor");
+  }
 module.exports = {
   sendOTP,
   renderotpPage,

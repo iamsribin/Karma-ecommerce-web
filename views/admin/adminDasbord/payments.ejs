@@ -1,31 +1,38 @@
-
-
 <%- include('../admin-partials/header'); %>
 <div class="col-12 tm-block-col">
-    <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
-        <h2 class="tm-block-title">Payments List</h2>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">PAYMENT ID.</th>
-                    <th scope="col">STATUS</th>
-                    <th scope="col">AMOUNT</th>
-                    <th scope="col">PAYMENT METHOD</th>
-                    <th scope="col">CREATION DATE</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row"><b>#122349</b></th>
-                    <td>
-                        <div class="tm-status-circle moving">
-                        </div>succeeded
-                    </td>
-                    <td>$799</td>
-                    <td>Razor pay</td>
-                    <td>04:00, 14 NOV 2018</td>
-                </tr>
-                <tr>
+  <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
+    <h2 class="tm-block-title">Payments List</h2>
+    <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">PAYMENT ID.</th>
+          <th scope="col">STATUS</th>
+          <th scope="col">AMOUNT</th>
+          <th scope="col">PAYMENT METHOD</th>
+          <th scope="col">DATE</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%paymentList.forEach((payment)=>{ %>
+        <tr>
+          <th scope="row"><b><%=payment.payment_id%></b></th>
+          <td>
+            <%if(payment.status === "success"){%>
+            <div class="tm-status-circle moving"></div>
+            <%=payment.status%> <%}else if(payment.status === "refunded"){%>
+            <div class="tm-status-circle cancelled"></div>
+            <%=payment.status%> <%}else{%>
+                <div class="tm-status-circle pending">
+                </div> <%=payment.status%>
+                <%}%>
+          </td>
+          <td>$799</td>
+          <td><%=payment.paymentMode%></td>
+          <td><%=payment.updatedAt.toDateString()%></td>
+        </tr>
+        <% })%>
+
+        <!-- <tr>
                     <th scope="row"><b>#122349</b></th>
                     <td>
                         <div class="tm-status-circle cancelled">
@@ -44,13 +51,10 @@
                     <td>$500</td>
                     <td>COD</td>
                     <td>06:00, 28 NOV 2018</td>
-                </tr>
-
-            </tbody>
-        </table>
-    </div>
-</div>
+                </tr> -->
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <%- include('../admin-partials/footer'); %>
-

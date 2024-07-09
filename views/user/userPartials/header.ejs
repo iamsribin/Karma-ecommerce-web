@@ -8,7 +8,6 @@
     <meta content="eCommerce HTML Template Free Download" name="description" />
 
     <!-- Favicon -->
-    <!-- <link href="/img/favicon.ico" rel="icon" /> -->
     <link rel="shortcut icon" href="img/fav.png" />
 
     <!-- Google Fonts -->
@@ -28,35 +27,60 @@
     />
     <link href="/lib/slick/slick.css" rel="stylesheet" />
     <link href="/lib/slick/slick-theme.css" rel="stylesheet" />
-
     <!-- Template Stylesheet -->
     <link href="/css/style.css" rel="stylesheet" />
     <link rel="stylesheet" href="/css/etalage.css" />
-
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Etalage Plugin -->
-    <script src="/js2/jquery.etalage.min.js"></script>
+    <script src="/js/jquery.etalage.min.js"></script>    <!-- Bottom Bar End -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     
     <script>
       jQuery(document).ready(function ($) {
-        $('#etalage').etalage({
+        $("#etalage").etalage({
           thumb_image_width: 380,
           thumb_image_height: 400,
           source_image_width: 900,
           source_image_height: 1000,
-          show_hint: true
+          show_hint: true,
         });
       });
     </script>
-  </head>
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    // Toast functions
+    const showErrorToast = (message) => {
+        toastr.options = {
+            positionClass: "toast-top-center",
+            timeOut: "3000",
+            closeButton: true,
+        };
+        toastr.error(message);
+    };
+
+    const showSuccessToast = (message) => {
+        toastr.options = {
+            positionClass: "toast-top-center",
+            timeOut: "3000",
+            closeButton: true,
+        };
+        toastr.success(message);
+    };
+</script>
+
+
+  </head>
 
   <body>
     <!-- Top bar Start -->
     <div class="top-bar">
       <div class="container-fluid">
-        <div class="row" style="margin-right: 30px;">
+        <div class="row" style="margin-right: 30px">
           <div class="col-sm-6">
             <i class="fa fa-envelope"></i>
             support@email.com
@@ -93,7 +117,7 @@
               <a href="/category" class="nav-item nav-link">Products</a>
               <a href="/Contact" class="nav-item nav-link">Contact</a>
               <% if (locals.user) { %>
-                <a href="/cart" class="nav-item nav-link">Cart</a>
+              <a href="/cart" class="nav-item nav-link">Cart</a>
               <a href="/user-profile" class="nav-item nav-link">My Account</a>
               <%}%>
             </div>
@@ -151,16 +175,16 @@
           </div>
           <div class="col-md-6">
             <div class="search">
-              <input type="text" placeholder="Search" />
-              <button><i class="fa fa-search"></i></button>
+              <input type="text" placeholder="Search by brand, gender and category of shoe" />
+              <button id="searchBtn"><i class="fa fa-search"></i></button>
             </div>
           </div>
-        <%  if (locals.user) { %>
+          <% if (locals.user) { %>
           <div class="col-md-3">
             <div class="user">
               <a href="/wishlist" class="btn wishlist">
                 <i class="fa fa-heart"></i>
-                <span>0</span>
+                <span></span>
               </a>
               <a href="/cart" class="btn cart">
                 <i class="fa fa-shopping-cart"></i>
@@ -172,44 +196,63 @@
         </div>
       </div>
     </div>
-    <!-- Bottom Bar End -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 
     <script>
       const logoutLink = document.querySelector(".logoutLink");
-
-logoutLink.addEventListener("click", async (event) => {
-    event.preventDefault();
-    Swal.fire({
-        title: "Are you sure?",
-        text: "Do you want to logout?",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, Logout!"
-    }).then(async (result) => {
-        if (result.isConfirmed) {
+      logoutLink.addEventListener("click", async (event) => {
+        event.preventDefault();
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to logout?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, Logout!",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
             Swal.fire({
-                title: "Successfully logged out",
-                icon: "success",
-                showCancelButton: false,
-                confirmButtonColor: "#3085d6",
-                confirmButtonText: "OK",
+              title: "Successfully logged out",
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
             }).then(async (result) => {
-                if (result.isConfirmed) {
-                    const response = await fetch("/auth/logout", {
-                        method: "POST",
-                    });
-                    if (response.redirected) {
-                        window.location.href = response.url;
-                    }
+              if (result.isConfirmed) {
+                const response = await fetch("/auth/logout", {
+                  method: "POST",
+                });
+                if (response.redirected) {
+                  window.location.href = response.url;
                 }
+              }
             });
-        }
-    });
-});
-
+          }
+        });
+      });
     </script>
+
+<script>
+const showInfoToast = (message) => {
+      toastr.options = {
+        "positionClass": "toast-top-center",
+        "timeOut": "3000",
+        "closeButton": true,
+      };
+      toastr.error(message);
+    };
+
+  const searchBtn = document.querySelector("#searchBtn");
+  searchBtn.addEventListener("click", () => {
+    const searchInput = document.querySelector("input[type='text']").value;
+    if (searchInput.trim() === "") {
+      showInfoToast("seach is empty!");
+      return;
+    }
+    window.location.href = `/search?search=${searchInput}`;
+  });
+</script>
+
   </body>
 </html>

@@ -387,24 +387,6 @@
 <script src="/adminpublic/cropper/cropper.min.js"></script>
 
 <script>
-  // document.addEventListener("DOMContentLoaded", function () {
-  //   const colorOptions = document.querySelectorAll(
-  //     ".custom-select.tm-select-accounts option"
-  //   );
-
-  //   colorOptions.forEach((option) => {
-  //     const color = option.getAttribute("data-color");
-  //     if (color) {
-  //       const span = option.querySelector(".color-circle");
-  //       if (span) {
-  //         span.style.backgroundColor = color;
-  //       } else {
-  //         option.style.backgroundColor = color; // In case span doesn't exist, which shouldn't be the case here.
-  //       }
-  //     }
-  //   });
-  // });
-
   const form = document.getElementById("addProductForm");
   const errorMessages = {
     name: "Please enter the product name.",
@@ -423,18 +405,83 @@
   };
 
   function displaySelectedImages(input) {
-    const container = document.getElementById("selectedImagesContainer");
-    container.innerHTML = "";
-    for (const file of input.files) {
+    const selectedImagesContainer = document.getElementById("selectedImagesContainer");
+    selectedImagesContainer.innerHTML = "";
+
+    for (let i = 0; i < input.files.length; i++) {
+      const file = input.files[i];
       const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = document.createElement("img");
-        img.src = e.target.result;
-        img.classList.add("selected-image");
-        container.appendChild(img);
+      const cropContainer = document.createElement("div");
+      cropContainer.classList.add("image-crop-container");
+      cropContainer.innerHTML = `
+        <div class="image-container">
+          <img id="image${i}" src="" alt="Select an image to crop">
+        </div>
+        <button class="crop-button" id="cropButton${i}">Crop Image ${i + 1}</button>
+      `;
+      selectedImagesContainer.appendChild(cropContainer);
+
+      const image = cropContainer.querySelector(`#image${i}`);
+      const cropButton = cropContainer.querySelector(`#cropButton${i}`);
+
+      reader.onload = () => {
+        image.src = reader.result;
+        let cropper = new Cropper(image, {
+          aspectRatio: 1,
+          viewMode: 1,
+        });
+
+        cropButton.addEventListener("click", (event) => {
+          event.preventDefault();
+          if (cropper) {
+            const canvas = cropper.getCroppedCanvas({
+              width: 800, // Increased size for better quality
+              height: 800, // Increased size for better quality
+              imageSmoothingEnabled: true,
+              imageSmoothingQuality: 'high',
+            });
+            const croppedImageDataURL = canvas.toDataURL('image/jpeg', 1.0); // Set quality to maximum
+            image.src = croppedImageDataURL;
+            const croppedImageFile = dataURLToFile(croppedImageDataURL, file.name);
+            const currentFiles = Array.from(input.files);
+            currentFiles[i] = croppedImageFile;
+
+            const newFileList = createFileList(currentFiles);
+            input.files = newFileList;
+            cropper.destroy();
+            cropper = null;
+          } else {
+            cropper = new Cropper(image, {
+              aspectRatio: 1,
+              viewMode: 1,
+            });
+          }
+        });
       };
       reader.readAsDataURL(file);
     }
+  }
+
+  function dataURLToFile(dataUrl, filename) {
+    const arr = dataUrl.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+
+    return new File([u8arr], filename, { type: mime });
+  }
+
+  function createFileList(currentList) {
+    const dataTransfer = new DataTransfer();
+    currentList.forEach((file) => {
+      dataTransfer.items.add(file);
+    });
+    return dataTransfer.files;
   }
 
   function addVariant() {
@@ -587,115 +634,10 @@
       }
     }
 
-    //brand validationn
-    if (!brand || brand === "Select brand") {
-      valid = false;
-      document.getElementById("brand-error").innerText = errorMessages.brand;
-    }
-
-    // tag validatin
-    if (!tag || tag === "Select tag") {
-      valid = false;
-      document.getElementById("tag-error").innerText = errorMessages.tag;
-    }
-
-    // Category validation
-    if (!category || category === "Select category") {
-      valid = false;
-      document.getElementById("category-error").innerText =
-        errorMessages.category;
-    }
-
     if (!valid) {
       event.preventDefault();
     }
   });
-
-  //image cropp
-  function displaySelectedImages(input) {
-    const selectedImagesContainer = document.getElementById(
-      "selectedImagesContainer"
-    );
-    selectedImagesContainer.innerHTML = "";
-
-    for (let i = 0; i < input.files.length; i++) {
-      const file = input.files[i];
-      const reader = new FileReader();
-      const cropContainer = document.createElement("div");
-      cropContainer.classList.add("image-crop-container");
-      cropContainer.innerHTML = `
-            <div class="image-container">
-                <img id="image${i}" src="" alt="Select an image to crop">
-            </div>
-            <button class="crop-button" id="cropButton${i}">Crop Image ${
-        i + 1
-      }</button>
-        `;
-      selectedImagesContainer.appendChild(cropContainer);
-
-      const image = cropContainer.querySelector(`#image${i}`);
-      const cropButton = cropContainer.querySelector(`#cropButton${i}`);
-
-      reader.onload = () => {
-        image.src = reader.result;
-        let cropper = new Cropper(image, {
-          aspectRatio: 1,
-          viewMode: 1,
-        });
-
-        cropButton.addEventListener("click", (event) => {
-          event.preventDefault();
-          if (cropper) {
-            const canvas = cropper.getCroppedCanvas({
-              width: 300,
-              height: 300,
-            });
-            const croppedImageDataURL = canvas.toDataURL();
-            image.src = croppedImageDataURL;
-            const croppedImageFile = dataURLToFile(
-              croppedImageDataURL,
-              file.name
-            );
-            const currentFiles = Array.from(input.files);
-            currentFiles[i] = croppedImageFile;
-
-            const newFileList = createFileList(currentFiles);
-            input.files = newFileList;
-            cropper.destroy();
-            cropper = null;
-          } else {
-            cropper = new Cropper(image, {
-              aspectRatio: 1,
-              viewMode: 1,
-            });
-          }
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-
-  function dataURLToFile(dataUrl, filename) {
-    const arr = dataUrl.split(",");
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const bstr = atob(arr[1]);
-
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) {
-      u8arr[n] = bstr.charCodeAt(n);
-    }
-
-    return new File([u8arr], filename, { type: mime });
-  }
-
-  function createFileList(currentList) {
-    const dataTransfer = new DataTransfer();
-    currentList.forEach((file) => {
-      dataTransfer.items.add(file);
-    });
-    return dataTransfer.files;
-  }
 </script>
 
 <script>
@@ -726,6 +668,7 @@
           if (data.status) {
             message.innerHTML = data.message;
             message.style.color = "rgb(0, 255, 38)";
+            targetButton.removeAttribute("disabled");
           } else {
             message.innerHTML = data.message;
             message.style.color = "red";
@@ -749,6 +692,5 @@
     };
   }
 </script>
-
 
 <%- include('../admin-partials/footer'); %>

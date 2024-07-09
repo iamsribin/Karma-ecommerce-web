@@ -243,92 +243,79 @@
     <div class="row align-items-center product-slider product-slider-4">
       <% locals.products.forEach((product)=>{ %> <% if(
       product.isActive===true){%>
-      <div class="col-lg-3" style="width: 450px">
-        <div class="product-item">
-          <div class="product-title">
-            <div class="text-left">
-              <a href="#"><%= product.name %></a>
-            </div>
-
-            <div class="ratting d-flex justify-content-between">
-              <div>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
+        <div class="col-lg-3" style="width: 450px;">
+          <div class="product-item  ">
+            <div class="product-title rounded-top">
+  
+  
+              <div class="ratting d-flex justify-content-between">
+                <div>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                  <i class="fa fa-star"></i>
+                </div>
+               
+                <% if (product.totalQuantity == 0 ) { %>
+                <span class="badge badge-danger"> Out Of Stock</span>
+                <% } else if (product.totalQuantity < 10) { %>
+                <span class="badge badge-warning">Limited Stock</span>
+                <% } else { %>
+                <span class="badge badge-success">In Stock</span>
+                <% } %>
               </div>
-              <% if (product.totalQuantity < 10) { %>
-              <i
-                style="
-                  background-color: rgb(255, 174, 0);
-                  color: rgb(0, 0, 0);
-                  border-radius: 7px;
-                "
-                >&nbsp; Limited Stock &nbsp;</i
-              >
-              <% } else if (product.totalQuantity == 0) { %>
-              <i
-                style="
-                  background-color: rgb(255, 0, 0);
-                  color: rgb(0, 0, 0);
-                  border-radius: 7px;
-                "
-                >&nbsp; Out Of Stock &nbsp;</i
-              >
+            </div>
+            <div class="product-image">
+              <a href="product-detail.html">
+                <img src="<%= product.imagePaths[0] %>" alt="Product Image" />
+              </a>
+              <div class="product-action">
+  
+             <a href="#" tabindex="0" class="addToWishlist" data-id="<%= product._id %>" data-toggle="tooltip" title="wishlist">
+                <i class="fa fa-heart"></i>
+              </a>
+                <a
+                  href="/product/<%= product._id %>"
+                  tabindex="0"
+                  data-toggle="tooltip"
+                  title="view"
+                  ><i class="fa fa-search"></i
+                ></a>
+  
+              </div>
+            </div>
+            <div class="product-price rounded-bottom">
+              <div class="d-flex justify-content-between">
+                <div>
+                  <span><b><%= product.name %></b></span>
+                </div>
+                <div>
+                  <span class="badge badge-light"><%= product.brand.name %></span>
+                </div>
+              </div>
+              <div class="text-dark">
+                <%
+                function capitalizeFirstLetter(string) {
+                  return string.charAt(0).toUpperCase() + string.slice(1);
+                }
+                %>
+                <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
+                            </div>
+              <% if (product.offerAmount) { %>
+              <h6 class="text-dark">
+                $ <%= product.offerAmount %>&nbsp;&nbsp;
+                <span style="text-decoration: line-through; color: crimson"
+                  ><%= product.basePrice %></span
+                >
+              </h6>
               <% } else { %>
-              <i
-                style="
-                  background-color: greenyellow;
-                  color: rgb(0, 0, 0);
-                  border-radius: 7px;
-                "
-                >&nbsp; In Stock &nbsp;</i
-              >
-              <% } %>
+                <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
+                <% } %>
+              <!-- <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a> -->
             </div>
           </div>
-          <div class="product-image">
-            <a href="product-detail.html">
-              <img src="<%= product.imagePaths[0] %>" alt="Product Image" />
-            </a>
-            <div class="product-action">
-
-              <a href="#" tabindex="0" data-toggle="tooltip" title="wishlist"
-                ><i class="fa fa-heart"></i
-              ></a>
-              <a
-                href="/product/<%= product._id %>"
-                tabindex="0"
-                data-toggle="tooltip"
-                title="view"
-                ><i class="fa fa-search"></i
-              ></a>
-
-            </div>
-          </div>
-          <div class="product-price">
-            <div class="text-black">
-              <span><b>BRAND : &nbsp;&nbsp;&nbsp;</b></span>
-              <span class="text-capitalize"> <%= product.brand.name %></span
-              ><br />
-              <span><b>Category : &nbsp;</b></span>
-              <span><%= product.category.name %></span>
-            </div>
-            <% if (product.offerAmount) { %>
-            <h5 class="text-white">
-              $ <%= product.offerAmount %>&nbsp;&nbsp;
-              <span style="text-decoration: line-through; color: crimson"
-                ><%= product.basePrice %></span
-              >
-            </h5>
-            <% } else { %>
-            <h5 class="text-white"><span>$</span><%= product.basePrice %></h5>
-            <% } %>
-            <!-- <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a> -->
-          </div>
-        </div>
-      </div>
+        </div>   
       <%}%> <%})%>
     </div>
   </div>
@@ -344,12 +331,10 @@
     <div class="row align-items-center product-slider product-slider-4">
       <% locals.products.forEach((product)=>{ %> <% if(
       product.isActive===true){%>
-      <div class="col-lg-3" style="width: 450px">
-        <div class="product-item">
-          <div class="product-title">
-            <div class="text-left">
-              <a href="#"><%= product.name %></a>
-            </div>
+      <div class="col-lg-3" style="width: 450px;">
+        <div class="product-item  ">
+          <div class="product-title rounded-top">
+
 
             <div class="ratting d-flex justify-content-between">
               <div>
@@ -359,33 +344,13 @@
                 <i class="fa fa-star"></i>
                 <i class="fa fa-star"></i>
               </div>
-              <% if (product.totalQuantity < 10) { %>
-              <i
-                style="
-                  background-color: rgb(255, 174, 0);
-                  color: rgb(0, 0, 0);
-                  border-radius: 7px;
-                "
-                >&nbsp; Limited Stock &nbsp;</i
-              >
-              <% } else if (product.totalQuantity == 0) { %>
-              <i
-                style="
-                  background-color: rgb(255, 0, 0);
-                  color: rgb(0, 0, 0);
-                  border-radius: 7px;
-                "
-                >&nbsp; Out Of Stock &nbsp;</i
-              >
+             
+              <% if (product.totalQuantity == 0 ) { %>
+              <span class="badge badge-danger"> Out Of Stock</span>
+              <% } else if (product.totalQuantity < 10) { %>
+              <span class="badge badge-warning">Limited Stock</span>
               <% } else { %>
-              <i
-                style="
-                  background-color: greenyellow;
-                  color: rgb(0, 0, 0);
-                  border-radius: 7px;
-                "
-                >&nbsp; In Stock &nbsp;</i
-              >
+              <span class="badge badge-success">In Stock</span>
               <% } %>
             </div>
           </div>
@@ -394,10 +359,9 @@
               <img src="<%= product.imagePaths[0] %>" alt="Product Image" />
             </a>
             <div class="product-action">
-
-              <a href="#" tabindex="0" data-toggle="tooltip" title="wishlist"
-                ><i class="fa fa-heart"></i
-              ></a>
+              <a href="#" tabindex="0" class="addToWishlist" data-id="<%= product._id %>" data-toggle="tooltip" title="wishlist">
+                <i class="fa fa-heart"></i>
+              </a>
               <a
                 href="/product/<%= product._id %>"
                 tabindex="0"
@@ -405,26 +369,34 @@
                 title="view"
                 ><i class="fa fa-search"></i
               ></a>
-
             </div>
           </div>
-          <div class="product-price">
-            <div class="text-dark">
-              <span><b>BRAND : &nbsp;&nbsp;&nbsp;</b></span>
-              <span class="text-capitalize"> <%= product.brand.name %></span
-              ><br />
-              <span><b>Category : &nbsp;</b></span>
-              <span><%= product.category.name %></span>
+          <div class="product-price rounded-bottom">
+            <div class="d-flex justify-content-between">
+              <div>
+                <span><b><%= product.name %></b></span>
+              </div>
+              <div>
+                <span class="badge badge-light"><%= product.brand.name %></span>
+              </div>
             </div>
+            <div class="text-dark">
+              <%
+              function capitalizeFirstLetter(string) {
+                return string.charAt(0).toUpperCase() + string.slice(1);
+              }
+              %>
+              <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
+                          </div>
             <% if (product.offerAmount) { %>
-            <h5 class="text-white">
+            <h6 class="text-dark">
               $ <%= product.offerAmount %>&nbsp;&nbsp;
               <span style="text-decoration: line-through; color: crimson"
                 ><%= product.basePrice %></span
               >
-            </h5>
+            </h6>
             <% } else { %>
-              <h5 class="text-white"><span>$</span><%= product.basePrice %></h5>
+              <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
               <% } %>
             <!-- <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a> -->
           </div>
@@ -437,4 +409,70 @@
 <!-- Recent Product End -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="/frond-end-JS/home.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 <%- include('../userPartials/footer'); %>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+
+
+  const showInfoToast = (message) => {
+      toastr.options = {
+        "positionClass": "toast-top-center",
+        "timeOut": "3000",
+        "closeButton": true,
+      };
+      toastr.info(message);
+    };
+
+    const showErrorToast = (message) => {
+    toastr.options = {
+        "positionClass": "toast-top-center",
+        "timeOut": "3000",
+        "closeButton": true,
+      };
+      toastr.error(message);
+    }
+  
+    const showSuccessToast = (message) => {
+    toastr.options = {
+        "positionClass": "toast-top-center",
+        "timeOut": "3000",
+        "closeButton": true,
+      };
+      toastr.success(message);
+    }
+  
+
+  const addToWishlistButtons = document.querySelectorAll('.addToWishlist');
+  addToWishlistButtons.forEach(item => {
+    item.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const productId = item.dataset.id;
+      try {
+        const response = await fetch('/add-wishlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ productId })
+        });
+
+        const data = await response.json();
+        console.log("data", data);
+        if (response.ok) {
+          showSuccessToast("item added wishlist successfully");
+        }else{
+          showErrorToast(`${data.message}`);
+        }
+
+
+      } catch (error) {
+        console.log(error);
+      showErrorToast("Failed to add to wishlist");
+      }
+    });
+  });
+});
+
+</script>

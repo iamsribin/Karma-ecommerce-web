@@ -17,26 +17,22 @@
               <p>Your OTP was sent to <span style="color: rgb(239, 108, 0);"><%=locals.email%></span></p>
               <h6 class="alert-danger errorMessage" style="margin-bottom: 10px; color: red;"></h6>
               <div class="otp-field mb-4">
-                <input type="number"  class="email-otp-input" />
-                <input type="number"  class="email-otp-input" disabled />
-                <input type="number"  class="email-otp-input" disabled />
-                <input type="number"  class="email-otp-input" disabled />
-                <!-- <input type="number" disabled />
-                <input type="number" disabled /> -->
+                <input type="number" class="email-otp-input" />
+                <input type="number" class="email-otp-input" disabled />
+                <input type="number" class="email-otp-input" disabled />
+                <input type="number" class="email-otp-input" disabled />
               </div>
-  
-              <button class="btn btn-primary mb-3 verify-otp">
+              <button class="btn btn-primary mb-3 verify-otp" disabled>
                 Verify
               </button>
-              <p class="resend text-muted mb-0 resendButtonContainer">
+              <p class="resend text-muted mb-0 resendButtonContainer" style="display: none;">
                 Didn't receive code? <a class="resend-otp" href="">Request again</a>
               </p>
-              <div id="timer" style="padding-top: 10px;">Time remaining: 2:59</div>
+              <div id="timer" style="padding-top: 10px;">Time remaining: 1:59</div>
             </div>
           </div>
         </div>
       </div>
-
     <script src="/frond-end-JS/forgotPasswordOtp.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </body>

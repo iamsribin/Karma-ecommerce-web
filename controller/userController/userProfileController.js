@@ -2,8 +2,10 @@ const userDB = require("../../models/userModels/userModel");
 const AddressDB = require("../../models/userModels/addressModel");
 const mongoose = require("mongoose");
 const UserDB = require("../../models/userModels/userModel");
+const Order = require("../../models/userModels/orderModel");
 const { createError } = require("../../utils/errors");
 const cartDB = require("../../models/userModels/cartModel");
+const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
 
@@ -16,13 +18,15 @@ exports.getUserProfile = async (req, res, next) => {
     
     const cart = await cartDB.findOne({userId: req.session.userId});
     const cartLength = cart?.cart?.length;
-
-    console.log(userDetalis, addresses);
+    const userId = req.session.userId;; 
+    const orders = await Order.find({ userId }).populate('products.productId').populate('products.size');
+    console.log(orders);
     res.render("user/pages/userProfile", {
       userDetalis,
       cartLength,
       user:userDetalis,
       addresses: addresses?.addresses,
+      orders,
     });
   } catch (error) {
     console.log(error);
@@ -89,42 +93,50 @@ exports.editUserInfo = async (req, res, next) => {
 //create addressess
 exports.createAddressess = async (req, res, next) => {
   try {
-    const userId = req.session.userId;
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return next(createError(404, "Invalid user ID"));
-    }
+      const userId = req.session.userId;
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return next(createError(404, "Invalid user ID"));
+      }
 
-    const addressData = {
-      fullName: req.body.name,
-      phoneNumber: req.body.number,
-      address: req.body.address,
-      locality: req.body.locality,
-      pincode: req.body.pincode,
-      state: req.body.state,
-      district: req.body.district,
-      landMark: req.body.landmark,
-      houseNo: req.body.houseNo,
-      addressType: req.body.addressType,
-    };
+      console.log("add", req.body);
 
-    const userAddress = await AddressDB.findOne({ userId });
+      const addressData = {
+          fullName: req.body.name,
+          phoneNumber: req.body.number,
+          address: req.body.address,
+          locality: req.body.locality,
+          pincode: req.body.pincode,
+          state: req.body.state,
+          district: req.body.district,
+          landMark: req.body.landmark,
+          houseNo: req.body.houseNo,
+          addressType: req.body.addressType,
+      };
 
-    if (userAddress) {
-      userAddress.addresses.push(addressData);
-      await userAddress.save();
-    } else {
-      await AddressDB.create({
-        userId,
-        addresses: [addressData],
-      });
-    }
-    
-    return res.status(200).send(addressData);
+      const userAddress = await AddressDB.findOne({ userId });
+
+      let newAddress;
+      if (userAddress) {
+          console.log("old address");
+          userAddress.addresses.push(addressData);
+          await userAddress.save();
+          newAddress = userAddress.addresses[userAddress.addresses.length - 1];
+      } else {
+          const newAddressDocument = await AddressDB.create({
+              userId,
+              addresses: [addressData],
+          });
+          console.log("log new address");
+          newAddress = newAddressDocument.addresses[0];
+      }
+
+      return res.status(200).send(newAddress);
   } catch (error) {
-    console.log(error);
-    next(createError(500, error.message || "Internal Server Error"));
+      console.log("error new address:", error);
+      next(createError(500, error.message || "Internal Server Error"));
   }
 };
+
 
 //get Edit Address Details With Id
 exports.getEditAddressDetailsWithId = async (req, res, next) => {
@@ -185,6 +197,7 @@ exports.editAddressDetails = async (req, res, next) => {
     const { id } = req.params;
     const userId = req.session.userId;
 
+    console.log("edit body",req.body);
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return next(createError(404, "Invalid user ID"));
     }
@@ -257,9 +270,63 @@ exports.deleteAddress = async (req, res, next) => {
     userAddress.addresses.splice(addressIndex, 1);
     await userAddress.save();
 
-    return res.status(200).send(userAddress);
+    return res.status(200).json({userAddress});
   } catch (err) {
     console.log(err);
     return next(createError(500, "Failed to delete address"));
   }
 };
+
+//get orders
+exports.getUserOrders = async (req, res) => {
+  try {
+    const userId = req.session.userId;; 
+    const orders = await Order.find({ userId }).populate('products.productId').populate('products.size');
+
+    res.render('orders', { orders });
+  } catch (error) {
+    console.error('Error fetching orders:', error);
+    res.status(500).send('Internal Server Error');
+  }
+};
+
+//change password
+exports.setNewPassword = async (req, res) => {
+  try {
+    const userId = req.session.userId;
+
+    if(!userId){
+      return res.status(404).redirect("/");
+    }
+    const { currPassword, newPassword } = req.body;
+
+    const user = await UserDB.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if(user.googleId){
+      return res.status(404).json({ message: "Password change not available for Google sign-in users." });
+    }
+
+    const isMatch = await bcrypt.compare(currPassword, user.password);
+
+    if(!isMatch){
+      return res.status(400).json({ message: "Password is incorrect" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    const updateData = { password:  hashedPassword };
+    await UserDB.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
+
+    return res.status(200).json({message:"success"})
+
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "something went wrong" });
+  }
+}

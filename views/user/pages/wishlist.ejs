@@ -1,0 +1,164 @@
+<%- include('../userPartials/header'); %>
+
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-wrap">
+    <div class="container-fluid">
+        <ul class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Products</a></li>
+            <li class="breadcrumb-item active">Wishlist</li>
+        </ul>
+    </div>
+</div>
+<!-- Breadcrumb End -->
+
+<!-- Wishlist Start -->
+<style>
+    .wishlist-item {
+        display: flex;
+        align-items: center;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 15px;
+        padding: 10px;
+        position: relative;
+    }
+    .wishlist-image {
+        width: 100px;
+        height: 100px;
+        object-fit: contain;
+        margin-right: 15px;
+    }
+    .wishlist-details {
+        flex-grow: 1;
+    }
+    .wishlist-title {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+    .wishlist-rating {
+        color: #388e3c;
+        margin-bottom: 5px;
+    }
+    .wishlist-price {
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .wishlist-original-price {
+        text-decoration: line-through;
+        color: #757575;
+        margin-left: 10px;
+    }
+    .wishlist-discount {
+        color: #388e3c;
+        margin-left: 10px;
+    }
+    .assured-icon {
+        width: 20px;
+        height: 20px;
+        vertical-align: middle;
+    }
+    .delete-btn {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: none;
+        border: none;
+        color: red;
+        cursor: pointer;
+    }
+    .wishlist-content {
+        display: flex;
+        align-items: center;
+        width: 100%;
+    }
+</style>
+
+<div id="wishlist-container" style="padding: 10px 90px 90px">
+    <h1 class="text-center">My Wishlist</h1>
+</div>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script>
+    const showErrorToast = (message) => {
+    toastr.options = {
+        "positionClass": "toast-top-center",
+        "timeOut": "3000",
+        "closeButton": true,
+      };
+      toastr.error(message);
+    }
+  
+    const showSuccessToast = (message) => {
+    toastr.options = {
+        "positionClass": "toast-top-center",
+        "timeOut": "3000",
+        "closeButton": true,
+      };
+      toastr.success(message);
+    }
+
+</script>
+
+<script>
+    const wishlistData = JSON.parse('<%= JSON.stringify(wishlist) %>'.replace(/&#34;/g, '"'));
+    const wishlistContainer = document.getElementById('wishlist-container');
+
+
+   async function deleteWishlistItem(productId) {
+    try {
+        const response = await fetch('/delete-wishlist-item', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productId: productId }),
+        })
+
+        const data = await response.json()
+
+        if(response.ok){
+            showSuccessToast('Item deleted from wishlist');
+            document.getElementById(`wishlist-item-${productId}`).remove();
+        }else{
+            showErrorToast(`${data.error}`);
+        }
+    } catch (error) {
+        console.log('Error deleting wishlist item:', error);
+      }
+    }
+if(wishlistData.items.length > 0) {
+    wishlistData.items.forEach(item => {
+        const product = item.product;
+        const hasOfferPrice = product.offerAmount && product.offerAmount < product.basePrice;
+        const discountPercentage = hasOfferPrice ? Math.round((product.basePrice - product.offerAmount) / product.basePrice * 100) : 0;
+        
+        const wishlistItem = `
+            <div id="wishlist-item-${product._id}" class="wishlist-item">
+                <a href="/product/${product._id}" class="wishlist-content">
+                    <img src="${product.imagePaths[0]}" alt="${product.name}" class="wishlist-image">
+                    <div class="wishlist-details">
+                        <div class="wishlist-title">${product.name}</div>
+                        <div class="wishlist-rating">
+                            ${product.rating || 4.5}★ ${product.reviews ? `(${product.reviews})` : ''}
+                        </div>
+                        <div class="wishlist-price">
+                            ₹${hasOfferPrice ? product.offerAmount : product.basePrice}
+                            ${hasOfferPrice ? `
+                                <span class="wishlist-original-price">₹${product.basePrice}</span>
+                                <span class="wishlist-discount">${discountPercentage}% off</span>
+                            ` : ''}
+                        </div>
+                    </div>
+                </a>
+                <button class="delete-btn" onclick="deleteWishlistItem('${product._id}')">❌</button>
+            </div>
+        `;
+        wishlistContainer.innerHTML += wishlistItem;
+    });
+}else{
+    wishlistContainer.innerHTML = '<h3 class="text-center">No items in your wishlist</h3>';  // Show a message if there are no items in wishlist.  // Replace this with your own HTML structure.  // You can also add a button to add items to wishlist.  // You may also want to add a button to go to the shopping cart.  // You can use the provided CSS styles for the wishlist items.  // You can also use the provided JavaScript function to delete wishlist items.  // You can use the provided CSS styles for the delete button.  // You can also use the provided JavaScript function to show success and error toasts.  // You can use the provided CSS styles for the toasts.  // You can also use the provided JavaScript function to fetch the wishlist data from the server.  // You can use the provided CSS styles for the wishlist container.  // You can also use the
+}
+</script>
+<!-- Wishlist End -->
+
+<%- include('../userPartials/footer'); %>

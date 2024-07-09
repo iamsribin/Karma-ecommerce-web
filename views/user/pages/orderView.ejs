@@ -1,0 +1,502 @@
+<%- include('../userPartials/header'); %>
+
+<style>
+  body {
+    font-family: Helvetica, sans-serif;
+  }
+  a {
+    text-decoration: none;
+  }
+
+  /* PROGRESS TRACKER */
+  .progress-tracker {
+    display: flex;
+    margin: 0;
+    counter-reset: item;
+    list-style-type: none;
+    padding: 0;
+  }
+  .progress-tracker .step {
+    flex: 1;
+    position: relative;
+  }
+  .progress-tracker .step:before {
+    background: #ff0000;
+    border-radius: 20px;
+    color: #ffffff;
+    content: "";
+    font-size: 18px;
+    line-height: 1.8em;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    box-sizing: border-box;
+  }
+  .progress-tracker .step .step-name {
+    display: inline-flex;
+    margin: 0 0 0 15px;
+    background: #dddddd;
+    height: 35px;
+    width: 100%;
+    align-items: center;
+    padding: 0 30px;
+    color: #777777;
+    line-height: 1.2em;
+    font-size: 13px;
+  }
+  .progress-tracker .step .step-date {
+    display: block;
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #777777;
+  }
+  .progress-tracker .step:last-child .step-name {
+    border-radius: 0 20px 20px 0;
+    width: calc(100% - 45px);
+  }
+  .progress-tracker .step.active .step-name {
+    color: #333333;
+    font-weight: bold;
+  }
+  .progress-tracker .step.active:before {
+    background: #46c0f5;
+  }
+  .progress-tracker .step.completed:before {
+    background: #87db55;
+    content: "\2714";
+  }
+  .progress-tracker .step.red:before {
+    background: #ff0000;
+    content: "\2714";
+  }
+</style>
+
+<div class="container-fluid bg-light p-4">
+  <div class="row justify-content-center">
+    <div
+      class="col-12 col-md-11 col-lg-11 text-white p-4 d-flex justify-content-between"
+      style="background-color: #4d869c"
+    >
+      <div class="col-6">
+        <h3>Sent to:</h3>
+        <p>
+          <%=order.address.fullName%> &nbsp; <%=order.address.phoneNumber%><br /><%=order.address.state%>
+          &nbsp; <%=order.address.district%><br /><%=order.address.houseNo%>
+          <%=order.address.address%> / <%=order.address.pincode%>
+        </p>
+      </div>
+      <div class="col-6 pt-5">
+        <span>Download Invoice:</span> &nbsp; &nbsp;
+       <a href="/dowload-invoice/<%=order.orderId%>"><button class="btn">Download</button></a> 
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center mt-4">
+    <div class="col-12 col-md-11 col-lg-11 bg-white p-4">
+      <h2 class="text-center">Here's what you ordered:</h2>
+      <hr />
+      <div class="d-flex justify-content-between">
+        <span>Order id: <%=order.orderId%></span>
+        <% if (orderProduct.status === "pending" || orderProduct.status ===
+        "processing" || orderProduct.status === "shipped") { %>
+        <button
+          class="btn btn-danger"
+          id="cancelBtn"
+          style="background-color: red; color: white"
+        >
+          Cancel this order
+        </button>
+        <% } %> <% if (orderProduct.status === "delivered") { %>
+        <button
+          class="btn btn-success"
+          id="returnBtn"
+          style="background-color: red; color: white"
+        >
+          Return
+        </button>
+        <% } %>
+      </div>
+
+      <hr />
+      <br />
+      <ol class="progress-tracker">
+        <% orderProduct.statusHistory.forEach((item) => { %> <% if (["returned",
+        "canceled", "return rejected"].includes(item.status)) { %>
+        <li class="step red">
+          <span class="step-date" style="width: 100%"
+            ><%=item.date.toDateString()%></span
+          >
+          <a href="#" class="step-name"><%=item.status%></a>
+        </li>
+        <% } else { %>
+        <li class="step completed">
+          <span class="step-date" style="width: 100%"
+            ><%=item.date.toDateString()%></span
+          >
+          <a class="step-name"><%=item.status%></a>
+        </li>
+        <% } %> <% }) %>
+      </ol>
+
+      <hr />
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex justify-content-between text-secondary">
+            <div class="col-8">ITEM</div>
+            <div class="col-1 text-center">QTY</div>
+            <div class="col-1 text-right">COST</div>
+          </div>
+          <hr />
+          <div class="d-flex justify-content-between align-items-center pb-3">
+            <div class="col-2">
+              <img
+                src="<%=orderProduct.productId.imagePaths[0]%>"
+                alt="Product Image"
+                class="img-fluid product-image"
+              />
+            </div>
+            <div class="col-6">
+              <strong
+                ><%= orderProduct.productId.brand.name %>'S
+                <%=orderProduct.productId.name%> &nbsp; &nbsp; &nbsp;</strong
+              >
+              <br />
+              <span>SIZE: <%=orderProduct.size.size%></span>
+              <br />
+              <span
+                ><%= orderProduct.productId.tag.tagName.toLowerCase() %></span
+              >
+              <br />
+              <span
+                ><%= orderProduct.productId.category.name.toLowerCase() %></span
+              >
+              <% if (orderProduct.offerPrice) { %>
+              <p class="mb-0 text-primary">
+                ₹<%=orderProduct.offerPrice%>
+                <span
+                  class="mb-0 text-danger"
+                  style="text-decoration: line-through"
+                  >₹<%=orderProduct.price%></span
+                >
+              </p>
+              <% } else { %>
+              <p class="mb-0 text-primary">₹<%=orderProduct.price%></p>
+              <% } %> <% if (orderProduct.status === "delivered" ||
+              orderProduct.status === "pickup completed") { %>
+              <p class="mb-0 text-success font-weight-bold">
+                <%=orderProduct.status%>
+              </p>
+              <% } else if (orderProduct.status === "canceled" ||
+              orderProduct.status === "return rejected" || orderProduct.status
+              === "returned" ) { %>
+              <p class="mb-0 text-danger font-weight-bold">
+                <%=orderProduct.status %>
+              </p>
+              <% } else { %>
+              <p class="mb-0 text-warning font-weight-bold">
+                <%=orderProduct.status%>
+              </p>
+              <% } %> <% if (orderProduct.status === "pending" ||
+              orderProduct.status === "processing" || orderProduct.status ===
+              "shipped") { %>
+              <p>
+                "Estimated delivery by
+                <b
+                  ><%= order.deliveryDate.toLocaleDateString('en-US', { weekday:
+                  'short', month: 'short', day: 'numeric' }) %></b
+                >: This may vary depending on your location."
+              </p>
+              <% } %>
+            </div>
+            <div class="col-1 text-center"><%=orderProduct.quantity%></div>
+            <div class="col-1 text-right">₹<%=orderProduct.totalPrice%></div>
+          </div>
+        </div>
+      </div>
+      <%if(productReview){%>
+      <hr />
+      <h2 class="text-center">Here's your review</h2>
+      <div class="reviews-submitted d-flex justify-content-around ">
+        <div class="col-8 ml-5">
+        <div class="reviewer">
+          <%=productReview.userId.name%>, -
+          <span><%=productReview.createdAt.toDateString()%></span>
+        </div>
+        <div class="ratting">
+          <%for(let i = 0; i < productReview.rating; i++){%>
+          <i class="fa fa-star"></i>
+          <%}%>
+        </div>
+        <p><%=productReview.Description%></p>
+       </div>
+        <div class="col-4 ml-5">
+          <a class="text-danger deleteAction" >
+            <i class="far fa-trash-alt"></i>
+          </a>
+          &nbsp; &nbsp;
+          <a class="text-primary">
+            <i style="color: rgb(43, 0, 255)" class="fas fa-edit"></i>
+          </a>
+        </div>
+      </div>
+      <%}%>
+      <hr />
+      <div class="container mt-5">
+        <% if (order.products.length > 1) { %>
+        <h2 class="mb-4">Other items in this order</h2>
+        <% order.products.forEach(product => { %> <% if (product._id !==
+        orderProduct._id) { %>
+        <div
+          class="row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center"
+        >
+          <div class="d-flex align-items-center col-md-10">
+            <div class="col-md-2 mr-3">
+              <img
+                src="<%= product.productId.imagePaths[0] %>"
+                alt="Product Image"
+                class="img-fluid product-image"
+              />
+            </div>
+            <div class="col-md-6 mr-3">
+              <p><b><%= product.productId.name %></b></p>
+              <p>
+                <b>
+                  <div
+                    class="tm-status-circle <%= product.status === 'canceled' || product.status === 'return rejected' || product.status === 'returned' ? 'cancelled' : product.status === 'delivered' ? 'moving' : 'pending' %>"
+                  ></div>
+                  <%= product.status.charAt(0).toUpperCase() +
+                  product.status.slice(1) %>
+                </b>
+              </p>
+              <p><b>Size: <%= product.size.size %></b></p>
+            </div>
+            <div class="col-md-2">
+              <p><b>₹ <%= product.totalPrice %></b></p>
+            </div>
+          </div>
+          <div class="d-flex flex-column">
+            <a href="/order-view/<%= product._id %>/<%= order.orderId %>">
+              <button class="btn btn-primary mb-2 w-100">View</button>
+            </a>
+            <% if (product.status === "delivered") { %>
+            <button class="btn btn-primary w-100">Review</button>
+            <% } %>
+          </div>
+        </div>
+        <% } %> <% }); %> <% } %>
+      </div>
+      <hr />
+    </div>
+  </div>
+</div>
+
+<!-- Return Reason Modal -->
+<div
+  class="modal fade"
+  id="returnModal"
+  tabindex="-1"
+  aria-labelledby="returnModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="returnModalLabel">Reason for Returning</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea
+          id="returnReason"
+          class="form-control"
+          rows="3"
+          placeholder="Please provide the reason for returning the product (at least 5 words)"
+        ></textarea>
+        <div
+          id="returnReasonError"
+          class="text-danger mt-2"
+          style="display: none"
+        >
+          Please enter at least 5 words.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="submitReturnReason">
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Cancel Reason Modal -->
+<div
+  class="modal fade"
+  id="cancelModal"
+  tabindex="-1"
+  aria-labelledby="cancelModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cancelModalLabel">Reason for Cancelling</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea
+          id="cancelReason"
+          class="form-control"
+          rows="3"
+          placeholder="Please provide the reason for cancelling the product (at least 5 words)"
+        ></textarea>
+        <div
+          id="cancelReasonError"
+          class="text-danger mt-2"
+          style="display: none"
+        >
+          Please enter at least 5 words.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="submitCancelReason">
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+ $(document).ready(function () {
+    $("#returnBtn").click(function () {
+        $("#returnModal").modal("show");
+    });
+
+    $("#cancelBtn").click(function () {
+        $("#cancelModal").modal("show");
+    });
+
+    $("#submitReturnReason").click(async function () {
+        const returnReason = $("#returnReason").val().trim();
+        if (returnReason.split("").length < 5) {
+            $("#returnReasonError").show();
+        } else {
+            $("#returnReasonError").hide();
+            try {
+                const response = await fetch("/return-product", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderId: "<%=order.orderId%>",
+                        productId: "<%=orderProduct.productId._id%>",
+                        reason: returnReason,
+                    }),
+                });
+
+                $("#returnModal").modal("hide");
+                if (response.ok) {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Your return request has been submitted successfully.",
+                        icon: "success",
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "There was an error processing your return request. Please try again.",
+                        icon: "error",
+                    });
+                }
+            } catch (error) {
+                $("#returnModal").modal("hide");
+                Swal.fire({
+                    title: "Error!",
+                    text: "There was an error processing your return request. Please try again.",
+                    icon: "error",
+                });
+            }
+        }
+    });
+
+    $("#submitCancelReason").click(async function () {
+        const cancelReason = $("#cancelReason").val().trim();
+        if (cancelReason.split("").length < 5) {
+            $("#cancelReasonError").show();
+        } else {
+            $("#cancelReasonError").hide();
+            try {
+                const response = await fetch("/cancel-product", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        orderId: "<%=order.orderId%>",
+                        productId: "<%=orderProduct.productId._id%>",
+                        reason: cancelReason,
+                    }),
+                });
+
+                $("#cancelModal").modal("hide");
+                if (response.status === 200) {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Your cancellation request has been submitted successfully.",
+                        icon: "success",
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "There was an error processing your cancellation request. Please try again.",
+                        icon: "error",
+                    });
+                }
+            } catch (error) {
+                $("#cancelModal").modal("hide");
+                Swal.fire({
+                    title: "Error!",
+                    text: "There was an error processing your cancellation request. Please try again.",
+                    icon: "error",
+                });
+            }
+        }
+    });
+});
+
+</script>
+
+<%- include('../userPartials/footer'); %>

@@ -8,9 +8,9 @@ const TAX_PERCENTAGE = 0.18;
 // const HIGHER_TAX_PERCENTAGE = 0.18;
 
 // Helper function to calculate totals
-const calculateTotals = (cart, taxPercentage) => {
-  cart.tax = Math.floor((cart.subTotal - cart.discount) * taxPercentage);
-  cart.grandTotal = cart.subTotal + cart.tax - cart.discount;
+const calculateTotals = (cart, ) => {
+  cart.tax = Math.ceil(cart.subTotal - cart.discount );
+  cart.grandTotal = cart.subTotal - cart.discount;
 };
 
 // Render cart page
@@ -50,7 +50,7 @@ exports.renderCartPage = async (req, res, next) => {
 exports.addCart = async (req, res, next) => {
   try {
     const { productId, size, quantity } = req.body;
-    const userId = req.session.userId;
+    const userId = req.session.userId;   
 
     if (!userId) {
       return next(createError(401, "User not authenticated"));
@@ -63,7 +63,8 @@ exports.addCart = async (req, res, next) => {
       return next(createError(404, "Product not found"));
     }
 
-    const price = product.offerAmount || product.basePrice;
+    const price = product.basePrice;
+    const offerPrice = product.offerAmount ? product.offerAmount: undefined;
 
     if (userCart) {
       const existingProductIndex = userCart.cart.findIndex(
@@ -73,26 +74,26 @@ exports.addCart = async (req, res, next) => {
       if (existingProductIndex !== -1) {
         userCart.cart[existingProductIndex].quantity += parseInt(quantity, 10);
       } else {
-        userCart.cart.push({ product: productId, size, quantity });
+        userCart.cart.push({ product: productId, size, quantity ,price, offerPrice});
       }
 
       userCart.subTotal += product.basePrice * quantity;
       userCart.discount += product.offerAmount ? (product.basePrice - product.offerAmount) * quantity : 0;
-      calculateTotals(userCart, TAX_PERCENTAGE);
+      calculateTotals(userCart);
 
       await userCart.save();
     } else {
       const subTotal = product.basePrice * quantity;
       const discount = product.offerAmount ? (product.basePrice - product.offerAmount) * quantity : 0;
-      const tax = Math.floor((subTotal - discount) * TAX_PERCENTAGE);
-      const grandTotal = subTotal + tax - discount;
+      // const tax = Math.floor((subTotal - discount) * TAX_PERCENTAGE);
+      const grandTotal = subTotal  - discount;
 
       await Cart.create({
         userId,
-        cart: [{ product: productId, size, quantity }],
+        cart: [{ product: productId, size, quantity, price, offerPrice}],
         subTotal,
         discount,
-        tax,
+        // tax,
         grandTotal,
       });
     }
@@ -147,7 +148,7 @@ exports.updateCartQuantity = async (req, res, next) => {
       return res.status(400).send({ message: "Invalid action" });
     }
 
-    calculateTotals(userCart, TAX_PERCENTAGE);
+    calculateTotals(userCart);
     await userCart.save();
 
     return res.status(200).send({ message: "Cart updated successfully" });
@@ -190,7 +191,7 @@ exports.removeItemsFromCart = async (req, res, next) => {
     const quantity = userCart.cart[productIndex].quantity;
     userCart.subTotal -= product.basePrice * quantity;
     userCart.discount -= product.offerAmount ? (product.basePrice - product.offerAmount) * quantity : 0;
-    calculateTotals(userCart, TAX_PERCENTAGE);
+    calculateTotals(userCart);
 
     userCart.cart.splice(productIndex, 1);
 

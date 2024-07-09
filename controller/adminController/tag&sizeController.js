@@ -102,6 +102,15 @@ exports.editTag = async (req, res, next) => {
 
    const tagNameUpper = tagName.toUpperCase();
 
+   const existingTag = await tagDB.findOne({
+    tagName:tagNameUpper,
+    isActive: true,
+  });
+
+  if (existingTag) {
+    return next(createError(400, "This Tag already exists and is active!"));
+  }
+
     const existTag = await tagDB.findOne({ tagName: tagNameUpper, _id: id });
     
     if (existTag) return next(createError(400, "This tag already exists and is active!"));
@@ -207,6 +216,15 @@ exports.editSize = async (req, res, next) => {
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).render("errorPages/404");
+    }
+
+    const existingSize = await sizeDB.findOne({
+      size: sizeUpper,
+      isActive: true,
+    });
+
+    if (existingSize) {
+      return next(createError(400, "This size already exists and is active!"));
     }
 
     const updatedSize = await sizeDB.findOneAndUpdate(

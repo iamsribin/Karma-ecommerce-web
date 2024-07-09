@@ -1,21 +1,163 @@
-<h4 class="text-center">Account Details</h4>
-
-<h4>Password change</h4>
-<div class="row">
+<h4 class="text-center pt-3">Password Change</h4>
+  <form id="changePasswordForm">
+<div class="row p-5">
   <div class="col-md-12">
     <input
       class="form-control"
       type="password"
+      name="currPassword"
       placeholder="Current Password"
     />
+    <span id="newPassword" class="text-danger"></span>
   </div>
   <div class="col-md-6">
-    <input class="form-control" type="text" placeholder="New Password" />
+    <input class="form-control" type="text" name="Password" placeholder="New Password" />
+     <span id="passwordSignIn" class="text-danger"></span> 
   </div>
   <div class="col-md-6">
-    <input class="form-control" type="text" placeholder="Confirm Password" />
+    <input class="form-control" type="text" name="newPassword" placeholder="Confirm Password" />
+    <span id="conformPassword" class="text-danger"></span>
   </div>
   <div class="col-md-12">
     <button class="btn">Save Changes</button>
+    <a href="/sendmail" class="pl-5">forgot password? </a>
   </div>
 </div>
+</form>
+
+<script src="https://jsuites.net/v4/jsuites.js"></script>
+<link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+<script>
+const form = document.getElementById("changePasswordForm");
+
+function validatePassword(){
+  const currPassword = form.currPassword.value;
+  const password1 = form.Password.value;
+  const newPassword = form.newPassword.value;
+
+  if (currPassword.length < 8) {
+
+    document.getElementById("newPassword").innerHTML =
+        "*please write password Atleast 8 charaters*";
+      return false;
+    }
+    if (currPassword.search(/[0-9]/) == -1) {
+      document.getElementById("newPassword").innerHTML =
+        "*please write password Atleast 1 Numberic character";
+      return false;
+    }
+    if (currPassword.search(/[a-z]/) == -1) {
+      document.getElementById("newPassword").innerHTML =
+        "*please write password Atleast 1 lower case character";
+      return false;
+    }
+    if (currPassword.search(/[A-Z]/) == -1) {
+      document.getElementById("newPassword").innerHTML =
+        "*please write password Atleast 1 upper case character";
+      return false;
+    }
+    if (currPassword.search(/[!\@\#\$\%\^\&\*\(\)\_\-\+\=\<\>\,\?]/) == -1) {
+      document.getElementById("newPassword").innerHTML =
+        "*please write password Atleast 1 special symbol in the character";
+      return false;
+    }
+    else{
+      document.getElementById("newPassword").innerHTML =
+        "";
+    }
+    // ----------------new password-------------------
+
+  if (password1.length < 8) {
+      document.getElementById("passwordSignIn").innerHTML =
+        "*please write password Atleast 8 charaters*";
+      return false;
+    }
+    if (password1.search(/[0-9]/) == -1) {
+      document.getElementById("passwordSignIn").innerHTML =
+        "*please write password Atleast 1 Numberic character";
+      return false;
+    }
+    if (password1.search(/[a-z]/) == -1) {
+      document.getElementById("passwordSignIn").innerHTML =
+        "*please write password Atleast 1 lower case character";
+      return false;
+    }
+    if (password1.search(/[A-Z]/) == -1) {
+      document.getElementById("passwordSignIn").innerHTML =
+        "*please write password Atleast 1 upper case character";
+      return false;
+    }
+    if (password1.search(/[!\@\#\$\%\^\&\*\(\)\_\-\+\=\<\>\,\?]/) == -1) {
+      document.getElementById("passwordSignIn").innerHTML =
+        "*please write password Atleast 1 special symbol in the character";
+      return false;
+    }
+    else{
+      document.getElementById("passwordSignIn").innerHTML =
+        "";
+    }
+   
+  // ----------------conform password-------------------
+if(newPassword != password1){
+  document.getElementById("conformPassword").innerHTML =
+        "*password not match";
+      return false;
+}
+else {
+      document.getElementById("conformPassword").innerHTML = "";
+      return true;
+    }
+x
+}
+
+form.addEventListener("submit", async (e) => {
+e.preventDefault();
+  const currPassword = form.currPassword.value;
+  const password = form.Password.value;
+  const newPassword = form.newPassword.value;
+  console.log("lklfksd",currPassword, newPassword);
+  if(validatePassword()){
+try {
+  const response = await fetch("/setNewPassword", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      currPassword,
+      newPassword,
+    }),
+  });
+
+  const data = await response.json();
+
+  if (response.ok) {
+    Swal.fire({
+  icon: "success",
+  title: "password updated",
+  showConfirmButton: false,
+  timer: 1000
+}).then(() => {
+  document.getElementsByName("Password")[0].value = "";
+    document.getElementsByName("newPassword")[0].value = "";
+    document.getElementsByName("currPassword")[0].value = "";
+})
+
+  } else {
+    jSuites.notification({
+      error: 1,
+      name: 'Error message',
+      message: data.message || 'An error occurred',
+    });
+  }
+} catch (error) {
+  console.log("error",error);
+  jSuites.notification({
+    error: 1,
+    name: 'Error message',
+    message: 'An unexpected error occurred',
+  });
+}
+  }
+});
+</script>

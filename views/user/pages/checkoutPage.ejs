@@ -1,6 +1,6 @@
 <%- include('../userPartials/header'); %>
 <style>
-  .error-message{
+  .error-message {
     color: red;
   }
 </style>
@@ -23,148 +23,457 @@
       <div class="col-lg-8">
         <div class="checkout-inner">
           <!-- address start -->
+          <!-- Address Section -->
+          <h4 class="text-center pt-3">Address</h4>
+          <button
+            class="btn mx-5"
+            data-toggle="modal"
+            data-target="#addAddressModal"
+          >
+            Add Address
+          </button>
           <div id="address-container">
-            <% if (addresses) { %>
-              <% addresses.forEach((address, index) => { %>
-                <div class="row address-item">
-                  <div class="col-md-12 p-4 border mb-3" style="background-color: #ffffff">
-                    <div class="col-md-12 d-flex justify-content-end">
-                      <div class="custom-control custom-radio">
-                        <input
-                          type="radio"
-                          class="custom-control-input"
-                          id="address<%=index%>"
-                          value="<%= address._id %>"
-                          name="addressRadio"
-                        />
-                        <label class="custom-control-label" for="address<%=index%>">Deliver Here</label>
-                      </div>
-                    </div>
-                    <b class="address-type" style="text-transform: uppercase; font-size: 11px; color: #878787; vertical-align: middle; padding: 4px 7px; padding-bottom: 3px; border-radius: 2px; background-color: #f0f0f0; font-weight: 500; margin-right: 15px;">
-                      <%= address.addressType %>
-                    </b>
-                    <p>
-                      <b><%= address.fullName %> &nbsp; &nbsp; &nbsp; <%= address.phoneNumber %></b>
-                    </p>
-                    <p>
-                      <%= address.houseNo %>, <%= address.address %>, <%= address.district %>, <%= address.state %> - <%= address.pincode %>
-                    </p>
+            <% if (addresses) { %> <% addresses.forEach((address, index) => { %>
+            <div class="row p-3 address-item" data-id="<%= address._id %>">
+              <div
+                class="col-md-12 p-4 border mb-3"
+                style="background-color: #ffffff"
+              >
+                <div
+                  class="col-md-12 d-flex justify-content-end"
+                  style="display: none"
+                >
+                  <div class="custom-control custom-radio">
+                    <input
+                      type="radio"
+                      class="custom-control-input"
+                      id="address<%=index%>"
+                      value="<%= address._id %>"
+                      name="addressRadio"
+                    />
+                    <label class="custom-control-label" for="address<%=index%>"
+                      >Deliver Here</label
+                    >
                   </div>
                 </div>
-              <% }) %>
-            <% } else { %>
-              <div id="no-address-alert" class="alert alert-warning text-center" role="alert">No address found!</div>
+                <b
+                  class="address-type"
+                  style="
+                    text-transform: uppercase;
+                    font-size: 11px;
+                    color: #878787;
+                    vertical-align: middle;
+                    padding: 4px 7px;
+                    padding-bottom: 3px;
+                    border-radius: 2px;
+                    background-color: #f0f0f0;
+                    font-weight: 500;
+                    margin-right: 15px;
+                  "
+                >
+                  <%= address.addressType %>
+                </b>
+                <p>
+                  <b
+                    ><%= address.fullName %> &nbsp; &nbsp; &nbsp;<%=
+                    address.phoneNumber %></b
+                  >
+                </p>
+                <p>
+                  <%= address.houseNo %>, <%= address.address %>, <%=
+                  address.district %>, <%= address.state %> - <%=
+                  address.pincode %>
+                </p>
+                <button
+                  class="btn edit-button"
+                  data-id="<%= address._id %>"
+                  data-toggle="modal"
+                  data-target="#editAddressModal"
+                >
+                  Edit Address
+                </button>
+                <button
+                  id="delete-btn"
+                  class="btn delete-button text-white"
+                  style="background-color: rgb(197, 2, 2)"
+                  data-id="<%= address._id %>"
+                  data-toggle="modal"
+                >
+                  Delete Address
+                </button>
+              </div>
+            </div>
+            <% }) %> <% } else { %>
+            <div
+              id="no-address-alert"
+              class="alert alert-warning text-center"
+              role="alert"
+            >
+              No address found!
+            </div>
             <% } %>
           </div>
-          <!-- address end -->
 
-          <div class="col-md-12">
-            <div class="custom-control custom-radio">
-              <input
-                type="radio"
-                class="custom-control-input"
-                id="shipto"
-                value="newAddress"
-                name="addressRadio"
-              />
-              <label class="custom-control-label" for="shipto">Deliver another Address</label>
-            </div>
-          </div>
-          <div class="shipping-address">
-            <h2>Delivery Address</h2>
-            <form id="newAddressForm">
-              <div class="row">
-                <div class="col-md-6">
-                  <label>First Name</label>
-                  <input class="form-control" type="text" name="name" placeholder="First Name" />
-                  <div class="error-message" id="error-name"></div>
+          <!-- Add Address Modal -->
+          <div
+            class="modal fade"
+            id="addAddressModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="addAddressModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="addAddressModalLabel">
+                    Add Address
+                  </h5>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
                 </div>
-                <div class="col-md-6">
-                  <label>Mobile No</label>
-                  <input class="form-control" name="number" type="number" placeholder="Mobile No" />
-                  <div class="error-message" id="error-number"></div>
-                </div>
-                <div class="col-md-6">
-                  <label>Pincode</label>
-                  <input class="form-control" type="number" name="pincode" placeholder="Pincode" />
-                  <div class="error-message" id="error-pincode"></div>
-                </div>
-                <div class="col-md-6">
-                  <label>Locality</label>
-                  <input class="form-control" name="locality" type="text" placeholder="Locality" />
-                  <div class="error-message" id="error-locality"></div>
-                </div>
-                <div class="col-md-12">
-                  <label>Address</label>
-                  <input class="form-control" name="address" type="text" placeholder="Address(area and street)" />
-                  <div class="error-message" id="error-address"></div>
-                </div>
-                <div class="col-md-6">
-                  <label>State</label>
-                  <select name="state" class="custom-select">
-                    <option value="kerala" selected>Kerala</option>
-                    <option value="tamil nadu">Tamil Nadu</option>
-                  </select>
-                </div>
-                <div class="col-md-6">
-                  <label>City</label>
-                  <input class="form-control" name="city" type="text" placeholder="City/District/Town" />
-                  <div class="error-message" id="error-city"></div>
-                </div>
-                <div class="col-md-6">
-                  <label>Landmark</label>
-                  <input class="form-control" type="text" name="landmark" placeholder="Landmark" />
-                </div>
-                <div class="col-md-6">
-                  <label>Home NO</label>
-                  <input class="form-control" name="homeNo" type="number" placeholder="Home No" />
-                </div>
-                <label for="address-type" class="col-md-12">Address type</label>
-                <div class="col-md-6 d-flex justify-content-around pb-3">
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="addressType" id="editHomeAddress" value="home" />
-                    <label class="form-check-label" for="editHomeAddress">HOME</label>
-                  </div>
-                  <div class="form-check">
-                    <input class="form-check-input" type="radio" name="addressType" id="editWorkAddress" value="work" />
-                    <label class="form-check-label" for="editWorkAddress">WORK</label>
-                  </div>
+                <div class="modal-body">
+                  <form id="addAddressForm">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          name="name"
+                          type="text"
+                          placeholder="First Name"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          name="number"
+                          type="number"
+                          placeholder="10-digit number"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          name="pincode"
+                          type="number"
+                          placeholder="Pincode"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          name="locality"
+                          type="text"
+                          placeholder="Locality"
+                        />
+                      </div>
+                      <div class="col-md-12">
+                        <textarea
+                          class="form-control"
+                          name="address"
+                          rows="3"
+                          placeholder="Address (Area and Street)"
+                        ></textarea>
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          name="district"
+                          type="text"
+                          placeholder="City/District/Town"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <select
+                          class="custom-select tm-select-accounts"
+                          id="state"
+                          name="state"
+                          style="background-color: white; color: black"
+                        >
+                          <option selected value="Select state">
+                            Select State
+                          </option>
+                          <option value="kerala">Kerala</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          name="landmark"
+                          type="text"
+                          placeholder="Landmark (optional)"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          name="houseNo"
+                          type="number"
+                          placeholder="House No"
+                        />
+                      </div>
+                      <label for="address-type" class="col-md-12"
+                        >Address type</label
+                      >
+                      <div class="col-md-6 d-flex justify-content-around pb-3">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="addressType"
+                            id="editHomeAddress"
+                            value="home"
+                          />
+                          <label class="form-check-label" for="editHomeAddress"
+                            >HOME</label
+                          >
+                        </div>
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="addressType"
+                            id="editWorkAddress"
+                            value="work"
+                          />
+                          <label class="form-check-label" for="editWorkAddress"
+                            >WORK</label
+                          >
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <button class="btn btn-primary" type="submit">
+                          Add Address
+                        </button>
+                        <br /><br />
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </div>
-            </form>
+            </div>
           </div>
+
+          <!-- Edit Address Modal -->
+          <div
+            class="modal fade"
+            id="editAddressModal"
+            tabindex="-1"
+            role="dialog"
+            aria-labelledby="editAddressModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="editAddressModalLabel">
+                    Edit Address
+                  </h5>
+                  <button
+                    type="button"
+                    class="close"
+                    data-dismiss="modal"
+                    aria-label="Close"
+                  >
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+                  <form id="editAddressForm">
+                    <div class="row">
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          id="editName"
+                          name="name"
+                          type="text"
+                          placeholder="First Name"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          id="editNumber"
+                          type="number"
+                          name="number"
+                          placeholder="10-digit number"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          id="editPincode"
+                          name="pincode"
+                          type="text"
+                          placeholder="Pincode"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          id="editLocality"
+                          name="locality"
+                          type="text"
+                          placeholder="Locality"
+                        />
+                      </div>
+                      <div class="col-md-12">
+                        <textarea
+                          class="form-control"
+                          id="editAddress"
+                          name="address"
+                          rows="3"
+                          placeholder="Address (Area and Street)"
+                        ></textarea>
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          id="editDistrict"
+                          type="text"
+                          name="district"
+                          placeholder="City/District/Town"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <select
+                          class="custom-select tm-select-accounts"
+                          id="editState"
+                          name="state"
+                          style="background-color: white; color: black"
+                        >
+                          <option selected disabled value="Select tag">
+                            Select state
+                          </option>
+                          <option value="kerala">Kerala</option>
+                          <option value="tamil nadu">tamil nadu</option>
+                        </select>
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          id="editLandmark"
+                          type="text"
+                          name="landmark"
+                          placeholder="Landmark (optional)"
+                        />
+                      </div>
+                      <div class="col-md-6">
+                        <input
+                          class="form-control"
+                          id="editHouseNo"
+                          name="houseNo"
+                          type="number"
+                          placeholder="House No"
+                        />
+                      </div>
+                      <label for="address-type" class="col-md-12"
+                        >Address type</label
+                      >
+                      <div class="col-md-6 d-flex justify-content-around pb-3">
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="editaddressType"
+                            id="editHomeAddress"
+                            value="home"
+                          />
+                          <label class="form-check-label" for="editHomeAddress"
+                            >HOME</label
+                          >
+                        </div>
+                        <div class="form-check">
+                          <input
+                            class="form-check-input"
+                            type="radio"
+                            name="editaddressType"
+                            id="editWorkAddress"
+                            value="work"
+                          />
+                          <label class="form-check-label" for="editWorkAddress"
+                            >WORK</label
+                          >
+                        </div>
+                      </div>
+                      <div class="col-md-12">
+                        <button class="btn btn-primary" type="submit">
+                          Save Changes
+                        </button>
+                        <br /><br />
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- address end -->
         </div>
       </div>
       <div class="col-lg-4">
         <div class="checkout-inner">
           <div class="checkout-summary">
-            <h5 class="text-center font-weight-bold">Total <%=totalItems%> items</h5>
+            <h5 class="text-center font-weight-bold">
+              Total <%=totalItems%> items
+            </h5>
             <h1>Cart Total</h1>
             <p>Sub Total<span>₹ <%=userCart.subTotal%></span></p>
             <p>Shipping Cost<span>Free</span></p>
-            <p>Discount<span class="text-success">₹ <%=userCart.discount%></span></p>
-            <p>Tax<span>₹ <%=userCart.tax%></span></p>
-            <h2>Grand Total<span>₹ <%=userCart.grandTotal%></span></h2>
+            <p>
+              Discount<span class="text-success">₹ <%=userCart.discount%></span>
+            </p>
+            <!-- <p>Tax<span>₹ <%=userCart.tax%></span></p> -->
+            <h2>
+              Grand Total<span id="totalAmt">₹ <%=userCart.grandTotal%></span>
+            </h2>
           </div>
           <div class="checkout-payment">
             <div class="payment-methods">
               <h1>Payment Methods</h1>
               <div class="payment-method">
                 <div class="custom-control custom-radio">
-                  <input type="radio" class="custom-control-input" id="payment-1" name="payment" />
-                  <label class="custom-control-label" for="payment-1">Razorpay</label>
+                  <input
+                    type="radio"
+                    class="custom-control-input"
+                    id="razorPay"
+                    name="payment"
+                  />
+                  <label class="custom-control-label" for="razorPay"
+                    >Online</label
+                  >
                 </div>
               </div>
               <div class="payment-method">
                 <div class="custom-control custom-radio">
-                  <input type="radio" class="custom-control-input" id="payment-2" name="payment" />
-                  <label class="custom-control-label" for="payment-2">Wallet</label>
+                  <input
+                    type="radio"
+                    class="custom-control-input"
+                    id="wallet"
+                    name="payment"
+                  />
+                  <label class="custom-control-label" for="wallet" id="walletBalace" data-balance="<%= walletBalace ? walletBalace : null %>">
+                    Wallet &nbsp;&nbsp; (<%= walletBalace ?walletBalace : 'wallet is empty' %>)
+                  </label>                  
                 </div>
               </div>
               <div class="payment-method">
                 <div class="custom-control custom-radio">
-                  <input type="radio" class="custom-control-input" id="payment-3" name="payment" />
-                  <label class="custom-control-label" for="payment-3">Cash on Delivery</label>
+                  <input
+                    type="radio"
+                    class="custom-control-input"
+                    id="cashOnDelivery"
+                    name="payment"
+                  />
+                  <label class="custom-control-label" for="cashOnDelivery"
+                    >Cash on Delivery</label
+                  >
                 </div>
               </div>
             </div>
@@ -178,16 +487,335 @@
   </div>
 </div>
 <!-- Checkout End -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <%- include('../userPartials/footer'); %>
+<!-- Include Bootstrap JS and dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.1/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
+  const showErrorToast = (message) => {
+    toastr.options = {
+      positionClass: "toast-top-center",
+      timeOut: "3000",
+      closeButton: true,
+    };
+    toastr.error(message);
+  };
+</script>
+
+<!-- Add Address Script -->
+<script>
   document.addEventListener("DOMContentLoaded", () => {
-    const radioButtons = document.querySelectorAll('input[name="addressRadio"]');
+    const addAddressForm = document.querySelector("#addAddressForm");
+
+    addAddressForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!validateForm(addAddressForm)) return;
+
+      const formData = new FormData(addAddressForm);
+      const data = Object.fromEntries(formData.entries());
+
+      try {
+        const response = await fetch("/create-address", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          const newAddress = await response.json();
+          Swal.fire({
+            title: "Successfully added new address",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.reload();
+            }
+          });
+        } else {
+          Swal.fire({
+            title: `Error: ${response.statusText}`,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "An error occurred",
+          text: error.message,
+          icon: "error",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        });
+      }
+    });
+
+    // function addAddressToDOM(address) {
+    //   const addressContainer = document.querySelector("#address-container");
+
+    //   const addressHTML = `
+    //   <div class="row p-3 address-item" data-id="${address._id}">
+    //     <div class="col-md-12 p-4 border mb-3" style="background-color: #ffffff">
+    //       <b class="address-type" style="text-transform: uppercase; font-size: 11px; color: #878787; vertical-align: middle; padding: 4px 7px; padding-bottom: 3px; border-radius: 2px; background-color: #f0f0f0; font-weight: 500; margin-right: 15px;">
+    //         ${address.addressType}
+    //       </b>
+    //       <p><b>${address.fullName} &nbsp; &nbsp; &nbsp;${address.phoneNumber}</b></p>
+    //       <p>${address.houseNo}, ${address.address}, ${address.district}, ${address.state} - ${address.pincode}</p>
+    //       <button class="btn edit-button" data-id="${address._id}" data-toggle="modal" data-target="#editAddressModal">Edit Address</button>
+    //       <button id="delete-btn" class="btn delete-button text-white" data-target="#deleteAddressModal" style="background-color: rgb(197, 2, 2)" data-id="${address._id}">Delete Address</button>
+    //     </div>
+    //   </div>
+    //   `;
+    //   addressContainer.insertAdjacentHTML("beforeend", addressHTML);
+    // }
+  });
+</script>
+
+<!-- Edit Address Script -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const editAddressForm = document.querySelector("#editAddressForm");
+
+    document
+      .querySelector("#address-container")
+      .addEventListener("click", async (e) => {
+        if (e.target.classList.contains("edit-button")) {
+          const id = e.target.getAttribute("data-id");
+          try {
+            const response = await fetch(`/getEditAddress/${id}`, {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (response.ok) {
+              const address = await response.json();
+              populateEditModal(address);
+            } else {
+              console.error("Failed to fetch address data");
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      });
+
+    editAddressForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      if (!validateForm(editAddressForm)) return;
+
+      const formData = new FormData(editAddressForm);
+      const data = Object.fromEntries(formData.entries());
+
+      const id = document
+        .querySelector("#editAddressModal")
+        .getAttribute("data-id");
+
+      try {
+        const response = await fetch(`/editAddress/${id}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          Swal.fire({
+            title: "Successfully edited address",
+            icon: "success",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          }).then((result) => {
+            if (result.isConfirmed) {
+              $("#editAddressModal").modal("hide");
+              editAddressForm.reset();
+              document.body.classList.remove("modal-open");
+              $(".modal-backdrop").remove();
+              // Optionally, update the DOM with the new address details
+            }
+          });
+        } else {
+          Swal.fire({
+            title: `Error: ${response.statusText}`,
+            icon: "error",
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          title: "An error occurred",
+          text: error.message,
+          icon: "error",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        });
+      }
+    });
+
+    function populateEditModal(address) {
+      document
+        .querySelector("#editAddressModal")
+        .setAttribute("data-id", address._id);
+      document.getElementById("editName").value = address.fullName;
+      document.getElementById("editNumber").value = address.phoneNumber;
+      document.getElementById("editPincode").value = address.pincode;
+      document.getElementById("editLocality").value = address.locality;
+      document.getElementById("editAddress").value = address.address;
+      document.getElementById("editDistrict").value = address.district;
+      document.getElementById("editLandmark").value = address.landMark;
+      document.getElementById("editHouseNo").value = address.houseNo;
+
+      const addressTypeRadio = document.querySelector(
+        `input[name="editaddressType"][value="${address.addressType}"]`
+      );
+      if (addressTypeRadio) addressTypeRadio.checked = true;
+
+      const stateDropdown = document.getElementById("editState");
+      if (stateDropdown) {
+        const options = stateDropdown.options;
+        for (let i = 0; i < options.length; i++) {
+          if (options[i].value === address.state) {
+            options[i].selected = true;
+            break;
+          }
+        }
+      }
+    }
+  });
+</script>
+
+<!-- Form Validation Script -->
+<script>
+  function validateForm(form) {
+    let isValid = true;
+    const formData = new FormData(form);
+
+    formData.forEach((value, key) => {
+      const input = form.querySelector(`[name="${key}"]`);
+      let errorMessage = "";
+
+      if (key === "name") {
+        if (!value.trim() || value.length >= 10 || /\d/.test(value)) {
+          errorMessage = "enter valid name";
+        }
+      } else if (key === "number") {
+        if (!/^[1-9][0-9]{9}$/.test(value)) {
+          errorMessage = "enter valid number.";
+        }
+      } else if (key !== "landmark" && key !== "houseNo" && !value.trim()) {
+        errorMessage = "This field is required.";
+      }
+
+      if (errorMessage) {
+        showError(input, errorMessage);
+        isValid = false;
+      } else {
+        removeError(input);
+      }
+    });
+
+    return isValid;
+  }
+
+  function showError(input, message) {
+    let errorElement = input.parentElement.querySelector(".error-message");
+    if (!errorElement) {
+      errorElement = document.createElement("div");
+      errorElement.classList.add("error-message");
+      errorElement.style.color = "red";
+      input.parentElement.appendChild(errorElement);
+    }
+    errorElement.textContent = message;
+  }
+
+  function removeError(input) {
+    const errorElement = input.parentElement.querySelector(".error-message");
+    if (errorElement) {
+      errorElement.remove();
+    }
+  }
+</script>
+
+<!-- delete-btn  -->
+<script>
+  document
+    .querySelector("#address-container")
+    .addEventListener("click", async (e) => {
+      if (e.target.classList.contains("delete-button")) {
+        const id = e.target.getAttribute("data-id");
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you want to delete the address?",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#3085d6",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, delete!",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const response = await fetch("/delete-address", {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                id: id,
+              }),
+            });
+            if (response.ok) {
+              Swal.fire({
+                title: "Successfully deleted address",
+                icon: "success",
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+              }).then((result) => {
+                if (result.isConfirmed) {
+                  window.location.reload();
+                }
+              });
+            } else {
+              Swal.fire({
+                title: "something went wrong",
+                icon: "error",
+                showCancelButton: false,
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+              });
+            }
+          }
+        });
+      }
+    });
+</script>
+
+<!-- order place  -->
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const radioButtons = document.querySelectorAll(
+      'input[name="addressRadio"]'
+    );
     const paymentMethods = document.querySelectorAll('input[name="payment"]');
     const placeOrderBtn = document.querySelector("#placeOrderBtn");
     let selectedAddress = null;
     let selectedPayment = null;
+    
+
 
     radioButtons.forEach((radioButton) => {
       radioButton.addEventListener("change", () => {
@@ -203,31 +831,157 @@
 
     placeOrderBtn.addEventListener("click", async function (e) {
       e.preventDefault();
+      try {
+        // if (selectedAddress === 'newAddress') {
+        //       const form = document.getElementById("newAddressForm");
+        //       if (!validateForm(form)) {
+        //         return;
+        //       }
 
-      if (selectedAddress === 'newAddress') {
-        const form = document.getElementById("newAddressForm");
-        if (!validateForm(form)) {
-          return;
+        //       const formData = new FormData(form);
+        //       const addressData = Object.fromEntries(formData.entries());
+
+        //       const response = await fetch("place-order", {
+        //         method: "POST",
+        //         headers: {
+        //           "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify({
+        //           address: addressData,
+        //           paymentMethod: selectedPayment,
+        //         }),
+        //       });
+        //       const data = await response.json();
+        //       console.log(data);
+
+        //     } else {
+        const totalAmtElement = document.getElementById("totalAmt");
+        const totalAmtText = totalAmtElement.textContent.trim();
+        const totalAmt = totalAmtText.replace("₹ ", "");
+
+        const walletElement = document.getElementById("walletBalace");
+        const walletBalance = walletElement.getAttribute("data-balance");
+        console.log("walletBalance", walletBalance);
+
+       if(!selectedAddress){
+        showErrorToast("please select any address");
+        return
         }
 
-        const formData = new FormData(form);
-        const addressData = Object.fromEntries(formData.entries());
-
-        const response = await fetch("place-order", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            address: addressData,
-            paymentMethod: selectedPayment,
-            addressId: null,
-          }),
+        if (
+          selectedPayment === "cashOnDelivery" ||
+          selectedPayment === "wallet"
+        ) {
+          saveOrderOnCashOnDelivery(totalAmt, selectedPayment, selectedAddress, walletBalance);
+        } else if (selectedPayment === "razorPay") {
+          initiateRazorPayPayment(totalAmt,selectedPayment, selectedAddress);
+          return;
+        } else {
+          showErrorToast("please select any payment method");
+        }
+      } catch (error) {
+        console.log(error);
+        Swal.fire({
+          title: "Something went wrong",
+          icon: "error",
+          showCancelButton: false,
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        }).then(async (result) => {
+          window.location.reload();
         });
-        const data = await response.json();
-        console.log(data);
-        window.location.reload();
-      } else {
+      }
+    });
+  });
+</script>
+
+<!-- razorPayment -->
+<!-- <script>
+  function handlePayNowClick(order) {
+    var options = {
+      key: "rzp_test_we2isuMyajihCW",
+      amount: order.createdOrder.amount,
+      currency: "INR",
+      name: "KARMA",
+      description: "Test Transaction",
+      image: "img/fav.png",
+      order_id: order.createdOrder.id,
+      handler: function (response, error) {
+        verifyPayment(response, order);
+      },
+      prefill: {
+        user: order.newOrder.userId,
+      },
+      notes: {
+        address: "Razorpay Corporate Office",
+      },
+      theme: {
+        color: "#1818c4",
+      },
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+  }
+
+  function verifyPayment(payment, order) {
+    console.log("now in verifyPayment", payment);
+    console.log("now in order", order);
+    $.ajax({
+      url: "/VerifyOnlinePayment",
+      data: {
+        payment,
+        order,
+      },
+      method: "post",
+      success: (response) => {
+        console.log("response.success", response.success);
+        if (response.success) {
+          console.log("response got");
+          location.href = "/ordersuccess";
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Payment Failed",
+            text: "Your payment was unsuccessful. Please try again or choose a different payment method.",
+          }).then(() => {
+            location.href = "/user/cart";
+          });
+        }
+      },
+      error: (error) => {
+        console.error("Verify Payment Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "An error occurred while verifying the payment. Please try again.",
+        }).then(() => {
+          location.href = "/user/cart";
+        });
+      },
+    });
+  }
+</script> -->
+
+<!-- wallet and cashOnDelivery peyment function -->
+<script>
+
+  const saveOrderOnCashOnDelivery = async (
+    totalPrice,
+    selectedPayment,
+    selectedAddress,
+    walletBalance
+  ) => {
+    if (selectedPayment === "wallet") {
+console.log("bsg",walletBalance,"tota;",totalPrice);
+      if (Number(walletBalance) < Number(totalPrice)) {
+        showErrorToast("Insufficient balance in Wallet");
+        return;
+      }
+    }
+    if (totalPrice > 6000 && selectedPayment === "cashOnDelivery") {
+      showErrorToast("Order above 6000 should not be allowed for COD");
+    } else {
+      try {
         const response = await fetch("/place-order", {
           method: "POST",
           headers: {
@@ -236,55 +990,182 @@
           body: JSON.stringify({
             addressId: selectedAddress,
             paymentMethod: selectedPayment,
-            address: null,
           }),
         });
         const data = await response.json();
-        console.log(data);
-        window.location.reload();
-      }
-    });
-  });
 
-  function validateForm(form) {
-    let valid = true;
-    const formData = new FormData(form);
-    const fields = Object.fromEntries(formData.entries());
-    
-    const errors = {
-      name: "Enter valid name",
-      number: "Enter valid number",
-      pincode: "Pincode is required",
-      locality: "Locality is required",
-      address: "Address is required",
-      city: "City is required"
-    };
-
-    for (const [field, value] of Object.entries(fields)) {
-      const errorMessageElement = document.getElementById(`error-${field}`);
-      errorMessageElement.innerText = "";
-
-      switch (field) {
-        case 'name':
-          if (!value || value.length > 5 || /\d/.test(value)) {
-            errorMessageElement.innerText = errors[field];
-            valid = false;
-          }
-          break;
-        case 'number':
-          if (!/^[1-9]\d{9}$/.test(value)) {
-            errorMessageElement.innerText = errors[field];
-            valid = false;
-          }
-          break;
-        default:
-          if (!value && errors[field]) {
-            errorMessageElement.innerText = errors[field];
-            valid = false;
-          }
-          break;
+        if (response.ok) {
+          // const data = await response.json();
+          console.log("data", data);
+          Swal.fire({
+            title: "Your order has been created",
+            icon: "success",
+            showCancelButton: false,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          }).then(async (result) => {
+            window.location.href = `/order-confirmation/${data.newOrder._id}`;
+          });
+        } else {
+          Swal.fire({
+            title: `${data.message}`,
+            icon: "error",
+            showCancelButton: false,
+            confirmButtonColor: "#3085d6",
+            confirmButtonText: "OK",
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        Swal.fire({
+          title: "Something went wrong",
+          icon: "error",
+          showCancelButton: false,
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        }).then(async (result) => {
+          window.location.reload();
+        });
       }
     }
-    return valid;
-  }
+  };
+</script>
+
+<!-- razor pay order save backend  -->
+<script>
+  const saveOrderRazor = async (razorResponse, selectedPayment, selectedAddress) => {
+    try {
+      //saving the order
+      const response = await fetch("/place-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          addressId: selectedAddress,
+          paymentMethod: selectedPayment,
+        }),
+      });
+
+      const data = await response.json();
+
+      //saving payment
+      const verifyData = await fetch("/razor-verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...razorResponse,
+          orderId: data.newOrder._id,
+        }),
+      });
+
+      if (verifyData.ok) {
+        Swal.fire({
+          title: "Your order has been created",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        }).then(async (result) => {
+          window.location.href = `/order-confirmation/${data.newOrder._id}`;
+        });
+      }else{
+        showErrorToast("somthing went wrong");
+      }
+
+    } catch (error) {
+      console.log(error);
+      showErrorToast(error.response?.data?.error || "something went wrong");
+    }
+  };
+</script>
+
+<!-- //razorPay method -->
+<script>
+  const initiateRazorPayPayment = async (totalAmt, selectedPayment, selectedAddress) => {
+    console.log("calling razor pay function");
+
+    //getting razor-pay secret key
+    const response = await fetch("/razor-key", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const data = await response.json();
+
+    //creating razor pay order
+    const razorOrder = await fetch("/razor-order", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ amount: parseInt(totalAmt) }),
+    });
+
+    const order = await razorOrder.json();
+    
+    //razor pay configurations
+    let options = {
+      key: data.key,
+      amount: parseInt(totalAmt),
+      currency: "INR",
+      name: "KARMA",
+      description: "Test Transaction",
+      image: `img/fav.png`,
+      order_id: order.order.id,
+      handler: function (response) {
+        saveOrderRazor(response, selectedPayment, selectedAddress);
+      },
+      prefill: {
+        name: "jhone",
+        email: "jhone@example.com",
+        contact: "9000090000",
+      },
+      notes: {
+        address: "Razor pay Corporate Office",
+      },
+      theme: {
+        color: "#1818c4",
+      },
+    };
+
+    const razor = new window.Razorpay(options);
+    razor.open();
+
+
+    // If failed toast it.
+    razor.on("payment.failed", async function (response) {
+      console.log("faild",response);
+      try {
+        const newOrder = await fetch("/faildOrder", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            address: selectedAddress,
+            paymentMode: selectedPayment,
+            couponCode: couponCode,
+          }),
+        });
+
+        Swal.fire({
+          title: "Payment failed Order created with payment status Failed",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        }).then(async (result) => {
+          window.location.href = `/cart`;
+        });
+  
+      } catch (error) {
+        showErrorToast("something went wrong");
+      }
+    });
+  };
 </script>

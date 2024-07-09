@@ -9,6 +9,8 @@ const tagDB = require("../../models/adminModels/tag");
 const fs = require("fs");
 const path = require('path');
 const { ObjectId } = require("mongodb");
+const size = require("../../models/adminModels/size");
+const tag = require("../../models/adminModels/tag");
 
 // render products list page
 exports.renderProducts = async (req, res, next) => {
@@ -63,7 +65,10 @@ exports.addProduct = async (req, res, next) => {
       offerExpiryDate,
     } = req.body;
 
-
+    if(req.files.length > 5){
+      req.flash("error", "maximum image limit exceeded");
+      return res.redirect("/admin/add-product");
+    }
     const mainName = name.toUpperCase();
 
     const existProduct = await Product.findOne({
@@ -82,10 +87,24 @@ exports.addProduct = async (req, res, next) => {
     }
 
 
-    const variants = size.map((size, index) => ({
-      size: new ObjectId(size),
-      quantity: parseInt(quantity[index], 10) || 0,
-    }));
+    const variants = size.map((sizeValue, index) => {
+      const quantityValue = parseInt(quantity[index], 10) || 0;
+      let status;
+    
+      if (quantityValue > 5) {
+        status = "published";
+      } else if (quantityValue < 5 && quantityValue > 0) {
+        status = "low quantity";
+      } else if(quantityValue === 0){
+        status = "out of stock";
+      }
+    
+      return {
+        size: new ObjectId(sizeValue),
+        quantity: quantityValue,
+        status,
+      };
+    });
 
     let Quantity = quantity.map(Number);
 
@@ -101,6 +120,7 @@ exports.addProduct = async (req, res, next) => {
 
     let product;
 
+    
 
     if (offerAmount) {
       product = new Product({
@@ -212,7 +232,6 @@ exports.renderEditProductPage = async (req, res, next) => {
 };
 
 //edit product
-
 exports.editProduct = async (req, res, next) => {
   try {
     const {
@@ -230,15 +249,13 @@ exports.editProduct = async (req, res, next) => {
       weight,
       offerAmount,
       offerExpiryDate,
-      croppedImages
+      croppedImages,
     } = req.body;
 
     const { id } = req.params;
 
-
-
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(404).render("errorPages/404");
+      return res.status(404).render('errorPages/404');
     }
 
     const mainName = name.toUpperCase();
@@ -246,40 +263,43 @@ exports.editProduct = async (req, res, next) => {
     const existProduct = await Product.findOne({
       name: mainName,
       isActive: true,
+      _id: { $ne: id },
     });
 
     if (existProduct) {
-      req.flash("error", "Product already exist");
-      return res.redirect("/admin/add-product");
+      req.flash('error', 'Product already exists');
+      return res.redirect(`/admin/edit-product/${id}`);
     }
 
+    
+    if(req.files.length > 5){
+      req.flash("error", "maximum image limit exceeded");
+      return res.redirect(`/admin/edit-product/${id}`);
+    }
 
-    let product = await productDB.findById(id);
+    let product = await Product.findById(id);
 
     if (!product) {
-      req.flash("error", "Product not found");
+      req.flash('error', 'Product not found');
       return res.redirect(`/admin/edit-product/${id}`);
     }
 
     const files = req.files;
     let imagePaths = [...product.imagePaths];
 
+    // Handle uploaded images
     if (files && files.length > 0) {
-      files.forEach((file, idx) => {
+      files.forEach((file) => {
         const imgPath = `/uploads/products/${file.filename}`;
-        if (imagePaths[idx]) {
-          fs.unlink(path.join(__dirname, '..', imagePaths[idx]), (err) => {
-            if (err) console.error(err);
-          });
-        }
-        imagePaths[idx] = imgPath;
+        imagePaths.push(imgPath); // Append new images to the array
       });
     }
 
+    // Handle cropped images
     if (croppedImages) {
       for (const [idx, croppedImage] of Object.entries(croppedImages)) {
         if (croppedImage) {
-          const base64Data = croppedImage.replace(/^data:image\/\w+;base64,/, "");
+          const base64Data = croppedImage.replace(/^data:image\/\w+;base64,/, '');
           const buffer = Buffer.from(base64Data, 'base64');
           const fileName = `${Date.now()}-${idx}.png`;
           const imgPath = `/uploads/products/${fileName}`;
@@ -294,50 +314,115 @@ exports.editProduct = async (req, res, next) => {
       }
     }
 
+    // Prepare variants
+    const variants = size.map((sizeValue, index) => {
+      const quantityValue = parseInt(quantity[index], 10) || 0;
+      let status;
 
+      if (quantityValue > 5) {
+        status = 'published';
+      } else if (quantityValue > 0) {
+        status = 'low quantity';
+      } else {
+        status = 'out of stock';
+      }
 
-    product = await productDB.findOneAndUpdate(
+      return {
+        size: new mongoose.Types.ObjectId(sizeValue),
+        quantity: quantityValue,
+        status,
+      };
+    });
+
+    const totalQuantity = quantity.map(Number).reduce((acc, curr) => acc + curr, 0);
+
+    // Update product
+    product = await Product.findOneAndUpdate(
       { _id: id },
       {
         $set: {
           name: mainName,
           description,
           basePrice,
-          size,
           brand,
           category,
-          quantity,
+          totalQuantity,
+          variants,
           midsoleDrop,
           heel,
           tag,
           foreFoot,
           weight,
           offerAmount,
-          imagePaths,
           offerExpiryDate,
+          imagePaths,
         },
       },
       { new: true }
     );
 
-    req.flash("success", `Product ${upperName} updated successfully`);
+    req.flash('success', `Product ${mainName} updated successfully`);
     res.redirect(`/admin/edit-product/${id}`);
   } catch (error) {
-    console.log("category", error);
-    res.redirect("/internalError");
+    console.log('category', error);
+    res.redirect('/internalError');
   }
 };
 
 
-
 exports.adminAddProductCheck_get = async (req, res) => {
-	const productTitle = req.body.text;
-  console.log("df",productTitle);
-	let searchResult = await Product.find({ name: { $in: [productTitle] } });
-	console.log(searchResult);
-  if (searchResult.length === 0) {
+	const {text, id} = req.body;
+  let searchResult
+  if(id){
+    searchResult = await Product.find({ name: { $in: [text] }, _id: { $ne: id}});
+  }else{
+    searchResult = await Product.find({ name: { $in: [text] } });
+  }
+
+  if (text.trim() === '') {
+    res.json({ status: false, message: 'Not Available' });
+
+	} else if (searchResult.length === 0 ){
 		res.json({ status: true, message: 'Available' });
-	} else {
-		res.json({ status: false, message: 'Not Available' });
-	}
+
+	}else{
+    res.json({ status: false, message: 'Not Available' });
+  }
 };
+
+exports.deleteImage = async (req, res, next) => {
+  try {
+    const { index, id } = req.body;
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({ message: "Product not found" });
+    }
+
+    const imagePath = product.imagePaths[index];
+
+    if (!imagePath) {
+      return res.status(400).json({ message: "Image not found at the specified index" });
+    }
+
+    // Remove the image path from the array
+    product.imagePaths.splice(index, 1);
+    await product.save();
+
+    // Delete the image file from the folder
+    const imagePathToDelete = path.join(__dirname,".."+imagePath);
+    fs.unlink(imagePathToDelete, (err) => {
+      if (err) {
+        console.log("Failed to delete image file:", err);
+      } else {
+        console.log("Image file deleted successfully");
+      }
+    });
+
+    return res.status(200).json({ message: "Image deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    next(error);
+  }
+};
+
