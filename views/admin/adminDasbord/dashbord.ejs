@@ -256,9 +256,9 @@
             const endDate = document.getElementById('endDate');
             const generateReportBtn = document.getElementById('generateReport');
             let salesChart;
-
+            
             // Initial sales data from the server
-            const initialSalesData = <%- JSON.stringify(initialSalesData) %>;
+            const initialSalesData = JSON.parse('<%- JSON.stringify(initialSalesData) %>'.replace(/&#34;/g, '"'));
 
             timeFilter.addEventListener('change', function() {
                 if (this.value === 'custom') {

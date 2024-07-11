@@ -3,6 +3,8 @@ const { createError } = require("../../utils/errors");
 const User = require("../../models/userModels/userModel");
 const Size = require("../../models/adminModels/size");
 const Product = require("../../models/adminModels/product");
+const Coupon = require("../../models/adminModels/coupon");
+const {checkCoupon} = require("../userController/couponcontroller");
 
 const TAX_PERCENTAGE = 0.18;
 // const HIGHER_TAX_PERCENTAGE = 0.18;
@@ -34,11 +36,26 @@ exports.renderCartPage = async (req, res, next) => {
     })
     .lean();
 
+    const currentDate = new Date();
+  
+    const coupons = await Coupon.find({
+      isActive: true,
+      expiryDate: { $gt: currentDate },
+      minimumPurchaseAmount: { $ne: null}
+  });
+
+  if(userCart.coupon){
+    checkCoupon(userId);
+  }
+
+  console.log("carts",userCart);
+
     return res.render("user/pages/cartPage", {
       user: userDetails,
       cartProducts: userCart ? userCart.cart : null,
       cartLength: userCart ? userCart.cart.length : 0,
       userCart,
+      coupons
     });
   } catch (error) {
     console.error(error);
@@ -150,6 +167,10 @@ exports.updateCartQuantity = async (req, res, next) => {
 
     calculateTotals(userCart);
     await userCart.save();
+
+    if(userCart.coupon){
+      checkCoupon(userId);
+    }
 
     return res.status(200).send({ message: "Cart updated successfully" });
   } catch (error) {

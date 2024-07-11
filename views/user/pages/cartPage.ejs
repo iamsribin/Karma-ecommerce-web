@@ -1,4 +1,76 @@
 <%- include('../userPartials/header'); %>
+<style>
+  body {
+      font-family: Arial, sans-serif;
+  }
+  .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+  }
+  .modal-content {
+      background-color: #fefefe;
+      margin: 5% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 90%;
+      max-width: 500px;
+  }
+  .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+  }
+  .coupon-search {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+  }
+  .coupon-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-bottom: 10px;
+  }
+  .coupon-item {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px dashed #ddd;
+      display: flex;
+      align-items: center;
+  }
+  .coupon-code {
+      font-weight: bold;
+      color: #ff3e6c;
+      border: 1px dashed #ff3e6c;
+      padding: 5px;
+      margin-right: 10px;
+  }
+  .apply-btn {
+      background-color: #ff3e6c;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 16px;
+  }
+  .savings {
+      font-weight: bold;
+      margin-bottom: 5px;
+  }
+</style>
 
 <div class="breadcrumb-wrap">
   <div class="container-fluid">
@@ -92,10 +164,6 @@
         <div class="cart-page-inner">
           <div class="row">
             <div class="col-md-12">
-              <div class="coupon">
-                <input type="text" placeholder="Coupon Code" />
-                <button>Apply Code</button>
-              </div>
             </div>
             <div class="col-md-12">
               <div class="cart-summary">
@@ -103,13 +171,23 @@
                   <h1>Cart Summary</h1>
                   <p>Sub Total<span>₹ <%=userCart.subTotal%></span></p>
                   <p>Shipping Cost<span>Free</span></p>
+
+<%if(userCart.coupon){ %>
+  <div class="d-flex justify-content-between">
+    <span> coupon  offer <a style="cursor: pointer;" onclick="showCouponInfo('<%= userCart.couponCode %>')"> ⓘ </a></span> 
+      <span style="color: green;">-₹<%= userCart.couponDiscount %></span>
+  </div>
+  <br>
+<% } else { %>
+<p>Coupon Discount <span><a href="#"  id="openModalBtn">Apply Coupon</a></span></p>
+<div id="appliedCouponInfo"></div>
+<%}%>
                   <p>
                     Discount<span class="text-success"
-                      >₹ <%=userCart.discount%></span
+                      >₹ <%=userCart.coupon ?   userCart.discount + userCart.couponDiscount : userCart.discount %></span
                     >
                   </p>
-                  <!-- <p>Tax<span>₹ <%=userCart.tax%></span></p> -->
-                  <h2>Grand Total<span>₹ <%=userCart.grandTotal%></span></h2>
+                  <h2>Grand Total<span>₹ <%= userCart.coupon ? userCart.grandTotal- userCart.couponDiscount :  userCart.grandTotal %></span></h2>
                 </div>
                 <div class="cart-btn">
                   <!-- <button>Update Cart</button> -->
@@ -152,22 +230,178 @@
   </div>
 </div>
 <!-- Cart End -->
+<!-- model  -->
+<div id="couponModal" class="modal">
+  <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>APPLY COUPON</h2>
+      <input type="text" class="coupon-search" placeholder="Enter coupon code" id="couponSearch">
+      <div class="coupon-list" id="couponList"></div>
+      <div class="savings">Maximum savings: ₹<span id="maxSavings">0</span></div>
+      <button class="apply-btn" id="applyBtn">APPLY</button>
+  </div>
+</div>
+
+<div id="couponInfoModal" class="modal">
+  <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>Coupon Information</h2>
+      <p id="couponInfoContent"></p>
+      <button id="removeCouponBtn">Remove Coupon</button>
+  </div>
+</div>
+
 
 <%- include('../userPartials/footer'); %>
+<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+<!-- coupon  -->
+<script>
+  const coupons = JSON.parse('<%- JSON.stringify(coupons) %>'.replace(/&#34;/g, '"'));
+  const grandTotal = parseFloat('<%- userCart.grandTotal %>');
+
+  const modal = document.getElementById('couponModal');
+  const couponInfoModal = document.getElementById('couponInfoModal');
+  const openBtn = document.getElementById('openModalBtn');
+  const closeBtns = document.getElementsByClassName('close');
+  const couponSearch = document.getElementById('couponSearch');
+  const couponList = document.getElementById('couponList');
+  const maxSavings = document.getElementById('maxSavings');
+  const applyBtn = document.getElementById('applyBtn');
+  const removeCouponBtn = document.getElementById('removeCouponBtn');
+
+  openBtn.onclick = () => modal.style.display = 'block';
+
+  for (let closeBtn of closeBtns) {
+      closeBtn.onclick = function(event) {
+          event.stopPropagation();
+          this.parentElement.parentElement.style.display = 'none';
+      }
+  }
+
+  window.onclick = (event) => {
+      if (event.target == modal) modal.style.display = 'none';
+      if (event.target == couponInfoModal) couponInfoModal.style.display = 'none';
+  };
+
+  function renderCoupons(couponsToRender) {
+      couponList.innerHTML = '';
+      couponsToRender.forEach(coupon => {
+          const formattedDate = new Date(coupon.expiryDate).toLocaleDateString('en-IN', {
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+          });
+          const couponItem = document.createElement('div');
+          couponItem.className = 'coupon-item';
+          couponItem.innerHTML = `
+              <input type="radio" name="coupon" id="${coupon.name}" value="${coupon.couponCode}">
+              <label for="${coupon.name}">
+                  <span class="coupon-code">${coupon.couponCode}</span>
+                  <div>
+                      <div>Save ₹${coupon.offerAmount}</div>
+                      <div>Rs. ${coupon.offerAmount} off on minimum purchase of Rs. ${coupon.minimumPurchaseAmount}</div>
+                      <div>Expires on: ${formattedDate}</div>
+                  </div>
+              </label>
+          `;
+          couponList.appendChild(couponItem);
+
+          // Add click event listener to show coupon info
+          couponItem.querySelector('label').addEventListener('click', (e) => {
+              e.stopPropagation();
+              showCouponInfo(coupon.couponCode);
+          });
+      });
+  }
+
+  function updateMaxSavings() {
+      const selectedCoupon = document.querySelector('#couponList input[type="radio"]:checked');
+      const savings = selectedCoupon ? coupons.find(c => c.couponCode === selectedCoupon.value).offerAmount : 0;
+      maxSavings.textContent = savings;
+  }
+
+  couponSearch.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      const filteredCoupons = coupons.filter(coupon => 
+          coupon.name.toLowerCase().includes(searchTerm)
+      );
+      renderCoupons(filteredCoupons);
+  });
+
+  couponList.addEventListener('change', updateMaxSavings);
+
+  applyBtn.onclick = async () => {
+      const selectedCoupon = document.querySelector('#couponList input[type="radio"]:checked');
+      if (selectedCoupon) {
+          const couponCode = selectedCoupon.value;
+          try {
+              const response = await fetch('/apply-coupon', {
+                  method: 'POST',
+                  headers: {
+                      'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({ code: couponCode, grandTotal }),
+              });
+              const result = await response.json();
+              if (response.ok) {
+                  window.location.reload();
+              } else {
+                  showInfoToast(result.error);
+              }
+          } catch (error) {
+              console.error('Error:', error);
+              showInfoToast('An error occurred while applying the coupon.');
+          }
+      } else {
+          showInfoToast('Please select a coupon to apply.');
+      }
+  };
+
+  function showCouponInfo(couponCode) {
+      const coupon = coupons.find(c => c.couponCode === couponCode);
+      if (coupon) {
+          document.getElementById('couponInfoContent').innerHTML = `
+              Save ₹${coupon.offerAmount}<br>
+              Rs. ${coupon.offerAmount} off on minimum purchase of Rs. ${coupon.minimumPurchaseAmount}.<br>
+              Expires on: ${coupon.expiryDate}
+          `;
+          couponInfoModal.style.display = 'block';
+      }
+  }
+
+  removeCouponBtn.onclick = async () => {
+      try {
+          const response = await fetch('/remove-coupon', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          });
+          const result = await response.json();
+          if (result.success) {
+              document.getElementById('appliedCouponInfo').innerHTML = '';
+              // Update the cart summary with new totals
+              // You'll need to add logic here to update the cart summary
+          } else {
+              showErrorToast(result.message);
+          }
+      } catch (error) {
+          console.error('Error:', error);
+          showErrorToast('An error occurred while removing the coupon.');
+      }
+      couponInfoModal.style.display = 'none';
+  };
+
+  renderCoupons(coupons);
+</script>
+
 
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-    const showInfoToast = (message) => {
-      toastr.options = {
-        "positionClass": "toast-top-center",
-        "timeOut": "3000",
-        "closeButton": true,
-      };
-      toastr.info(message);
-    };
+
 
     // Increment quantity
     document.querySelectorAll(".btn-plus").forEach((button) => {
@@ -302,37 +536,3 @@
   });
 </script>
 
-<!-- <script>
-//   document.addEventListener("DOMContentLoaded", () => {
-//     const quantityInput = document.getElementById("quantity");
-//     const getQuntity = document.getElementById("getQuntity");
-//     const totalQuantity = getQuntity.getAttribute("data-id");
-
-    // Handle quantity increment/decrement
-    // document.querySelectorAll(".btn-plus").forEach((btn) => {
-    //   btn.addEventListener("click", function () {
-    //     const input = this.parentNode.querySelector("input");
-    //     input.value = parseInt(input.value) + 1;
-    //   });
-    // });
-
-    // document.querySelectorAll(".btn-minus").forEach((btn) => {
-    //   btn.addEventListener("click", function () {
-    //     const input = this.parentNode.querySelector("input");
-    //     if (parseInt(input.value) > 1) {
-    //       input.value = parseInt(input.value) - 1;
-    //     }
-    //   });
-    // });
-
-    // Handle size change
-    // document.querySelectorAll(".dropdown-item").forEach((item) => {
-    //   item.addEventListener("click", function (event) {
-    //     event.preventDefault();
-    //     const newSizeId = this.getAttribute("data-size-id");
-    //     const productId = this.getAttribute("data-product-id");
-        // TODO: Add logic to update the size in the backend using AJAX
-//       });
-//     });
-//   });
- </script>  -->

@@ -97,6 +97,11 @@ verifyPayment,
 createRazerPayOrder
 } = require("../../controller/userController/paymentController");
 
+const {
+applyCoupon,
+removeCoupon
+} = require("../../controller/userController/couponcontroller")
+
 router.use(express.json());
 router.use(express.urlencoded({ extended: true }));
 
@@ -160,6 +165,7 @@ router.post("/add-wishlist", addToWishlist);
 router.post("/delete-wishlist-item", deleteOneProductFromWishlist);
 //dowload invoices
 router.get("/dowload-invoice/:id",generateOrderInvoice);
-
+//coupon
+router.post("/apply-coupon",verifyUser, applyCoupon);
 
 module.exports = router;

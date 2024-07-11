@@ -11,7 +11,8 @@ const Counter = require("../../models/userModels/counterModel");
 const Wallet = require("../../models/userModels/walletModel");
 const uuid = require("uuid");
 const mongoose = require("mongoose");
-const {generateInvoicePDF} = require("../common/invoiceDowloadFuntion")
+const {generateInvoicePDF} = require("../common/invoiceDowloadFuntion");
+const Coupon = require("../../models/adminModels/coupon");
 
 //function increment or decrement product count
 const updateProductList = async (id, count, sizeId) => {
@@ -174,7 +175,21 @@ exports.placeOrder = async (req, res, next) => {
 
     await Promise.all(updateProductPromises);
 
+
+
     const newOrder = await Order.create(orderData);
+
+    if (userCart.coupon) {
+      const coupon = await Coupon.findOne({ _id: userCart.coupon });
+    
+      if (coupon && coupon.maximumUses !== null) {
+        await Coupon.findOneAndUpdate(
+          { _id: userCart.coupon },
+          { $inc: { currentUsageCount: 1 } }
+        );
+      }
+    }
+
     if (newOrder) {
       await cartDB.findByIdAndDelete(userCart._id);
     }
