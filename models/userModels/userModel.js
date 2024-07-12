@@ -8,7 +8,7 @@ const userSchema = Schema({
   password: { type: String },
   googleId: { type: String },
   status: { type: String, enum: ["active", "blocked"], default: "active" },
-
+  referralLink:{ type: String},
   profilePicture: {
     type: String,
     default: "https://cdn-icons-png.flaticon.com/512/149/149071.png",

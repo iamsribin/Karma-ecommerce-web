@@ -104,6 +104,12 @@ generateOrderCSV,
 generateOrderPDF
 } = require("../../controller/adminController/orderExportController");
 
+const {
+  renderManageOfferPage,
+  updateReferralLink, 
+  deleteReferral
+}= require("../../controller/adminController/offerController");
+
 //middlewares
 const { adminAuthCheck, checkAdmin, verifyAdmin } = require("../../middleware/adminAuth");
 
@@ -177,5 +183,9 @@ router.get("/payments", verifyAdmin, renderPaymentsList);
 router.post("/order-generate-excel",verifyAdmin, generateOrderExcel);
 router.post("/order-generate-csv",verifyAdmin, generateOrderCSV);
 router.post("/order-generate-pdf", verifyAdmin, generateOrderPDF);
-router.get("/sales-report", dashbord)
+router.get("/sales-report", dashbord);
+//offer
+router.get("/manage-offer", verifyAdmin, renderManageOfferPage);
+router.post("/update-referral-reward",verifyAdmin ,updateReferralLink);
+router.delete("/delete-referral-offer", verifyAdmin, deleteReferral)
 module.exports = router;

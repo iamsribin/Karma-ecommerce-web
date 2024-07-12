@@ -1,3 +1,78 @@
+<style>
+
+.copy-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    color: #333;
+    cursor: pointer;
+    font-family: Arial, sans-serif;
+    font-size: 14px;
+    padding: 6px 12px;
+    transition: all 0.3s ease;
+}
+
+.copy-button:hover {
+    background-color: #e0e0e0;
+    border-color: #999;
+}
+
+.copy-button:active {
+    background-color: #d0d0d0;
+    transform: translateY(1px);
+}
+
+.copy-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+
+.toast {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background-color: #333;
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  padding: 16px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+  font-size: 17px;
+}
+
+.toast.show {
+  visibility: visible;
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;} 
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;} 
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+</style>
+
+
 <section style="background-color: #eee">
   <div class="container">
     <div class="row justify-content-center">
@@ -48,6 +123,22 @@
                 <p class="mb-0"><strong>Email:</strong> &nbsp; <%= userDetalis.email %></p>
               </div>
             </div>
+            <%if(referral){%>
+            <hr />
+            <div class="row">
+              <div class="col-sm-12">
+
+                <p class="mb-0">
+                  <strong>referralLink:</strong> &nbsp;
+                  <button id="copyButton" class="copy-button">
+                   copy referral link
+                  </button>
+                  <span id="referralLink" style="display:none;"><%= userDetalis.referralLink %></span>
+                </p>
+                <div id="toast" class="toast">Link copied to clipboard!</div>
+              </div>
+            </div>
+            <%}%>
           </div>
         </div>
       </div>
@@ -185,23 +276,9 @@
       isOnlySpaces,
       "*Please enter a valid name*"
     );
-    // isValid &= validateField(
-    //   "email",
-    //   "error-message-email",
-    //   (value) => !value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
-    //   "Please enter a valid email."
-    // );
-    // isValid &= validateField(
-    //   "number",
-    //   "error-message-number",
-    //   (value) => value === "" || isNaN(value) || value.length !== 10,
-    //   "Please enter a 10-digit number"
-    // );
-
     return isValid;
   }
 
-  // Event listeners for input fields to remove error messages while typing
   const fieldsToValidate = [
     {
       fieldId: "fullName",
@@ -209,18 +286,6 @@
       validationFn: isOnlySpaces || value.length <= 5,
       errorMessage: "*Please enter a valid name*",
     },
-    // {
-    //   fieldId: "email",
-    //   errorMessageId: "error-message-email",
-    //   validationFn: (value) => !value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/),
-    //   errorMessage: "Please enter a valid email.",
-    // },
-    // {
-    //   fieldId: "number",
-    //   errorMessageId: "error-message-number",
-    //   validationFn: (value) => value === "" || isNaN(value) || value.length !== 10,
-    //   errorMessage: "Please enter a 10-digit number.",
-    // },
   ];
 
   fieldsToValidate.forEach(
@@ -283,4 +348,22 @@
   });
 </script>
 
+  <script>
+document.getElementById('copyButton').addEventListener('click', function() {
+  const referralLink = document.getElementById('referralLink').innerText;
+  const textarea = document.createElement('textarea');
+  textarea.value = referralLink;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+
+  // Show toast notification
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, 3000);
+});
+</script>
 

@@ -1,0 +1,263 @@
+<%- include('../admin-partials/header'); %>
+
+<style>
+  .offer-section {
+    background-color: #435c70;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+  }
+  .offer-section h2 {
+    color: #fff;
+    margin-bottom: 20px;
+  }
+  .offer-form {
+    background-color: #4e657a;
+    padding: 20px;
+    border-radius: 5px;
+  }
+  .offer-form label {
+    color: #fff;
+  }
+  .offer-form input,
+  .offer-form select {
+    margin-bottom: 10px;
+  }
+  .offer-list {
+    background-color: #4e657a;
+    padding: 20px;
+    border-radius: 5px;
+    margin-top: 20px;
+  }
+  .offer-list table {
+    color: #fff;
+  }
+  .btn-add-offer {
+    margin-bottom: 20px;
+  }
+</style>
+
+<style>
+  .modal-content {
+    background-color: #435c70;
+    color: #fff;
+  }
+  .modal-header {
+    border-bottom: 1px solid #4e657a;
+  }
+  .modal-footer {
+    border-top: 1px solid #4e657a;
+  }
+  .form-control {
+    background-color: #4e657a;
+    color: #fff;
+    border: 1px solid #6c7fa1;
+  }
+  .form-control:focus {
+    background-color: #4e657a;
+    color: #fff;
+  }
+</style>
+
+<body id="reportsPage">
+    <div class="container mt-5" style="padding: 0 100px 0">
+        <h1 class="text-white mb-4">Offer Management</h1>
+        <!-- Referral Offer Section -->
+        <div class="offer-section">
+          <h2>Referral Offers</h2>
+          <% if(referralDetails.length !== 0) { %>
+          <button
+            class="btn btn-primary btn-add-offer"
+            data-toggle="modal"
+            data-target="#referralOfferModal"
+          >
+            <i class="fas fa-edit"></i> Edit Referral Offer
+          </button>
+          <% } else { %>
+          <button
+            class="btn btn-primary btn-add-offer"
+            data-toggle="modal"
+            data-target="#referralOfferModal"
+          >
+            <i class="fas fa-plus"></i> Add Referral Offer
+          </button>
+          <% } %>
+    
+          <div class="offer-list">
+            <% if(referralDetails.length !== 0) { %>
+            <h3 style="color: white">
+              Referral reward is
+              <span id="currentDiscount"><%= referralDetails[0].reward %></span>
+            </h3>
+            <p style="color: white;">Currently, <%= referralDetails[0].userCount %> users have logged in with the referral link.</p>
+            <% } else { %>
+            <h3 style="color: white">
+              No referral reward found 
+            </h3>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    
+
+  <div
+    class="modal fade"
+    id="referralOfferModal"
+    tabindex="-1"
+    role="dialog"
+    aria-labelledby="referralOfferModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="referralOfferModalLabel">
+            Edit Referral Offer
+          </h5>
+          <button
+            type="button"
+            class="close"
+            data-dismiss="modal"
+            aria-label="Close"
+          >
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="referralOfferForm" class="offer-form">
+            <div class="form-group">
+              <label for="referralDiscount">Reward Amount</label>
+              <input
+                type="number"
+                class="form-control"
+                id="referralDiscount"
+                required
+              />
+            </div>
+            <div id="emptyReferralActions" style="display: none">
+              <button type="submit" class="btn btn-primary">
+                Add Discount
+              </button>
+            </div>
+            <div id="existingReferralActions" style="display: none">
+              <button type="submit" class="btn btn-primary">Update</button>
+              <button
+                type="button"
+                class="btn btn-danger"
+                id="deleteReferralOffer"
+              >
+                remove offer
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="/adminpublic/js/bootstrap.min.js"></script>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="/adminpublic/js/bootstrap.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      let referralDetails =   JSON.parse('<%- JSON.stringify(referralDetails || []) %>'.replace(/&#34;/g, '"'));
+  
+      function updateModalContent() {
+        if (referralDetails.length > 0 && referralDetails[0].reward) {
+          $("#referralDiscount").val(referralDetails[0].reward);
+          $("#emptyReferralActions").hide();
+          $("#existingReferralActions").show();
+          $("#referralOfferModalLabel").text("Edit Referral Offer");
+        } else {
+          $("#referralDiscount").val("");
+          $("#emptyReferralActions").show();
+          $("#existingReferralActions").hide();
+          $("#referralOfferModalLabel").text("Add Referral Offer");
+        }
+      }
+  
+      $("#referralOfferModal").on("show.bs.modal", function (e) {
+        updateModalContent();
+      });
+  
+      async function updateReferralReward(reward) {
+        try {
+          const response = await fetch('/admin/update-referral-reward', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reward }),
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to update referral reward');
+          }
+  
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error('Error updating referral reward:', error);
+          throw error;
+        }
+      }
+  
+      async function deleteReferralOffer() {
+        try {
+          const response = await fetch('/admin/delete-referral-offer', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          if (!response.ok) {
+            throw new Error('Failed to delete referral offer');
+          }
+  
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error('Error deleting referral offer:', error);
+          throw error;
+        }
+      }
+  
+      $("#referralOfferForm").on("submit", async function (e) {
+        e.preventDefault();
+        const newReward = $("#referralDiscount").val();
+        try {
+          const result = await updateReferralReward(newReward);
+          if (referralDetails.length === 0) {
+            referralDetails.push({ reward: newReward, userCount: 0 });
+          } else {
+            referralDetails[0].reward = newReward;
+          }
+          $("#currentDiscount").text(newReward);
+          $("#referralOfferModal").modal("hide");
+          alert('Referral reward updated successfully');
+          location.reload(); // Refresh the page to reflect changes
+        } catch (error) {
+          alert('Failed to update referral reward. Please try again.');
+        }
+      });
+  
+      $("#deleteReferralOffer").on("click", async function () {
+        if (confirm("Are you sure you want to delete this referral offer?")) {
+          try {
+            const result = await deleteReferralOffer();
+            referralDetails = [];
+            $("#currentDiscount").text("N/A");
+            $("#referralOfferModal").modal("hide");
+            alert('Referral offer deleted successfully');
+            location.reload(); // Refresh the page to reflect changes
+          } catch (error) {
+            alert('Failed to delete referral offer. Please try again.');
+          }
+        }
+      });
+    });
+  </script>
+  </body>

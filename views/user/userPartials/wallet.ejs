@@ -1,4 +1,3 @@
-
 <div class="container mt-5">
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
@@ -8,7 +7,7 @@
         <div class="card-body">
             <div class="bg-light p-3 mb-3">
                 <h5 class="mb-0">
-                  <img src="/uploads/assets/wallet.png" alt="" style="width: 50px;" >
+                    <span class="wallet-icon">👛</span>
                     Balance:₹<%= wallet.balance %> 
                 </h5>
             </div>
@@ -24,14 +23,12 @@
                     </tr>
                 </thead>
                 <tbody id="transactionTable">
-                    <% wallet.transactions.forEach((transaction)=>{ %>
-                        <tr>
-                        <td><%= transaction.createdAt.toDateString() %></td>
-                        <td><%= transaction.amount.toFixed(2) %></>
-                        <td><%= transaction.type %></td>
-                        <td><%= transaction.description %></td>
-                    </tr>
-                    <% }) %>
+                  <% wallet.transactions.forEach((transaction)=>{ %>
+                    <td><%= transaction.createdAt %></td>
+                    <td class="credit"><%= transaction.amount.toFixed(2) %></td>
+                    <td class="credit"><%= transaction.type %></td>
+                    <td><%= transaction.description %></td>
+                <% }) %>
                 </tbody>
             </table>
         </div>

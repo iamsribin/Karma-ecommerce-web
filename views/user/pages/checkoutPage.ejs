@@ -426,12 +426,14 @@
             <h1>Cart Total</h1>
             <p>Sub Total<span>₹ <%=userCart.subTotal%></span></p>
             <p>Shipping Cost<span>Free</span></p>
+            <%if(userCart?.couponDiscount){%>
+            <p>Coupon discount<span style="color: green;">-₹<%= userCart.couponDiscount %></span></p>
+            <%}%>
             <p>
               Discount<span class="text-success">₹ <%=userCart.discount%></span>
             </p>
-            <!-- <p>Tax<span>₹ <%=userCart.tax%></span></p> -->
             <h2>
-              Grand Total<span id="totalAmt">₹ <%=userCart.grandTotal%></span>
+              Grand Total<span id="totalAmt">₹ <%= userCart?.couponDiscount ? userCart.grandTotal - userCart?.couponDiscount :  userCart.grandTotal %></span>
             </h2>
           </div>
           <div class="checkout-payment">
@@ -561,25 +563,6 @@
         });
       }
     });
-
-    // function addAddressToDOM(address) {
-    //   const addressContainer = document.querySelector("#address-container");
-
-    //   const addressHTML = `
-    //   <div class="row p-3 address-item" data-id="${address._id}">
-    //     <div class="col-md-12 p-4 border mb-3" style="background-color: #ffffff">
-    //       <b class="address-type" style="text-transform: uppercase; font-size: 11px; color: #878787; vertical-align: middle; padding: 4px 7px; padding-bottom: 3px; border-radius: 2px; background-color: #f0f0f0; font-weight: 500; margin-right: 15px;">
-    //         ${address.addressType}
-    //       </b>
-    //       <p><b>${address.fullName} &nbsp; &nbsp; &nbsp;${address.phoneNumber}</b></p>
-    //       <p>${address.houseNo}, ${address.address}, ${address.district}, ${address.state} - ${address.pincode}</p>
-    //       <button class="btn edit-button" data-id="${address._id}" data-toggle="modal" data-target="#editAddressModal">Edit Address</button>
-    //       <button id="delete-btn" class="btn delete-button text-white" data-target="#deleteAddressModal" style="background-color: rgb(197, 2, 2)" data-id="${address._id}">Delete Address</button>
-    //     </div>
-    //   </div>
-    //   `;
-    //   addressContainer.insertAdjacentHTML("beforeend", addressHTML);
-    // }
   });
 </script>
 
@@ -832,29 +815,7 @@
     placeOrderBtn.addEventListener("click", async function (e) {
       e.preventDefault();
       try {
-        // if (selectedAddress === 'newAddress') {
-        //       const form = document.getElementById("newAddressForm");
-        //       if (!validateForm(form)) {
-        //         return;
-        //       }
 
-        //       const formData = new FormData(form);
-        //       const addressData = Object.fromEntries(formData.entries());
-
-        //       const response = await fetch("place-order", {
-        //         method: "POST",
-        //         headers: {
-        //           "Content-Type": "application/json",
-        //         },
-        //         body: JSON.stringify({
-        //           address: addressData,
-        //           paymentMethod: selectedPayment,
-        //         }),
-        //       });
-        //       const data = await response.json();
-        //       console.log(data);
-
-        //     } else {
         const totalAmtElement = document.getElementById("totalAmt");
         const totalAmtText = totalAmtElement.textContent.trim();
         const totalAmt = totalAmtText.replace("₹ ", "");
@@ -895,76 +856,8 @@
   });
 </script>
 
-<!-- razorPayment -->
-<!-- <script>
-  function handlePayNowClick(order) {
-    var options = {
-      key: "rzp_test_we2isuMyajihCW",
-      amount: order.createdOrder.amount,
-      currency: "INR",
-      name: "KARMA",
-      description: "Test Transaction",
-      image: "img/fav.png",
-      order_id: order.createdOrder.id,
-      handler: function (response, error) {
-        verifyPayment(response, order);
-      },
-      prefill: {
-        user: order.newOrder.userId,
-      },
-      notes: {
-        address: "Razorpay Corporate Office",
-      },
-      theme: {
-        color: "#1818c4",
-      },
-    };
-    var rzp1 = new Razorpay(options);
-    rzp1.open();
-  }
-
-  function verifyPayment(payment, order) {
-    console.log("now in verifyPayment", payment);
-    console.log("now in order", order);
-    $.ajax({
-      url: "/VerifyOnlinePayment",
-      data: {
-        payment,
-        order,
-      },
-      method: "post",
-      success: (response) => {
-        console.log("response.success", response.success);
-        if (response.success) {
-          console.log("response got");
-          location.href = "/ordersuccess";
-        } else {
-          Swal.fire({
-            icon: "error",
-            title: "Payment Failed",
-            text: "Your payment was unsuccessful. Please try again or choose a different payment method.",
-          }).then(() => {
-            location.href = "/user/cart";
-          });
-        }
-      },
-      error: (error) => {
-        console.error("Verify Payment Error:", error);
-        Swal.fire({
-          icon: "error",
-          title: "Error",
-          text: "An error occurred while verifying the payment. Please try again.",
-        }).then(() => {
-          location.href = "/user/cart";
-        });
-      },
-    });
-  }
-</script> -->
-
 <!-- wallet and cashOnDelivery peyment function -->
 <script>
-
   const saveOrderOnCashOnDelivery = async (
     totalPrice,
     selectedPayment,
@@ -972,7 +865,6 @@
     walletBalance
   ) => {
     if (selectedPayment === "wallet") {
-console.log("bsg",walletBalance,"tota;",totalPrice);
       if (Number(walletBalance) < Number(totalPrice)) {
         showErrorToast("Insufficient balance in Wallet");
         return;
@@ -995,8 +887,6 @@ console.log("bsg",walletBalance,"tota;",totalPrice);
         const data = await response.json();
 
         if (response.ok) {
-          // const data = await response.json();
-          console.log("data", data);
           Swal.fire({
             title: "Your order has been created",
             icon: "success",
@@ -1111,7 +1001,7 @@ console.log("bsg",walletBalance,"tota;",totalPrice);
     //razor pay configurations
     let options = {
       key: data.key,
-      amount: parseInt(totalAmt),
+      amount: parseInt(totalAmt) * 100,
       currency: "INR",
       name: "KARMA",
       description: "Test Transaction",

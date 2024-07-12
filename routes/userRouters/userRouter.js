@@ -167,5 +167,5 @@ router.post("/delete-wishlist-item", deleteOneProductFromWishlist);
 router.get("/dowload-invoice/:id",generateOrderInvoice);
 //coupon
 router.post("/apply-coupon",verifyUser, applyCoupon);
-
+router.delete("/remove-coupon", verifyUser ,removeCoupon);
 module.exports = router;

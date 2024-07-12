@@ -95,9 +95,8 @@ exports.removeCoupon = async (req, res) => {
     try {
       
         const _id = req.session.userId;
-  
       await Cart.findOneAndUpdate(
-        { user: _id },
+        { userId: _id },
         {
           $set: {
             coupon: null,
@@ -110,7 +109,7 @@ exports.removeCoupon = async (req, res) => {
   
       res.status(200).json({ success: true });
     } catch (error) {
-        console.log("er===rei",error);
+  
       res.status(400).json({ error: error.message });
     }
   };

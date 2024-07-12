@@ -44,7 +44,7 @@ exports.renderCartPage = async (req, res, next) => {
       minimumPurchaseAmount: { $ne: null}
   });
 
-  if(userCart.coupon){
+  if(userCart?.coupon){
     checkCoupon(userId);
   }
 
@@ -52,8 +52,8 @@ exports.renderCartPage = async (req, res, next) => {
 
     return res.render("user/pages/cartPage", {
       user: userDetails,
-      cartProducts: userCart ? userCart.cart : null,
-      cartLength: userCart ? userCart.cart.length : 0,
+      cartProducts: userCart ? userCart?.cart : null,
+      cartLength: userCart ? userCart?.cart?.length : 0,
       userCart,
       coupons
     });
@@ -221,6 +221,8 @@ exports.removeItemsFromCart = async (req, res, next) => {
     } else {
       await userCart.save();
     }
+
+    checkCoupon(userId);
 
     return res.status(200).send({ message: "Product removed from cart successfully" });
   } catch (error) {

@@ -2,7 +2,7 @@
 Pending:
 Admin
 - pagination
-- offer management
+<!-- - offer management -->
 - order details page for return order
 - add summery in sales report
 User
@@ -10,18 +10,18 @@ User
 - handle deleted items in cart, details page
 - password change form validation
 - sorting products
-- coupon
+<!-- - coupon -->
 
 Theory: 5
 Practical: 5
 
 Nextweek:
 User side :
-Invoice download (Pdf)
+<!-- Invoice download (Pdf) -->
 product riview
 add brands and category tag in frond end
 Order above Rs 1000 should not be allowed for COD
-Delivery charge can be applied according to location / fixed charges (optional)
+<!-- Delivery charge can be applied according to location / fixed charges (optional) -->
 Handle error for failed payments (update status as payment pending), 
 Should be able to continue payment from my order page in case of failed payment
 Admin side :
@@ -30,4 +30,4 @@ Coupon Management (Create, Delete)
 Best selling product (top 10) 
 Best selling category (top 10) 
 Best selling brands (top 10) 
-Generate ledger book (optional)
+<!-- Generate ledger book (optional) -->

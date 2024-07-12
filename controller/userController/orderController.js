@@ -166,7 +166,9 @@ exports.placeOrder = async (req, res, next) => {
         totalPrice: userCart.grandTotal,
         products: products,
         subTotal: userCart.subTotal,
-        discount: userCart.discount,
+        coupon: userCart.coupon,
+        couponDiscount: userCart?.couponDiscount ?  userCart?.couponDiscount: null,
+        discount: userCart?.discount ?  userCart?.discount : null,
       };
 
     const updateProductPromises = products.map((item) => {
@@ -175,9 +177,6 @@ exports.placeOrder = async (req, res, next) => {
 
     await Promise.all(updateProductPromises);
 
-
-
-    const newOrder = await Order.create(orderData);
 
     if (userCart.coupon) {
       const coupon = await Coupon.findOne({ _id: userCart.coupon });
@@ -188,13 +187,15 @@ exports.placeOrder = async (req, res, next) => {
           { $inc: { currentUsageCount: 1 } }
         );
       }
+
+      orderData.totalPrice -= userCart.couponDiscount;
     }
+
+    const newOrder = await Order.create(orderData);
 
     if (newOrder) {
       await cartDB.findByIdAndDelete(userCart._id);
     }
-
-    console.log(newOrder);
 
     if (paymentMethod === "wallet") {
       const exists = await Wallet.findOne({ user: userId });
@@ -244,7 +245,6 @@ exports.placeOrder = async (req, res, next) => {
         });
       }
     } 
-
 
   return res.status(200).json({ newOrder });
   } catch (error) {

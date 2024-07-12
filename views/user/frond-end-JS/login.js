@@ -164,6 +164,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const email = formData.get("email");  
       const password1 = formData.get("password1");
  
+      const urlParams = new URLSearchParams(window.location.search);
+      const userId = urlParams.get('userId');
       try {
         const response = await fetch("/register", {
           method: "POST",
@@ -174,6 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
             name,
             email,
             password1,
+            userId,
           }),
         });
 
@@ -182,7 +185,6 @@ document.addEventListener("DOMContentLoaded", () => {
         } else {
           const errorData = await response.json();
           const errorMessage = errorData.message || "An error occurred";
-          // document.querySelector(".error-message-signup").textContent = errorMessage;
           throw new Error(errorMessage);
         }
       } catch (error) {

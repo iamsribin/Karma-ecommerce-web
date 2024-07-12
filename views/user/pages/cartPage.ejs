@@ -22,6 +22,13 @@
       width: 90%;
       max-width: 500px;
   }
+  .closeInfo{
+    color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+  }
   .close {
       color: #aaa;
       float: right;
@@ -179,12 +186,12 @@
   </div>
   <br>
 <% } else { %>
-<p>Coupon Discount <span><a href="#"  id="openModalBtn">Apply Coupon</a></span></p>
+<p>Coupon Discount <span><a style="cursor: pointer; color: #4D869C;"  id="openModalBtn">Apply Coupon</a></span></p>
 <div id="appliedCouponInfo"></div>
 <%}%>
                   <p>
                     Discount<span class="text-success"
-                      >₹ <%=userCart.coupon ?   userCart.discount + userCart.couponDiscount : userCart.discount %></span
+                      >₹ <%= userCart.discount %></span
                     >
                   </p>
                   <h2>Grand Total<span>₹ <%= userCart.coupon ? userCart.grandTotal- userCart.couponDiscount :  userCart.grandTotal %></span></h2>
@@ -244,7 +251,7 @@
 
 <div id="couponInfoModal" class="modal">
   <div class="modal-content">
-      <span class="close">&times;</span>
+      <span class="closeInfo" id="closeInfo">&times;</span>
       <h2>Coupon Information</h2>
       <p id="couponInfoContent"></p>
       <button id="removeCouponBtn">Remove Coupon</button>
@@ -260,19 +267,19 @@
 <!-- coupon  -->
 <script>
   const coupons = JSON.parse('<%- JSON.stringify(coupons) %>'.replace(/&#34;/g, '"'));
-  const grandTotal = parseFloat('<%- userCart.grandTotal %>');
+  const grandTotal = parseFloat('<%- userCart?.grandTotal %>');
 
   const modal = document.getElementById('couponModal');
   const couponInfoModal = document.getElementById('couponInfoModal');
   const openBtn = document.getElementById('openModalBtn');
   const closeBtns = document.getElementsByClassName('close');
+  const closeInfoBtn = document.getElementById('closeInfo');
   const couponSearch = document.getElementById('couponSearch');
   const couponList = document.getElementById('couponList');
   const maxSavings = document.getElementById('maxSavings');
   const applyBtn = document.getElementById('applyBtn');
   const removeCouponBtn = document.getElementById('removeCouponBtn');
 
-  openBtn.onclick = () => modal.style.display = 'block';
 
   for (let closeBtn of closeBtns) {
       closeBtn.onclick = function(event) {
@@ -280,11 +287,18 @@
           this.parentElement.parentElement.style.display = 'none';
       }
   }
+  
+  closeInfoBtn.addEventListener("click", function(e){
+    e.stopPropagation();
+    couponInfoModal.style.display = 'none';
+  })
 
   window.onclick = (event) => {
       if (event.target == modal) modal.style.display = 'none';
       if (event.target == couponInfoModal) couponInfoModal.style.display = 'none';
   };
+
+
 
   function renderCoupons(couponsToRender) {
       couponList.innerHTML = '';
@@ -333,7 +347,7 @@
 
   couponList.addEventListener('change', updateMaxSavings);
 
-  applyBtn.onclick = async () => {
+  applyBtn.addEventListener("click", async function() {
       const selectedCoupon = document.querySelector('#couponList input[type="radio"]:checked');
       if (selectedCoupon) {
           const couponCode = selectedCoupon.value;
@@ -358,42 +372,51 @@
       } else {
           showInfoToast('Please select a coupon to apply.');
       }
-  };
+  });
 
   function showCouponInfo(couponCode) {
       const coupon = coupons.find(c => c.couponCode === couponCode);
       if (coupon) {
-          document.getElementById('couponInfoContent').innerHTML = `
+      const formattedDate = new Date(coupon.expiryDate).toLocaleDateString(
+        "en-IN",
+        {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        }
+      );
+
+      document.getElementById("couponInfoContent").innerHTML = `
               Save ₹${coupon.offerAmount}<br>
               Rs. ${coupon.offerAmount} off on minimum purchase of Rs. ${coupon.minimumPurchaseAmount}.<br>
-              Expires on: ${coupon.expiryDate}
+              Expires on: ${formattedDate}
           `;
           couponInfoModal.style.display = 'block';
       }
   }
 
-  removeCouponBtn.onclick = async () => {
+  removeCouponBtn.addEventListener('click', async function(){
       try {
           const response = await fetch('/remove-coupon', {
-              method: 'POST',
+              method: 'DELETE',
               headers: {
                   'Content-Type': 'application/json',
               },
           });
           const result = await response.json();
           if (result.success) {
-              document.getElementById('appliedCouponInfo').innerHTML = '';
-              // Update the cart summary with new totals
-              // You'll need to add logic here to update the cart summary
+             window.location.reload();
           } else {
-              showErrorToast(result.message);
+              showErrorToast(result.error);
           }
       } catch (error) {
-          console.error('Error:', error);
+          console.error('Error remove:', error);
           showErrorToast('An error occurred while removing the coupon.');
       }
       couponInfoModal.style.display = 'none';
-  };
+  });
+  openBtn.onclick = () => modal.style.display = 'block';
+
 
   renderCoupons(coupons);
 </script>

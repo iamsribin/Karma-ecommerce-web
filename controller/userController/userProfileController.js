@@ -8,6 +8,8 @@ const cartDB = require("../../models/userModels/cartModel");
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
+const Referral = require("../../models/adminModels/referral");
+const Wallet = require("../../models/userModels/walletModel")
 
 //render user profile
 exports.getUserProfile = async (req, res, next) => {
@@ -18,15 +20,26 @@ exports.getUserProfile = async (req, res, next) => {
     
     const cart = await cartDB.findOne({userId: req.session.userId});
     const cartLength = cart?.cart?.length;
-    const userId = req.session.userId;; 
-    const orders = await Order.find({ userId }).populate('products.productId').populate('products.size');
-    console.log(orders);
+
+    const wallet = await Wallet.findOne({user: id})
+    .sort({createdAt: -1});
+
+    const orders = await Order.find({ userId: id })
+    .populate('products.productId')
+    .populate('products.size')
+    .populate("coupon")
+    .sort({createdAt: -1})
+
+    const referral = await Referral.findOne({  });
+
     res.render("user/pages/userProfile", {
       userDetalis,
       cartLength,
       user:userDetalis,
       addresses: addresses?.addresses,
       orders,
+      referral,
+      wallet,
     });
   } catch (error) {
     console.log(error);
@@ -281,7 +294,10 @@ exports.deleteAddress = async (req, res, next) => {
 exports.getUserOrders = async (req, res) => {
   try {
     const userId = req.session.userId;; 
-    const orders = await Order.find({ userId }).populate('products.productId').populate('products.size');
+    const orders = await Order.find({ userId })
+    .populate('products.productId')
+    .populate('products.size')
+    .sort({ createdAt: -1 }); 
 
     res.render('orders', { orders });
   } catch (error) {

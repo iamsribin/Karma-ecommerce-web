@@ -170,12 +170,9 @@
               <span>SIZE: <%=orderProduct.size.size%></span>
               <br />
               <span
-                ><%= orderProduct.productId.tag.tagName.toLowerCase() %></span
+                ><%= orderProduct.productId.tag.tagName.toLowerCase() %>'s <%= orderProduct.productId.category.name.toLowerCase() %> Shoe</span
               >
               <br />
-              <span
-                ><%= orderProduct.productId.category.name.toLowerCase() %></span
-              >
               <% if (orderProduct.offerPrice) { %>
               <p class="mb-0 text-primary">
                 ₹<%=orderProduct.offerPrice%>

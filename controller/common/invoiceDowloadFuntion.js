@@ -131,18 +131,18 @@ const generateInvoicePDF = async (order) => {
       );
 
       
-    //   const paidToDatePosition = subtotalPosition + 30;
-    //   generateTableRowNoLine(
-    //     doc,
-    //     paidToDatePosition,
-    //     "",
-    //     "",
-    //     "Tax",
-    //     "",
-        
-    //   );
+      const paidToDatePosition = subtotalPosition + 30;
+      generateTableRowNoLine(
+        doc,
+        paidToDatePosition,
+        "",
+        "",
+        "coupon discount",
+        "",
+        order.couponDiscount ? order.couponDiscount : "not applyed"
+      );
 
-      let duePosition = subtotalPosition + 30;
+      let duePosition = paidToDatePosition + 30;
 
       if(order.discount){
         generateTableRowNoLine(

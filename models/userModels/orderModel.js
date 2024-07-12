@@ -170,17 +170,14 @@ const OrderSchema = new Schema(
       type: String,
     },
     coupon: {
-      type: Schema.Types.ObjectId,
+      type: mongoose.Types.ObjectId,
       ref: Coupon,
     },
-    couponCode: {
-      type: String,
+    couponDiscount:{
+      type: Number,
     },
     discount: {
       type: Number,
-    },
-    couponType: {
-      type: String,
     },
   },
   { timestamps: true }

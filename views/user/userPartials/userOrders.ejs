@@ -8,7 +8,7 @@
                         <div class="col-md-2 mr-3">
                             <img src="<%= product.productId.imagePaths[0] %>" alt="Product Image" class="img-fluid product-image">
                         </div>
-                        <div class="col-md-6 mr-3">
+                        <div class="col-md-7 mr-3">
                             <p><b><%= product.productId.name %></b></p>
                             <p>
                                 <b>
@@ -19,8 +19,10 @@
                                   <%= product.status.charAt(0).toUpperCase() + product.status.slice(1) %> 
                                 </b>
                               </p>   
-                           <p><b>Size: <%= product.size.size %></b></p>
-                        
+                          <b>Size: <%= product.size.size %></b>
+                           <%if(order.coupon){%>
+                           <p>coupon applyed. code: <b><%= order.coupon.couponCode %></b> discount: <b><%= order.couponDiscount %></b></p>
+                           <%}%>
                         </div>
                         <div class="col-md-2">
                             <p><b>₹ <%= product.totalPrice %></b></p>

@@ -3,6 +3,10 @@ const sendEmail = require("../../utils/email");
 const bcrypt = require("bcrypt");
 const User = require("../../models/userModels/userModel");
 const { createError } = require("../../utils/errors");
+const Referral = require("../../models/adminModels/referral");
+const mongoose = require("mongoose");
+const Wallet = require("../../models/userModels/walletModel");
+const Counter = require("../../models/userModels/counterModel");
 
 const { AUTH_EMAIL } = process.env;
 const MAX_OTP_COUNT = 4;
@@ -45,8 +49,77 @@ async function deleteOtp(email) {
   }
 }
 
+async function giveReward(userId){
+  try {
+
+   const rewardUser = await User.findById(userId);
+   const referral = await Referral.find({});
+
+   if(!rewardUser || referral.length === 0){
+    return null;
+   }
+   
+   let counter = await Counter.findOne({
+    model: "Wallet",
+    field: "transaction_id",
+  });
+
+  // Checking if order counter already exist
+  if (counter) {
+    counter.count += 1;
+    await counter.save();
+  } else { 
+    counter = await Counter.create({
+      model: "Wallet",
+      field: "transaction_id",
+    });
+  }
+
+  let wallet = {};
+  const exists = await Wallet.findOne({ user: userId });
+
+  if (exists) {
+    wallet = await Wallet.findByIdAndUpdate(exists._id, {
+      $inc: {
+        balance: referral[0].reward,
+      },
+      $push: {
+        transactions: {
+          transaction_id: counter.count + 1,
+          amount: referral[0].reward,
+          type: "credit",
+          description: "referral link reward",
+        },
+      },
+    });
+  } else {
+    wallet = await Wallet.create({
+      user: userId,
+      balance: referral[0].reward,
+      transactions: [
+        {
+          transaction_id: counter.count + 1,
+          amount: referral[0].reward,
+          type: "credit",
+          description: "referral link reward",
+        },
+      ],
+    });
+  }
+  await Referral.findOneAndUpdate({}, { $inc: { userCount: 1 } }, { new: true });
+
+  } catch (error) {
+    console.error("Error in giveReward:", error);
+  }
+}
+
+
 const sendOTP = async (req, res, next) => {
-  const { name, email, password1 } = req.body;
+  const { name, email, password1, userId } = req.body;
+
+  if (mongoose.Types.ObjectId.isValid(userId)) {
+    req.session.referralUser = userId;
+  }
 
   try {
     const existingUser = await User.findOne({ email });
@@ -134,18 +207,33 @@ const verifyOtp = async (req, res, next) => {
 
   try {
     const user = await User.findOne({ email });
+
     if (!user) return next(createError(401, "Invalid email"));
 
     const isMatch = await bcrypt.compare(otp, user.otp);
     if (!isMatch) return next(createError(401, "Invalid OTP"));
      CurrentCount =0;
-    await User.findOneAndUpdate({ email: user.email }, { $unset: { otp: "" } });
+
+   const referralLink = `http://localhost:4000/login?userId=${user._id}`;
+
+    await User.findOneAndUpdate({ email: user.email },
+       { $unset: { otp: "" }, 
+       referralLink: referralLink
+      });
+
+      const referralUser =  req?.session?.referralUser;
+
+      if (mongoose.Types.ObjectId.isValid(referralUser)) {
+        giveReward(referralUser);
+      }
+     
 
     if (!req.session.passwordChange) {
       req.session.userGmail = user.email;
       req.session.user = user.name;
       req.session.userId = user._id;
       delete req.session.otpverfication;
+      delete  req.session.referralUser;
     }
     return res.status(200).json({ name: user.name });
   } catch (error) {
