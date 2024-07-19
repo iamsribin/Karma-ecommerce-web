@@ -1,36 +1,97 @@
 <%- include('../admin-partials/header'); %>
+
 <div class="col-12 tm-block-col">
   <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
     <h2 class="tm-block-title">Payments List</h2>
-    <table class="table">
+    <table id="paymentsTable" class="table">
       <thead>
         <tr>
-          <th scope="col">PAYMENT ID.</th>
+          <th>PAYMENT ID</th>
+          <th scope="col">ORDER ID</th>
           <th scope="col">STATUS</th>
           <th scope="col">AMOUNT</th>
-          <th scope="col">PAYMENT METHOD</th>
+          <th scope="col">METHOD</th>
           <th scope="col">DATE</th>
         </tr>
       </thead>
       <tbody>
-        <%paymentList.forEach((payment)=>{ %>
+        <% paymentList.forEach((payment) => { %>
         <tr>
-          <th scope="row"><b><%=payment.payment_id%></b></th>
+          <td><b><%= payment.payment_id %></b></td>
+          <td><b><%= payment.orderId %></b></td>
           <td>
-            <%if(payment.status === "success"){%>
+            <% if(payment.status === "success") { %>
             <div class="tm-status-circle moving"></div>
-            <%=payment.status%> <%}else if(payment.status === "refunded"){%>
+            <%= payment.status %>
+            <% } else if(payment.status === "refunded") { %>
             <div class="tm-status-circle cancelled"></div>
-            <%=payment.status%> <%}else{%>
-                <div class="tm-status-circle pending">
-                </div> <%=payment.status%>
-                <%}%>
+            <%= payment.status %>
+            <% } else { %>
+            <div class="tm-status-circle pending"></div>
+            <%= payment.status %>
+            <% } %>
           </td>
-          <td>$799</td>
-          <td><%=payment.paymentMode%></td>
-          <td><%=payment.updatedAt.toDateString()%></td>
+          <td>$<%=payment.amount%></td>
+          <td><%= payment.paymentMode %></td>
+          <td><%= payment.updatedAt.toDateString() %></td>
         </tr>
-        <% })%>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- include('../admin-partials/footer'); %>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css" />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('#paymentsTable').DataTable({
+      "pageLength": 10,
+      "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+      "order": [[ 4, "desc" ]],  // Sort by Date column descending
+      "language": {
+        "search": "Search payments:"
+      },
+      "columnDefs": [
+        { "orderable": false, "targets": 1 }  // Disable sorting on the Status column
+      ]
+    });
+  });
+</script>
+
+<style>
+  .dataTables_wrapper .dataTables_filter input {
+    background-color: aliceblue;
+    color: black;
+  }
+  .dataTables_wrapper .dataTables_length select {
+    background-color: aliceblue;
+    color: black;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    background-color: #435c70;
+    color: white !important;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #1d2e3f !important;
+    color: white !important;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background-color: #1d2e3f !important;
+    color: white !important;
+  }
+</style>
+
+
+
+
+
 
         <!-- <tr>
                     <th scope="row"><b>#122349</b></th>
@@ -52,9 +113,3 @@
                     <td>COD</td>
                     <td>06:00, 28 NOV 2018</td>
                 </tr> -->
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<%- include('../admin-partials/footer'); %>

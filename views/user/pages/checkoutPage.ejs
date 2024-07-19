@@ -947,7 +947,7 @@
         },
         body: JSON.stringify({
           ...razorResponse,
-          orderId: data.newOrder._id,
+          orderId: data.newOrder.orderId,
         }),
       });
 
@@ -1029,7 +1029,7 @@
 
     // If failed toast it.
     razor.on("payment.failed", async function (response) {
-      console.log("faild",response);
+      console.log("faild respose",response);
       try {
         const newOrder = await fetch("/faildOrder", {
           method: "POST",
@@ -1037,13 +1037,29 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            address: selectedAddress,
-            paymentMode: selectedPayment,
-            couponCode: couponCode,
+            addressId: selectedAddress,
+            paymentMethod: selectedPayment,
+            // couponCode: couponCode,
           }),
         });
+        const data = await newOrder.json();
+        console.log("data",data);
 
-        Swal.fire({
+//saving payment
+const verifyData = await fetch("/razor-verify-failedPayment", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    ...response,
+    orderId: data.newOrder.orderId,
+  }),
+});
+
+
+if(newOrder.ok){
+  Swal.fire({
           title: "Payment failed Order created with payment status Failed",
           icon: "success",
           showCancelButton: false,
@@ -1052,8 +1068,11 @@
         }).then(async (result) => {
           window.location.href = `/cart`;
         });
-  
+}else{
+  showErrorToast("something went wrong try again");
+}
       } catch (error) {
+        console.log("faild payment error",error);
         showErrorToast("something went wrong");
       }
     });

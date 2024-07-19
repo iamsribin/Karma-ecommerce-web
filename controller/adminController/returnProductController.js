@@ -7,6 +7,7 @@ const orderDB = require("../../models/userModels/orderModel");
 const Counter = require("../../models/userModels/counterModel");
 const Payment = require("../../models/userModels/paymentModel");
 const Wallet = require("../../models/userModels/walletModel");
+const uuid = require("uuid");
 
 //function increment or decrement product count
 const updateProductList = async (id, count, sizeId) => {
@@ -120,13 +121,14 @@ exports.renderReturnProducts = async (req, res, next) => {
       }
     ]);
 
+    console.log("orders",orders[4]);
+
     res.render("admin/adminDasbord/returnProducts", { orders });
   } catch (error) {
     console.log(error);
     res.status(500).send("Server Error");
   }
 };
-
 
 exports.updateReturnStatus = async (req, res, next) =>{
   try {
@@ -146,8 +148,6 @@ exports.updateReturnStatus = async (req, res, next) =>{
       { new: true }
     );
 
-    console.log(order);
-
     if(!order){
       return res.status(404).json({message: "Order or product not found"});
     }
@@ -162,8 +162,7 @@ exports.updateReturnStatus = async (req, res, next) =>{
     }
 
     const returnedProduct = order.products[index];
-console.log("return product",returnedProduct);
-console.log("ordre", order);
+
     // Update product stock
     updateProductList(
       returnedProduct.productId,
@@ -171,16 +170,20 @@ console.log("ordre", order);
       returnedProduct.size
     );
 
+
     if (order.paymentMethod !== "cashOnDelivery") {
       // Adding the refund to wallet of user.
-      await Payment.findOneAndUpdate(
-        { orderId: returnedProduct._id },
-        {
-          $set: {
-            status: "refunded",
-          },
-        }
-      );
+
+      await Payment.create({
+        orderId: returnedProduct.orderId,
+        amount: returnedProduct.totalPrice,
+        payment_id: `wallet_${uuid.v4()}`,
+        user: order.userId,
+        status: "refunded",
+        paymentMode: "wallet",
+        product: returnedProduct._id,
+      });
+
 
       let counter = await Counter.findOne({
         model: "Wallet",
@@ -203,12 +206,12 @@ console.log("ordre", order);
       if (exists) {
         wallet = await Wallet.findByIdAndUpdate(exists._id, {
           $inc: {
-            balance: order.totalPrice,
+            balance: returnedProduct.totalPrice,
           },
           $push: {
             transactions: {
               transaction_id: counter.count + 1,
-              amount: order.totalPrice,
+              amount: returnedProduct.totalPrice,
               type: "credit",
               description: "Order Cancellation Refund",
               orderId: order._id,
@@ -219,11 +222,11 @@ console.log("ordre", order);
       } else {
         wallet = await Wallet.create({
           user: order.userId,
-          balance: order.totalPrice,
+          balance: returnedProduct.totalPrice,
           transactions: [
             {
               transaction_id: counter.count + 1,
-              amount: order.totalPrice,
+              amount: returnedProduct.totalPrice,
               type: "credit",
               description: "Order Cancellation Refund",
               orderId: order._id,
@@ -242,3 +245,35 @@ console.log("ordre", order);
 }
 
 
+exports.returnProductView = async (req, res )=>{
+  try {
+    const orderId = req.params.orderId;
+    const productId = req.params.productId;
+
+    const order = await orderDB.findOne({orderId: orderId})      
+        .populate({
+        path: "products.productId",
+        model: "Product",
+        populate: [
+          { path: "category", model: "Caregory" },
+          { path: "tag", model: "Tag" },
+          { path: "brand", model: "Brand" },
+        ],
+      })
+      .populate({
+        path: "products.size",
+        model: "Size",
+      });
+
+    if (!order) return res.status(404).json({ message: "Order not found" });
+    const orderProduct = order.products.find((item) => item.productId._id.equals(productId));
+
+    if (!orderProduct)
+      return res.status(404).json({ message: "Product not found in order" });
+
+
+    res.render("admin/adminDasbord/returnProductView", { order,orderProduct });
+  } catch (error) {
+    console.log(error);
+  }
+}

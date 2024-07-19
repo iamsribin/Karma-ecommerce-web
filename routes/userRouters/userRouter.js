@@ -64,7 +64,9 @@ const {
   cancelOrder,
   returnProduct,
   generateOrderInvoice,
-  createfailOrder
+  createfailOrder,
+  renderOrderFailedProducts,
+  repaymentOrder
 } = require("../../controller/userController/orderController");
 
 //review controller
@@ -94,7 +96,9 @@ deleteOneProductFromWishlist
 const {
 getKey,
 verifyPayment,
-createRazerPayOrder
+verifyPaymentFailedPayment,
+createRazerPayOrder,
+addMoneyWallet,
 } = require("../../controller/userController/paymentController");
 
 const {
@@ -147,6 +151,7 @@ router.post("/place-order", verifyUser, placeOrder);
 router.get("/order-confirmation/:id",verifyUser, renderOrderConfirmationPage);
 router.get('/orders',verifyUser, getUserOrders);
 router.get("/order-view/:id/:orderId",verifyUser, renderOrderView);
+router.get("/failedOrder-view/:orderId",verifyUser, renderOrderFailedProducts);
 router.post("/cancel-product",verifyUser, cancelOrder);
 router.post("/return-product",verifyUser, returnProduct);
 //review 
@@ -158,7 +163,10 @@ router.get("/search",searchProduct);
 router.get("/razor-key",getKey);
 router.post("/razor-order", createRazerPayOrder);
 router.post("/razor-verify", verifyPayment);
-// router.post("/faildorder", createfailOrder);
+router.post("/razor-verify-failedPayment",verifyUser, verifyPaymentFailedPayment)
+router.post("/faildorder", createfailOrder);
+router.post("/repayment",verifyUser, repaymentOrder);
+
 //whishlist
 router.get("/wishlist",verifyUser, getWishlist);
 router.post("/add-wishlist", addToWishlist);
@@ -168,4 +176,9 @@ router.get("/dowload-invoice/:id",generateOrderInvoice);
 //coupon
 router.post("/apply-coupon",verifyUser, applyCoupon);
 router.delete("/remove-coupon", verifyUser ,removeCoupon);
+//wallert
+router.post("/addMoney-wallet", verifyUser, addMoneyWallet);
+router.get("/Contact",(req, res) =>{
+  return res.status(200).render("user/pages/contact");
+})
 module.exports = router;

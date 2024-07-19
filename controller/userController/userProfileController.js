@@ -31,6 +31,7 @@ exports.getUserProfile = async (req, res, next) => {
     .sort({createdAt: -1})
 
     const referral = await Referral.findOne({  });
+console.log("wallet",wallet);
 
     res.render("user/pages/userProfile", {
       userDetalis,
@@ -330,6 +331,12 @@ exports.setNewPassword = async (req, res) => {
 
     if(!isMatch){
       return res.status(400).json({ message: "Password is incorrect" });
+    }
+
+    const isOldPassword = await bcrypt.compare(newPassword, user.password);
+
+    if(isOldPassword){
+      return res.status(400).json({ message: "This is your old password" });
     }
 
     const salt = await bcrypt.genSalt(10);

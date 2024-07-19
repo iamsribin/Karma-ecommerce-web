@@ -3,8 +3,7 @@
 <div class="breadcrumb-wrap">
   <div class="container-fluid">
       <ul class="breadcrumb">
-          <li class="breadcrumb-item"><a href="#">Home</a></li>
-          <li class="breadcrumb-item"><a href="#">Products</a></li>
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
           <li class="breadcrumb-item active">My Account</li>
       </ul>
   </div>
@@ -24,38 +23,65 @@
                 <a class="nav-link" id="account-nav" data-toggle="pill" href="#account-tab" role="tab"><i class="fa fa-user"></i>Password</a>
                 <a class="nav-link" id="cart-nav" href="/cart"><i class="fa fa-shopping-cart"></i>Cart</a>
                 <a class="nav-link" id="wishlist-nav" href="/wishlist"><i class="fa fa-heart"></i>Wishlist</a>
-                <a class="nav-link" href="index.html"><i class="fa fa-sign-out-alt"></i>Logout</a>
+                <a class="nav-link" href="" id="logoutBtn"><i class="fa fa-sign-out-alt"></i>Logout</a>
               </div>
           </div>
           <div class="col-md-9">
               <div class="tab-content">
-
                   <div class="tab-pane fade show active" id="dashboard-tab" role="tabpanel" aria-labelledby="dashboard-nav">
                     <%- include('../userPartials/user-personal-info'); %>
                   </div>
-
                   <div class="tab-pane fade" id="orders-tab" role="tabpanel" aria-labelledby="orders-nav">
                     <%- include('../userPartials/userOrders'); %>
                   </div>
-
                   <div class="tab-pane fade" id="payment-tab" role="tabpanel" aria-labelledby="payment-nav">
-                    <%- include('../userPartials/paymentMethod'); %>
+                    <%- include('../userPartials/wallet'); %>
                   </div>
-
                   <div  class="tab-pane fade" id="address-tab" role="tabpanel" aria-labelledby="address-nav">
                     <%- include('../userPartials/userAddress'); %>
                   </div>
-                  
                   <div class="tab-pane fade" id="account-tab" role="tabpanel" aria-labelledby="account-nav">
                     <%- include('../userPartials/accountDetails'); %>
                   </div>
-
               </div>
-          </div>
+          </div>  
       </div>
   </div>
 </div>
 <!-- My Account End -->
-
-
 <%- include('../userPartials/footer'); %>
+
+<script>
+  const logoutBtn = document.querySelector("#logoutBtn");
+  logoutBtn.addEventListener("click", async (event) => {
+    event.preventDefault();
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you want to logout?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Logout!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Successfully logged out",
+          icon: "success",
+          showCancelButton: false,
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            const response = await fetch("/auth/logout", {
+              method: "POST",
+            });
+            if (response.redirected) {
+              window.location.href = response.url;
+            }
+          }
+        });
+      }
+    });
+  });
+</script>

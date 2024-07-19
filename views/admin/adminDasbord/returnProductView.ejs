@@ -1,0 +1,247 @@
+<%- include('../admin-partials/header'); %>
+
+<style>
+  body {
+    font-family: Helvetica, sans-serif;
+  }
+  a {
+    text-decoration: none;
+  }
+
+  /* PROGRESS TRACKER */
+  .progress-tracker {
+    display: flex;
+    margin: 0;
+    counter-reset: item;
+    list-style-type: none;
+    padding: 0;
+  }
+  .progress-tracker .step {
+    flex: 1;
+    position: relative;
+  }
+  .progress-tracker .step:before {
+    background: #ff0000;
+    border-radius: 20px;
+    color: #ffffff;
+    content: "";
+    font-size: 18px;
+    line-height: 1.8em;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    position: absolute;
+    width: 35px;
+    height: 35px;
+    box-sizing: border-box;
+  }
+  .progress-tracker .step .step-name {
+    display: inline-flex;
+    margin: 0 0 0 15px;
+    background: #dddddd;
+    height: 35px;
+    width: 100%;
+    align-items: center;
+    padding: 0 30px;
+    color: #777777;
+    line-height: 1.2em;
+    font-size: 13px;
+  }
+  .progress-tracker .step .step-date {
+    display: block;
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #777777;
+  }
+  .progress-tracker .step:last-child .step-name {
+    border-radius: 0 20px 20px 0;
+    width: calc(100% - 45px);
+  }
+  .progress-tracker .step.active .step-name {
+    color: #333333;
+    font-weight: bold;
+  }
+  .progress-tracker .step.active:before {
+    background: #46c0f5;
+  }
+  .progress-tracker .step.completed:before {
+    background: #87db55;
+    content: "\2714";
+  }
+  .progress-tracker .step.red:before {
+    background: #ff0000;
+    content: "\2714";
+  }
+</style>
+
+<div class="container-fluid bg-light p-4">
+  <div class="row justify-content-center">
+    <div
+      class="col-12 col-md-11 col-lg-11 text-white p-4 d-flex justify-content-between"
+      style="background-color: #4d869c"
+    >
+      <div class="col-6">
+        <h3>Sent to:</h3>
+        <p>
+          <%=order.address.fullName%> &nbsp; <%=order.address.phoneNumber%><br /><%=order.address.state%>
+          &nbsp; <%=order.address.district%><br /><%=order.address.houseNo%>
+          <%=order.address.address%> / <%=order.address.pincode%>
+        </p>
+      </div>
+      <div class="col-6 pt-5">
+       <% orderProduct.statusHistory.forEach((history)=>{ %>
+   <% if(history.status === "return request"){ %>
+    <p>The product was returned due to <strong>"<%= history.reason %>"</strong>.</p>
+   <%}%>
+      <%  })%>
+      </div>
+    </div>
+  </div>
+  <div class="row justify-content-center mt-4">
+    <div class="col-12 col-md-11 col-lg-11 bg-white p-4">
+      <h2 class="text-center">Here's what you ordered:</h2>
+
+      <hr />
+      <br />
+      <ol class="progress-tracker">
+        <% orderProduct.statusHistory.forEach((item) => { %> <% if (["returned",
+        "canceled", "return rejected"].includes(item.status)) { %>
+        <li class="step red">
+          <span class="step-date" style="width: 100%"
+            ><%=item.date.toDateString()%></span
+          >
+          <a href="#" class="step-name"><%=item.status%></a>
+        </li>
+        <% } else { %>
+        <li class="step completed">
+          <span class="step-date" style="width: 100%"
+            ><%=item.date.toDateString()%></span
+          >
+          <a class="step-name"><%=item.status%></a>
+        </li>
+        <% } %> <% }) %>
+      </ol>
+
+      <hr />
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex justify-content-between text-secondary">
+            <div class="col-8">ITEM</div>
+            <div class="col-1 text-center">QTY</div>
+            <div class="col-1 text-right">COST</div>
+          </div>
+          <hr />
+          <div class="d-flex justify-content-between align-items-center pb-3">
+            <div class="col-2">
+              <img
+                src="<%=orderProduct.productId.imagePaths[0]%>"
+                alt="Product Image"
+                class="img-fluid product-image"
+              />
+            </div>
+            <div class="col-6">
+              <strong
+                ><%= orderProduct.productId.brand.name %>'S
+                <%=orderProduct.productId.name%> &nbsp; &nbsp; &nbsp;</strong
+              >
+              <br />
+              <span>SIZE: <%=orderProduct.size.size%></span>
+              <br />
+              <span
+                ><%= orderProduct.productId.tag.tagName.toLowerCase() %>'s <%= orderProduct.productId.category.name.toLowerCase() %> Shoe</span
+              >
+              <br />
+              <% if (orderProduct.offerPrice) { %>
+              <p class="mb-0 text-primary">
+                ₹<%=orderProduct.offerPrice%>
+                <span
+                  class="mb-0 text-danger"
+                  style="text-decoration: line-through"
+                  >₹<%=orderProduct.price%></span
+                >
+              </p>
+              <% } else { %>
+              <p class="mb-0 text-primary">₹<%=orderProduct.price%></p>
+              <% } %> <% if (orderProduct.status === "delivered" ||
+              orderProduct.status === "pickup completed") { %>
+              <p class="mb-0 text-success font-weight-bold">
+                <%=orderProduct.status%>
+              </p>
+              <% } else if (orderProduct.status === "canceled" ||
+              orderProduct.status === "return rejected" || orderProduct.status
+              === "returned" ) { %>
+              <p class="mb-0 text-danger font-weight-bold">
+                <%=orderProduct.status %>
+              </p>
+              <% } else { %>
+              <p class="mb-0 text-warning font-weight-bold">
+                <%=orderProduct.status%>
+              </p>
+              <% } %> <% if (orderProduct.status === "pending" ||
+              orderProduct.status === "processing" || orderProduct.status ===
+              "shipped") { %>
+              <p>
+                "Estimated delivery by
+                <b
+                  ><%= order.deliveryDate.toLocaleDateString('en-US', { weekday:
+                  'short', month: 'short', day: 'numeric' }) %></b
+                >: This may vary depending on your location."
+              </p>
+              <% } %>
+            </div>
+            <div class="col-1 text-center"><%=orderProduct.quantity%></div>
+            <div class="col-1 text-right">₹<%=orderProduct.totalPrice%></div>
+          </div>
+        </div>
+      </div>
+      <hr />
+      <div class="container mt-5">
+        <% if (order.products.length > 1) { %>
+        <h2 class="mb-4">Other items in this order</h2>
+        <% order.products.forEach(product => { %> <% if (product._id !==
+        orderProduct._id) { %>
+        <div
+          class="row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center"
+        >
+          <div class="d-flex align-items-center col-md-10">
+            <div class="col-md-2 mr-3">
+              <img
+                src="<%= product.productId.imagePaths[0] %>"
+                alt="Product Image"
+                class="img-fluid product-image"
+              />
+            </div>
+            <div class="col-md-6 mr-3">
+              <p><b><%= product.productId.name %></b></p>
+              <p>
+                <b>
+                  <div
+                    class="tm-status-circle <%= product.status === 'canceled' || product.status === 'return rejected' || product.status === 'returned' ? 'cancelled' : product.status === 'delivered' ? 'moving' : 'pending' %>"
+                  ></div>
+                  <%= product.status.charAt(0).toUpperCase() +
+                  product.status.slice(1) %>
+                </b>
+              </p>
+              <p><b>Size: <%= product.size.size %></b></p>
+            </div>
+            <div class="col-md-2">
+              <p><b>₹ <%= product.totalPrice %></b></p>
+            </div>
+          </div>
+        </div>
+        <% } %> <% }); %> <% } %>
+      </div>
+      <hr />
+    </div>
+  </div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<%- include('../admin-partials/footer'); %>
+

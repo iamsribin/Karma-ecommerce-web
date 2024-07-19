@@ -65,10 +65,65 @@ exports.renderCheckoutPage = async (req, res, next) => {
     const userId = req.session?.userId;
 
     const userDetalis = await userDB.findOne({ _id: userId });
-    const userCart = await cartDB.findOne({ userId });
+    
+    let userCart = await cartDB.findOne({ userId })     
+     .populate({
+      path: "cart.product",
+      model: "Product",
+      match: { isActive: true },
+    });
+
+
     if (!userCart) {
       return res.redirect("/cart");
     }
+
+    if (userCart?.cart.length === 0) {
+      await cartDB.findOneAndDelete({ userId });
+      return res.redirect("/cart");
+    } else if (userCart) {
+      const activeCartItems = userCart.cart.filter(item => item.product && item.product.isActive);
+
+      if (activeCartItems.length !== userCart.cart.length) {
+        let newSubTotal = 0;
+        let newDiscount = 0;
+        activeCartItems.forEach(item => {
+          newSubTotal += item.price * item.quantity;
+          if (item.offerPrice) {
+            newDiscount += (item.price - item.offerPrice) * item.quantity;
+          }
+        });
+
+        const newGrandTotal = newSubTotal - newDiscount;
+
+        await cartDB.updateOne(
+          { _id: userCart._id },
+          { 
+            $set: { 
+              cart: activeCartItems,
+              subTotal: newSubTotal,
+              discount: newDiscount,
+              grandTotal: newGrandTotal
+            } 
+          }
+        );
+
+        // Refresh userCart after update
+        userCart = await cartDB.findOne({ userId })
+        .populate({
+          path: "cart.product",
+          model: "Product",
+          match: { isActive: true },
+        });
+      }
+    }
+
+    if (userCart?.cart.length === 0) {
+      await cartDB.findOneAndDelete({ userId });
+      return res.redirect("/cart");
+    }
+
+
     const addresses = await AddressDB.findOne({ userId });
 
     const cartLength = userCart?.cart?.length;
@@ -157,18 +212,28 @@ exports.placeOrder = async (req, res, next) => {
         userId,
       };
 
+      let paymentStatus;
+
+      if (paymentMethod === "wallet" || paymentMethod === "razorPay") {
+        paymentStatus = "success"
+      }else{
+        paymentStatus = "pending"
+      }
+
+
       orderData = {
         userId: userId,
         address: updatedAddress,
         paymentMethod,
         // tax: userCart.tax,
         totalQuantity: totalItems,
-        totalPrice: userCart.grandTotal,
+        totalPrice: userCart?.couponDiscount ?  userCart.grandTotal -  userCart?.couponDiscount:  userCart.grandTotal,
         products: products,
         subTotal: userCart.subTotal,
         coupon: userCart.coupon,
         couponDiscount: userCart?.couponDiscount ?  userCart?.couponDiscount: null,
         discount: userCart?.discount ?  userCart?.discount : null,
+        paymentStatus
       };
 
     const updateProductPromises = products.map((item) => {
@@ -204,7 +269,8 @@ exports.placeOrder = async (req, res, next) => {
       }
 
       await Payment.create({
-        orderId: newOrder._id,
+        orderId: newOrder.orderId,
+        amount: newOrder.totalPrice,
         payment_id: `wallet_${uuid.v4()}`,
         user: userId,
         status: "success",
@@ -313,6 +379,7 @@ exports.renderOrderView = async (req, res, next) => {
 
     if (!orderProduct)
       return res.status(404).json({ message: "Product not found in order" });
+
     const productReview = await Reviews.findOne({userId: userId, product: orderProduct.productId._id, order: order._id})
     .populate("userId");
 
@@ -382,16 +449,18 @@ exports.cancelOrder = async (req, res, next) => {
       { new: true }
     );
 
+    console.log( "canceled pro",canceledProduct, order);
     if (order.paymentMethod !== "cashOnDelivery") {
       // Adding the refund to wallet of user.
-      await Payment.findOneAndUpdate(
-        { orderId: order._id },
-        {
-          $set: {
-            status: "refunded",
-          },
-        }
-      );
+
+      await Payment.create({
+        orderId: order.orderId,
+        amount: canceledProduct.totalPrice,
+        payment_id: `wallet_${uuid.v4()}`,
+        user: userId,
+        status: "refunded",
+        paymentMode: "wallet",
+      });
 
       let counter = await Counter.findOne({
         model: "Wallet",
@@ -414,31 +483,31 @@ exports.cancelOrder = async (req, res, next) => {
       if (exists) {
         wallet = await Wallet.findByIdAndUpdate(exists._id, {
           $inc: {
-            balance: order.totalPrice,
+            balance: canceledProduct.totalPrice,
           },
           $push: {
             transactions: {
               transaction_id: counter.count + 1,
-              amount: order.totalPrice,
+              amount: canceledProduct.totalPrice,
               type: "credit",
               description: "Order Cancellation Refund",
               orderId: order._id,
-              product: canceledProduct.productId,
+              product: canceledProduct._id,
             },
           },
         });
       } else {
         wallet = await Wallet.create({
           user: userId,
-          balance: order.totalPrice,
+          balance: canceledProduct.totalPrice,
           transactions: [
             {
               transaction_id: counter.count + 1,
-              amount: order.totalPrice,
+              amount: canceledProduct.totalPrice,
               type: "credit",
               description: "Order Cancellation Refund",
               orderId: order._id,
-              product: canceledProduct.productId,
+              product: canceledProduct._id,
             },
           ],
         });
@@ -517,149 +586,173 @@ exports.generateOrderInvoice = async (req, res) => {
 };
 
 //create order for faild orders
-//  exports.createfailOrder = async (req, res) => {
-//   try {
+ exports.createfailOrder = async (req, res, next) => {
+  try {
 
-//     const {userId} = req.session.userId;
+    const userId = req.session.userId;
+    const { addressId, paymentMethod } = req.body;
 
-//     const { addressId, paymentMethod } = req.body;
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
 
-//     if (!userId) {
-//       return next(createError(401, "User not authenticated"));
-//     }
+    console.log("add, pay",addressId, paymentMethod);
+    if (!addressId ) {
+      return res.status(400).json({ message: "Address required" });
+    }
 
-//     if (!addressId ) {
-//       return next(createError(400, "Address required"));
-//     }
+    if (!paymentMethod) {
+      return res.status(400).json({ message: "Payment method required" });
+    }
 
-//     if (!paymentMethod) {
-//       return next(createError(400, "Payment method required"));
-//     }
+    const userCart = await cartDB.findOne({ userId });
 
-//     const userCart = await cartDB.findOne({ userId });
+    const products = userCart.cart.map((item) => ({
+      productId: item.product,
+      size: item.size,
+      quantity: item.quantity,
+      price: item.price,
+      status: "pending",
+      statusHistory: [
+        {
+          status: "pending",
+          date: Date.now(),
+        },
+      ],
+      offerPrice: item.offerPrice ? item.offerPrice : undefined,
+      totalPrice: item.offerPrice
+        ? item.offerPrice * item.quantity
+        : item.price * item.quantity,
+    }));
 
-//     const products = userCart.cart.map((item) => ({
-//       productId: item.product,
-//       size: item.size,
-//       quantity: item.quantity,
-//       price: item.price,
-//       status: "pending",
-//       statusHistory: [
-//         {
-//           status: "pending",
-//           date: Date.now(),
-//         },
-//       ],
-//       offerPrice: item.offerPrice ? item.offerPrice : undefined,
-//       totalPrice: item.offerPrice
-//         ? item.offerPrice * item.quantity
-//         : item.price * item.quantity,
-//     }));
+    const totalItems = userCart?.cart.reduce((accumilator, element) => {
+      return (accumilator += element.quantity);
+    }, 0);
 
-//     const totalItems = userCart?.cart.reduce((accumilator, element) => {
-//       return (accumilator += element.quantity);
-//     }, 0);
+    let orderData = {};
 
-//     let orderData = {};
+    // cheking which address is user choose
+      const userAddressDoc = await AddressDB.findOne({ userId });
 
-//     // cheking which address is user choose
-//       const userAddressDoc = await AddressDB.findOne({ userId });
+      if (!userAddressDoc) {
+        return res
+          .status(404)
+          .send({ message: "User address document not found" });
+      }
+      const address = userAddressDoc.addresses.find((address) =>
+        address._id.equals(addressId)
+      );
 
-//       if (!userAddressDoc) {
-//         return res
-//           .status(404)
-//           .send({ message: "User address document not found" });
-//       }
-//       const address = userAddressDoc.addresses.find((address) =>
-//         address._id.equals(addressId)
-//       );
+      if (!address) {
+        return res.status(404).send({ message: "Address not found" });
+      }
+      const updatedAddress = {
+        ...address,
+        userId,
+      };
 
-//       if (!address) {
-//         return res.status(404).send({ message: "Address not found" });
-//       }
-//       const updatedAddress = {
-//         ...address,
-//         userId,
-//       };
+      orderData = {
+        userId: userId,
+        address: updatedAddress,
+        paymentMethod,
+        // tax: userCart.tax,
+        totalQuantity: totalItems,
+        totalPrice: userCart?.couponDiscount ?  userCart.grandTotal -  userCart?.couponDiscount:  userCart.grandTotal,
+        products: products,
+        subTotal: userCart.subTotal,
+        coupon: userCart.coupon,
+        couponDiscount: userCart?.couponDiscount ?  userCart?.couponDiscount: null,
+        discount: userCart?.discount ?  userCart?.discount : null,
+        paymentStatus: "failed"
+      };
 
-//       orderData = {
-//         userId: userId,
-//         address: updatedAddress,
-//         paymentMethod,
-//         // tax: userCart.tax,
-//         totalQuantity: totalItems,
-//         totalPrice: userCart.grandTotal,
-//         products: products,
-//         subTotal: userCart.subTotal,
-//         discount: userCart.discount,
-//       };
+    const updateProductPromises = products.map((item) => {
+      return updateProductList(item.productId, -item.quantity, item.size);
+    });
 
-//     const updateProductPromises = products.map((item) => {
-//       return updateProductList(item.productId, -item.quantity, item.size);
-//     });
+    await Promise.all(updateProductPromises);
 
-//     await Promise.all(updateProductPromises);
+    const newOrder = await Order.create(orderData);
+    if (newOrder) {
+      await cartDB.findByIdAndDelete(userCart._id);
+    }
 
-//     const newOrder = await Order.create(orderData);
-//     if (newOrder) {
-//       await cartDB.findByIdAndDelete(userCart._id);
-//     }
+    console.log(newOrder);
 
-//     console.log(newOrder);
+  return res.status(200).json({ newOrder });
+  } catch (error) {
+    console.log("order eerr", error);
+    res.status(400).send({ message: error.message });
+  }
+};
 
-//     if (paymentMethod === "wallet") {
-//       const exists = await Wallet.findOne({ user: userId });
-//       if (!exists) {
-//         throw Error("No Wallet where found");
-//       }
-
-//       await Payment.create({
-//         orderId: newOrder._id,
-//         payment_id: `wallet_${uuid.v4()}`,
-//         user: userId,
-//         status: "success",
-//         paymentMode: "wallet",
-//       });
-
-//       let counter = await Counter.findOne({
-//         model: "Wallet",
-//         field: "transaction_id",
-//       });
-
-//       // Checking if order counter already exist
-//       if (counter) {
-//         counter.count += 1;
-//         await counter.save();
-//       } else {
-//         counter = await Counter.create({
-//           model: "Wallet",
-//           field: "transaction_id",
-//         });
-//       }
-
-//       let wallet = {};
-//       if (exists) {
-//         wallet = await Wallet.findByIdAndUpdate(exists._id, {
-//           $inc: {
-//             balance: -newOrder.totalPrice,
-//           },
-//           $push: {
-//             transactions: {
-//               transaction_id: counter.count + 1,
-//               amount: newOrder.totalPrice,
-//               type: "debit",
-//               description: "Product Ordered",
-//               order: newOrder._id,
-//             },
-//           },
-//         });
-//       }
-//     } 
+exports.renderOrderFailedProducts = async (req, res) =>{
+  try {
+    const {orderId} = req.params
+    const userId = req.session.userId;
+    console.log("order user id:",orderId, userId);
+    if (!userId) {
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+    const order = await Order.findOne({ userId, _id: orderId })
+      .populate({
+        path: "products.productId",
+        model: "Product",
+        populate: [
+          { path: "category", model: "Caregory" },
+          { path: "tag", model: "Tag" },
+          { path: "brand", model: "Brand" },
+        ],
+      })
+      .populate({
+        path: "products.size",
+        model: "Size",
+      });
 
 
-//   return res.status(200).json({ newOrder });
-//   } catch (error) {
-//     console.log("order eerr", error);
-//     res.status(400).send({ message: error.message });
-//   }
-// };
+      console.log("oder:",order);
+
+      if (!order) return res.status(404).json({ message: "Order not found" });
+      
+      const userDetalis = await userDB.findOne({ _id: userId });
+      const userCart = await cartDB.findOne({ userId });
+
+      return res.render("user/pages/paymentFailedOrder", {
+        cartLength: userCart?.cart?.length,
+        user: userDetalis,
+        order,
+      });
+
+
+  }catch(error){
+console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+exports.repaymentOrder = async (req, res) =>{
+  try {
+    const {orderId} = req.body;
+    const userId = req.session.userId;
+
+    if(!userId){
+      return res.status(401).json({ message: "User not authenticated" });
+    }
+
+   const order =  await Order.findOneAndUpdate({_id:orderId},{
+      $set: {
+        paymentStatus: "success",
+      }
+    },{ new: true });
+
+      if(!order){
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+
+return res.status(200).json({ message: "Order repayment successfully" });
+
+  } catch (error) {
+    console.log(error);
+  }
+} 

@@ -11,10 +11,12 @@ const paymentSchema = new Schema(
       ref: User,
       required: true,
     },
-    orderId: {
-      type: Schema.Types.ObjectId,
-      ref: Order,
+    amount:{
+      type: Number,
       required: true,
+    },
+    orderId: {
+      type: Number,
     },
     payment_id: {
       type: String,
@@ -28,7 +30,7 @@ const paymentSchema = new Schema(
     status: {
       type: String,
       required: true,
-      enum: ["pending", "success", "canceled", "refunded"],
+      enum: ["pending", "success", "canceled", "refunded", "failed"],
       default: "pending",
     },
     paymentMode: {

@@ -16,11 +16,25 @@ const tag = require("../../models/adminModels/tag");
 exports.renderProducts = async (req, res, next) => {
   try {
     const products = await productDB
-      .find({})
+      .find({isActive: true})
       .populate("brand")
       .populate("category");
     console.log(products);
     return res.render("admin/adminDasbord/products", { products });
+  } catch (error) {
+    return res.redirect("/internalError");
+  }
+};
+
+//render deleted products
+exports.renderDeletedProducts = async (req, res, next) => {
+  try {
+    const products = await productDB
+      .find({isActive: false})
+      .populate("brand")
+      .populate("category");
+    console.log(products);
+    return res.render("admin/adminDasbord/deletedProducts", { products });
   } catch (error) {
     return res.redirect("/internalError");
   }
@@ -182,10 +196,6 @@ exports.deleteProduct = async (req, res, next) => {
     const product = await productDB.findById(id);
     product.isActive = false;
 
-    // product.imagePaths.forEach((imagePath) => {
-    //   fs.unlinkSync(imagePath);
-    // });
-
     product.save();
 
     return res.status(200).json({ product });
@@ -195,6 +205,27 @@ exports.deleteProduct = async (req, res, next) => {
   }
 };
 
+//recover product
+exports.recoverProduct = async (req, res, next) => {
+  try{
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).render("errorPages/404");
+  }
+
+  const product = await productDB.findById(id);
+  product.isActive = true;
+
+  product.save();
+
+  return res.status(200).json({ product });
+  
+} catch (error) {
+  console.log(error);
+  return res.redirect("/internalError");
+}
+}
 //render edit product page
 exports.renderEditProductPage = async (req, res, next) => {
   try {

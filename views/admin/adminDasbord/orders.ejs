@@ -1,45 +1,29 @@
 <%- include('../admin-partials/header'); %>
+
 <div class="col-12 tm-block-col">
   <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
     <h2 class="tm-block-title">Order List</h2>
-    <div class="row">
-      <div class="col-lg-8">
-        <div class="input-group mb-3">
-          <input
-            type="text"
-            class="form-control"
-            style="background-color: aliceblue; color: black"
-            placeholder="Search products..."
-          />
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button">
-              <i class="fas fa-search"></i>
-            </button>
-          </div>
-        </div>
-      </div>
-      <div class="col-lg-4 text-right action-buttons">
-        <a href="/admin/retrun-products" class="btn btn-primary mr-2">Return Products</a>
+    <div class="row mb-4">
+      <div class="col-12 text-right">
+        <a href="/admin/retrun-products" class="btn btn-primary">Return Products</a>
       </div>
     </div>
-    <table class="table">
+    <table id="orderTable" class="table">
       <thead>
         <tr>
-          <th scope="col">ID.</th>
-          <!-- <th scope="col">STATUS</th> -->
-          <!-- <th scope="col">PRODUCT</th> -->
+          <th scope="col">ID</th>
           <th scope="col">CUSTOMER</th>
           <th scope="col">QTY</th>
           <th scope="col">DATE</th>
           <th scope="col">TOTAL</th>
           <th scope="col">ITEMS</th>
           <th scope="col">PAYMENT METHOD</th>
-          <th>ACTION</th>
+          <th scope="col">ACTION</th>
         </tr>
       </thead>
       <tbody>
+        <% orders.forEach((order) => { %>
         <tr>
-          <% orders.forEach((order)=>{%>
           <td><b><%= order.orderId %></b></td>
           <td><b><%= order.address.fullName %></b></td>
           <td><b><%= order.totalQuantity %></b></td>
@@ -48,44 +32,58 @@
           <td><b><%= order.products.length %></b></td>
           <td><b><%= order.paymentMethod %></b></td>
           <td>
-            <a href="/admin/view-order/<%=order._id%>">
-              <button class="btn"style="
-            padding: 9px;
-            border-radius: 4px;">View</button>
-            </a>
-          
+            <a href="/admin/view-order/<%= order._id %>" class="btn btn-primary btn-sm">View</a>
           </td>
         </tr>
-<%})%>
-        <!-- <tr>
-          <th scope="row"><b>2</b></th>
-          <td>
-            <div class="tm-status-circle cancelled"></div>
-            Processing
-          </td>
-          <td>Nike Air Force</td>
-          <td><b>George Wilson</b></td>
-          <td><b>7 min ago</b></td>
-          <td>$700</td>
-          <td><b>Razor Pay</b></td>
-        </tr>
-        <tr>
-          <th scope="row"><b>4</b></th>
-          <td>
-            <div class="tm-status-circle pending"></div>
-            Shiped
-          </td>
-
-          <td><img width="50" height="60" src="https://media.istockphoto.com/id/1495088043/vector/user-profile-icon-avatar-or-person-icon-profile-picture-portrait-symbol-default-portrait.jpg?s=612x612&w=0&k=20&c=dhV2p1JwmloBTOaGAtaA3AW1KSnjsdMt7-U_3EZElZ0=" class="tm-profile-photo rounded-circle" alt="Profile Photo"><b> Nike Full Force</b></td>
-          <td>Nike Full Force</td>
-          <td><b>Harry Ryan</b></td>
-          <td><b>9 min ago</b></td>
-          <td><b>$500</b></td>
-          <td><b>COD</b></td>
-        </tr> -->
+        <% }) %>
       </tbody>
     </table>
   </div>
 </div>
 
 <%- include('../admin-partials/footer'); %>
+
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/dataTables.bootstrap4.min.css" />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/dataTables.bootstrap4.min.js"></script>
+
+<script>
+  $(document).ready(function() {
+    $('#orderTable').DataTable({
+      "pageLength": 10,
+      "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+      "order": [[ 3, "desc" ]],  // Sort by Date column descending
+      "language": {
+        "search": "Search orders:"
+      },
+      "columnDefs": [
+        { "orderable": false, "targets": 7 }  // Disable sorting on the Action column
+      ]
+    });
+  });
+</script>
+
+<style>
+  .dataTables_wrapper .dataTables_filter input {
+    background-color: aliceblue;
+    color: black;
+  }
+  .dataTables_wrapper .dataTables_length select {
+    background-color: aliceblue;
+    color: black;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button {
+    background-color: #435c70;
+    color: white !important;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background-color: #1d2e3f !important;
+    color: white !important;
+  }
+  .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background-color: #1d2e3f !important;
+    color: white !important;
+  }
+</style>

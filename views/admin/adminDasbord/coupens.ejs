@@ -7,25 +7,25 @@
       <div class="input-group mb-3">
         <input
           type="text"
+          id="searchInput"
           class="form-control"
           style="background-color: aliceblue; color: black"
           placeholder="Search products..."
+          onchange="searchProducts()"
         />
         <div class="input-group-append">
-          <button class="btn btn-outline-secondary" type="button">
+          <button class="btn btn-outline-secondary" type="button" onclick="searchProducts()">
             <i class="fas fa-search"></i>
           </button>
         </div>
       </div>
     </div>
     <div class="col-lg-4 text-right action-buttons">
-      <a href="/admin/add-coupen" class="btn btn-primary mr-2"
-        >Add New Coupon</a
-      >
+      <a href="/admin/add-coupen" class="btn btn-primary mr-2">Add New Coupon</a>
     </div>
   </div>
   <div class="table-responsive">
-    <%if(coupons){%>
+    <% if (coupons && coupons.length > 0) { %>
     <table class="table table-hover">
       <thead class="thead-dark">
         <tr>
@@ -36,86 +36,92 @@
           <th scope="col">START DATE</th>
           <th scope="col">PURCHASE AMOUNT</th>
           <th scope="col">USAGE COUNT</th>
-          <th scope="col">CORRENT USAGE</th>
+          <th scope="col">CURRENT USAGE</th>
           <th scope="col">ACTION</th>
         </tr>
       </thead>
       <tbody>
-        <% locals.coupons.forEach((coupon) =>{ %> <% if (coupon.isActive){%>
+        <% coupons.forEach((coupon) => { %> 
+        <% if (coupon.isActive) { %>
         <tr>
+          <td><b><%= coupon.couponCode %></b></td>
+          <td class="tm-product-name"><%= coupon.name %></td>
           <td>
-            <b><%=coupon.couponCode%></b>
-          </td>
-          <td class="tm-product-name"><%=coupon.name%></td>
-          <td>
-            <% if(coupon.isExpired){ %>
+            <% if (coupon.isExpired) { %>
             <div class="tm-status-circle cancelled"></div>
-            <% }else{ %>
+            <% } else { %>
             <div class="tm-status-circle moving"></div>
             <% } %>
           </td>
           <td><b><%= coupon.expiryDate.toDateString() %></b></td>
           <td><b><%= coupon.startDate.toDateString() %></b></td>
-          <% if(coupon.minimumPurchaseAmount){%>
+          <% if (coupon.minimumPurchaseAmount) { %>
           <td><b><%= coupon.minimumPurchaseAmount %></b></td>
-          <%}else{%>
+          <% } else { %>
           <td><b>Null</b></td>
-          <%}%> <%if(coupon.maximumUses){%>
+          <% } %> 
+          <% if (coupon.maximumUses) { %>
           <td><b><%= coupon.maximumUses %></b></td>
-          <%}else{%>
+          <% } else { %>
           <td><b>Null</b></td>
-          <%}%>
+          <% } %>
           <td><b><%= coupon.currentUsageCount %></b></td>
           <td>
-            <a
-              class="text-danger deleteAction"
-              data-id="<%= coupon._id %>"
-              onclick="deleteCoupon('<%= coupon._id %>')"
-              ><i class="far fa-trash-alt"></i
-            ></a>
+            <a class="text-danger deleteAction" data-id="<%= coupon._id %>" onclick="deleteCoupon('<%= coupon._id %>')">
+              <i class="far fa-trash-alt"></i>
+            </a>
             &nbsp;
-            <a href="/admin/edit-coupon-page/<%= coupon._id%>" class="text-primary"
-              ><i style="color: white" class="fas fa-edit"></i
-            ></a>
+            <a href="/admin/edit-coupon-page/<%= coupon._id %>" class="text-primary">
+              <i style="color: white" class="fas fa-edit"></i>
+            </a>
           </td>
         </tr>
-        <%}%> <%})%>
+        <% } %> 
+        <% }) %>
       </tbody>
     </table>
   </div>
-</div>
+  <% } else { %>
+  <h1 style="text-align: center"><b>NO COUPONS IN THE DATABASE</b></h1>
+  <% } %>
 
-<nav aria-label="Page navigation">
-  <ul class="pagination justify-content-center">
-    <li class="page-item disabled">
-      <a class="page-link" href="#" tabindex="-1" aria-disabled="true"
-        >Previous</a
-      >
-    </li>
-    <li class="page-item active" aria-current="page">
-      <a class="page-link" href="#">1</a>
-    </li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-    <li class="page-item">
-      <a class="page-link" href="#">Next</a>
-    </li>
-  </ul>
-</nav>
-<%}else{%>
-    <h1 style="text-align: center"><b>NO COUPONS IN THE DATA BASE</b></h1>
-    <%}%>
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <% if (page > 1) { %>
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage('<%= page - 1 %>')">Previous</a>
+      </li>
+      <% } else { %>
+      <li class="page-item disabled">
+        <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+      </li>
+      <% } %>
+      <% for (let i = 1; i <= totalPages; i++) { %>
+      <li class="page-item <%= page === i ? 'active' : '' %>">
+        <a class="page-link" href="#" onclick="changePage('<%= i %>')"><%= i %></a>
+      </li>
+      <% } %>
+      <% if (page < totalPages) { %>
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage('<%= page + 1 %>')">Next</a>
+      </li>
+      <% } else { %>
+      <li class="page-item disabled">
+        <a class="page-link" href="#">Next</a>
+      </li>
+      <% } %>
+    </ul>
+  </nav>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
   function deleteCoupon(couponId) {
-
     Swal.fire({
       title: `Do you want to delete this coupon?`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       confirmButtonText: "OK",
-
     }).then(async (result) => {
       if (result.isConfirmed) {
         const response = await fetch(`/admin/delete-coupon/${couponId}`, {
@@ -135,6 +141,16 @@
         }
       }
     });
+  }
+
+  async function searchProducts() {
+    const query = document.getElementById('searchInput').value;
+    window.location.href = `/admin/coupens?search=${query}`;
+  }
+
+  async function changePage(page) {
+    const query = document.getElementById('searchInput').value;
+    window.location.href = `/admin/coupens?page=${page}&search=${query}`;
   }
 </script>
 <%- include('../admin-partials/footer'); %>

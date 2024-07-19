@@ -166,8 +166,11 @@ const OrderSchema = new Schema(
       type: Number,
       min: 0,
     },
-    status: {
+    paymentStatus: {
       type: String,
+      required: true,
+      enum: ["failed", "pending", "success"],
+      default: "pending",
     },
     coupon: {
       type: mongoose.Types.ObjectId,

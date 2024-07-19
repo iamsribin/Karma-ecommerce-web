@@ -83,8 +83,7 @@
   <div class="container-fluid">
     <ul class="breadcrumb">
       <li class="breadcrumb-item"><a href="/">Home</a></li>
-      <li class="breadcrumb-item"><a href="#">Products</a></li>
-      <li class="breadcrumb-item active">Product List</li>
+      <li class="breadcrumb-item active">Category</li>
     </ul>
   </div>
 </div>
@@ -97,17 +96,16 @@
           <div class="col-md-12">
             <div class="product-view-top">
               <div class="row">
-                <div class="col-md-4">
+                <div class="">
                   <div class="product-short">
-                    <div class="dropdown">
-                      <div class="dropdown-toggle" data-toggle="dropdown">
-                        Product short by
-                      </div>
-                      <div class="dropdown-menu dropdown-menu-right">
-                        <a href="#" class="dropdown-item">Newest</a>
-                        <a href="#" class="dropdown-item">Low to High</a>
-                        <a href="#" class="dropdown-item">High to Low</a>
-                      </div>
+                    <div >
+                      <select style="width: 164px; height: 40px" id="sortProduct">
+                        <option value="Newest">Newest</option>
+                        <option value="LowtoHigh">Low to High</option>
+                        <option value="HightoLow">High to Low</option>
+                        <option value="aToz">aA to zZ</option>
+                        <option value="zToa">zZ to Aa</option>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -125,12 +123,16 @@
                 <div class="product-title rounded-top">
                   <div class="ratting d-flex justify-content-between">
                     <div>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                    </div>
+                      <%if(product.rating){%>
+                      <% for (let i = 1; i <= 5; i++) { %>
+                        <% if (i <= Math.round(product.rating)) { %>
+                          <i class="fa fa-star"></i>
+                        <% } else { %>
+                          <i class="fa fa-star-o"></i>
+                        <% } %>
+                      <% } %>
+                   <%}%>
+                  </div>
                     <% if (product.totalQuantity == 0) { %>
                     <span class="badge badge-danger">Out Of Stock</span>
                     <% } else if (product.totalQuantity < 10) { %>
@@ -322,11 +324,11 @@
                   type="range"
                   min="500"
                   max="20000"
-                  value="250"
+                  value="30000"
                   class="price-slider"
                   id="priceRange"
                 />
-                <p>$<span id="priceValue">500</span></p>
+                <p>$<span id="priceValue">30000</span></p>
               </div>
             </div>
 
@@ -352,18 +354,18 @@
 <!-- Product List End -->
 
 <!-- Brand Start -->
-<!-- <div class="brand">
+<div class="brand">
   <div class="container-fluid">
     <div class="brand-slider">
-      <div class="brand-item"><img src="img/brand-1.png" alt="" /></div>
-      <div class="brand-item"><img src="img/brand-2.png" alt="" /></div>
-      <div class="brand-item"><img src="img/brand-3.png" alt="" /></div>
-      <div class="brand-item"><img src="img/brand-4.png" alt="" /></div>
-      <div class="brand-item"><img src="img/brand-5.png" alt="" /></div>
-      <div class="brand-item"><img src="img/brand-6.png" alt="" /></div>
+      <div class="brand-item"> <img src="/uploads/brands/brand-1.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-2.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-3.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-4.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-5.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-6.png" alt="brand imgage" /></div>
     </div>
   </div>
-</div> -->
+</div>
 <!-- Brand End -->
 
 <link
@@ -421,6 +423,8 @@
       ).map((el) => el.value);
       const priceRange = document.getElementById("priceRange").value;
 
+      const sort = document.getElementById("sortProduct").value; 
+
       // Construct query string
       const queryParams = new URLSearchParams({
         tag: gender.join(","),
@@ -428,6 +432,7 @@
         brand: brand.join(","),
         size: size.join(","),
         maxPrice: priceRange,
+        sort: sort,
       });
 
       try {
@@ -465,70 +470,62 @@
         productList.innerHTML = "<p>No product found</p>";
       } else {
         data.products.forEach((product) => {
-          const productHTML = `
-          <div class="col-lg-4" style="width: 450px;">
-            <div class="product-item">
-              <div class="product-title rounded-top">
-                <div class="ratting d-flex justify-content-between">
-                  <div>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                  </div>
-                  ${
-                    product.totalQuantity === 0
-                      ? '<span class="badge badge-danger">Out Of Stock</span>'
-                      : product.totalQuantity < 10
-                      ? '<span class="badge badge-warning">Limited Stock</span>'
-                      : '<span class="badge badge-success">In Stock</span>'
-                  }
-                </div>
-              </div>
-              <div class="product-image">
-                <a href="product-detail.html">
-                  <img src="${product.imagePaths[0]}" alt="Product Image" />
-                </a>
-                <div class="product-action">
-
-                  <a href="#" tabindex="0" class="addToWishlist" data-id="${
-                    product._id
-                  }" data-toggle="tooltip" title="wishlist">
-                <i class="fa fa-heart"></i></a>
-
-                  <a href="/product/${
-                    product._id
-                  }" tabindex="0" data-toggle="tooltip" title="view"><i class="fa fa-search"></i></a>
-                </div>
-              </div>
-              <div class="product-price rounded-bottom">
-                <div class="d-flex justify-content-between">
-                  <div>
-                    <span><b>${product.name}</b></span>
-                  </div>
-                  <div>
-                    <span class="badge badge-light">${product.brand.name}</span>
-                  </div>
-                </div>
-                <div class="text-dark">
-                  <span>${capitalizeFirstLetter(
-                    product.tag.tagName.toLowerCase()
-                  )}'s ${capitalizeFirstLetter(
-            product.category.name.toLowerCase()
-          )} Shoe</span>
-                </div>
-                ${
-                  product.offerAmount
-                    ? `<h6 class="text-dark">$ ${product.offerAmount}&nbsp;&nbsp;<span style="text-decoration: line-through; color: crimson">${product.basePrice}</span></h6>`
-                    : `<h6 class="text-dark"><span>$</span>${product.basePrice}</h6>`
-                }
-              </div>
+  const productHTML = `
+    <div class="col-lg-4" style="width: 450px;">
+      <div class="product-item">
+        <div class="product-title rounded-top">
+          <div class="ratting d-flex justify-content-between">
+            <div>
+              ${Array.from({ length: 5 }, (_, i) => 
+                `<i class="fa ${i < Math.round(product.rating) ? 'fa-star' : 'fa-star-o'}"></i>`
+              ).join('')}
+            </div>
+            ${
+              product.totalQuantity === 0
+                ? '<span class="badge badge-danger">Out Of Stock</span>'
+                : product.totalQuantity < 10
+                ? '<span class="badge badge-warning">Limited Stock</span>'
+                : '<span class="badge badge-success">In Stock</span>'
+            }
+          </div>
+        </div>
+        <div class="product-image">
+          <a href="product-detail.html">
+            <img src="${product.imagePaths[0]}" alt="Product Image" />
+          </a>
+          <div class="product-action">
+            <a href="#" tabindex="0" class="addToWishlist" data-id="${product._id}" data-toggle="tooltip" title="wishlist">
+              <i class="fa fa-heart"></i>
+            </a>
+            <a href="/product/${product._id}" tabindex="0" data-toggle="tooltip" title="view">
+              <i class="fa fa-search"></i>
+            </a>
+          </div>
+        </div>
+        <div class="product-price rounded-bottom">
+          <div class="d-flex justify-content-between">
+            <div>
+              <span><b>${product.name}</b></span>
+            </div>
+            <div>
+              <span class="badge badge-light">${product.brand.name}</span>
             </div>
           </div>
-        `;
-          productList.innerHTML += productHTML;
-        });
+          <div class="text-dark">
+            <span>${capitalizeFirstLetter(product.tag.tagName.toLowerCase())}'s ${capitalizeFirstLetter(product.category.name.toLowerCase())} Shoe</span>
+          </div>
+          ${
+            product.offerAmount
+              ? `<h6 class="text-dark">$ ${product.offerAmount}&nbsp;&nbsp;<span style="text-decoration: line-through; color: crimson">${product.basePrice}</span></h6>`
+              : `<h6 class="text-dark"><span>$</span>${product.basePrice}</h6>`
+          }
+        </div>
+      </div>
+    </div>
+  `;
+  productList.innerHTML += productHTML;
+});
+
       }
     }
 

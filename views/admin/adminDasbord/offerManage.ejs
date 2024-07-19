@@ -97,8 +97,32 @@
             <% } %>
           </div>
         </div>
-      </div>
-    
+
+
+      <!-- category offer  -->
+        <div class="offer-section">
+          <h2>Category Offers</h2>
+          <a href="/admin/offer-category">
+            <button
+            class="btn btn-primary btn-add-offer"
+          >
+            <i class="fas fa-plus"></i> view category offers
+          </button>
+          </a>
+      
+          <div class="offer-list">
+            <% if(referralDetails.length !== 0) { %>
+            <h3 style="color: white">
+           Currently 3 category have offer
+            </h3>
+            <p style="color: white;">Currently, <%= referralDetails[0].userCount %> users have logged in with the referral link.</p>
+            <% } else { %>
+            <h3 style="color: white">
+              No Category offer found 
+            </h3>
+            <% } %>
+          </div>
+        </div>
 
   <div
     class="modal fade"

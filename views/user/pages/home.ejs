@@ -1,17 +1,16 @@
 <%- include('../userPartials/header'); %>
 
 <!-- home page -->
-
 <style>
   .header-slider img,
   .header-img img {
     width: 100%;
-    height: 400px; /* Set this to your desired height */
-    object-fit: cover; /* Ensures the images cover the area without distortion */
+    height: 400px; 
+    object-fit: cover; 
   }
 
   .header-img .img-item {
-    margin-bottom: 20px; /* Add some space between additional images */
+    margin-bottom: 20px; 
   }
 
   .header-slider-item,
@@ -38,71 +37,64 @@
         <nav class="navbar bg-light">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="/"><i class="fa fa-home"></i>Home</a>
+              <a class="nav-link" href="/"><i class="fa fa-home"></i> Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"
-                ><i class="fa fa-shopping-bag"></i>Best Selling</a
-              >
+              <a class="nav-link" href="/category"><i class="fa fa-th-list"></i> All items</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"
-                ><i class="fa fa-plus-square"></i>New Arrivals</a
-              >
+              <!-- <a class="nav-link" href="#"><i class="fa fa-chart-line"></i> Best Selling</a> -->
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"
-                ><i class="fa fa-female"></i>Fashion & Beauty</a
-              >
+              <!-- <a class="nav-link" href="/search?search=newArrivals"><i class="fa fa-star"></i> New Arrivals</a> -->
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"
-                ><i class="fa fa-child"></i>Kids & Babies Clothes</a
-              >
+              <a class="nav-link" href="/search?search=men"><i class="fa fa-male"></i> Men</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"
-                ><i class="fa fa-tshirt"></i>Men & Women Clothes</a
-              >
+              <a class="nav-link" href="/search?search=women"><i class="fa fa-female"></i> Women</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"
-                ><i class="fa fa-mobile-alt"></i>Gadgets & Accessories</a
-              >
+              <a class="nav-link" href="/search?search=girl"><i class="fa fa-heart"></i> Girl</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#"
-                ><i class="fa fa-microchip"></i>Electronics & Accessories</a
-              >
+              <a class="nav-link" href="/search?search=boy"><i class="fa fa-gamepad"></i> Boy</a>
             </li>
           </ul>
+          
+          
         </nav>
       </div>
       <div class="col-md-9">
         <div class="header-slider normal-slider">
           <div class="header-slider-item">
-            <img src="/img2/Men's Collection.jpeg" alt="Slider Image" />
-            <div class="header-slider-caption">
-              <p>Some text goes here that describes the image</p>
-              <a class="btn" href=""
+            <img src="/uploads/banner/HOKA_ Million Dollar Investment_.jpeg" alt="Slider Image" />
+            <div class="header-slider-caption" style="background-color: #ffffff52;">
+              <a class="btn" href="/category"
                 ><i class="fa fa-shopping-cart"></i>Shop Now</a
               >
             </div>
           </div>
           <div class="header-slider-item">
-            <img src="/img2/Nike Mens Shoes Blue (1).jpeg" alt="Slider Image" />
-            <div class="header-slider-caption">
-              <p>Some text goes here that describes the image</p>
-              <a class="btn" href=""
+            <img src="/uploads/banner/Asics Novablast.jpeg" alt="Slider Image" />
+            <div class="header-slider-caption" style="background-color: #a9b7e552;">
+              <a class="btn" href="/category"
                 ><i class="fa fa-shopping-cart"></i>Shop Now</a
               >
             </div>
           </div>
           <div class="header-slider-item">
-            <img src="/img2/British Trendy Shoes.jpeg" alt="Slider Image" />
-            <div class="header-slider-caption">
-              <p>Some text goes here that describes the image</p>
-              <a class="btn" href=""
+            <img src="/uploads/banner/Adidas UltraBoost AD- Lighter than air_.jpeg" alt="Slider Image" />
+            <div class="header-slider-caption" style="background-color: #ffffff52;">
+              <a class="btn" href="/category"
+                ><i class="fa fa-shopping-cart"></i>Shop Now</a
+              >
+            </div>
+          </div>
+          <div class="header-slider-item">
+            <img src="/uploads/banner/adidas crazylight pack introduces a lightweight technology range.jpeg" alt="Slider Image" />
+            <div class="header-slider-caption" style="background-color: #ffffff52;">
+              <a class="btn" href="/category"
                 ><i class="fa fa-shopping-cart"></i>Shop Now</a
               >
             </div>
@@ -118,12 +110,12 @@
 <div class="brand">
   <div class="container-fluid">
     <div class="brand-slider">
-      <div class="brand-item"><img src="/img2/brand-1.png" alt="" /></div>
-      <div class="brand-item"><img src="/img2/brand-2.png" alt="" /></div>
-      <div class="brand-item"><img src="/img2/brand-3.png" alt="" /></div>
-      <div class="brand-item"><img src="/img2/brand-4.png" alt="" /></div>
-      <div class="brand-item"><img src="/img2/brand-5.png" alt="" /></div>
-      <div class="brand-item"><img src="/img2/brand-6.png" alt="" /></div>
+     <div class="brand-item"> <img src="/uploads/brands/brand-1.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-2.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-3.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-4.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-5.png" alt="brand imgage" /></div>
+      <div class="brand-item"><img src="/uploads/brands/brand-6.png" alt="brand imgage" /></div>
     </div>
   </div>
 </div>
@@ -137,28 +129,28 @@
         <div class="feature-content">
           <i class="fab fa-cc-mastercard"></i>
           <h2>Secure Payment</h2>
-          <p>Lorem ipsum dolor sit amet consectetur elit</p>
+          <p></p>
         </div>
       </div>
       <div class="col-lg-3 col-md-6 feature-col">
         <div class="feature-content">
           <i class="fa fa-truck"></i>
-          <h2>Worldwide Delivery</h2>
-          <p>Lorem ipsum dolor sit amet consectetur elit</p>
+          <h2>All Kerala Delivery</h2>
+          <p></p>
         </div>
       </div>
       <div class="col-lg-3 col-md-6 feature-col">
         <div class="feature-content">
           <i class="fa fa-sync-alt"></i>
           <h2>90 Days Return</h2>
-          <p>Lorem ipsum dolor sit amet consectetur elit</p>
+          <p></p>
         </div>
       </div>
       <div class="col-lg-3 col-md-6 feature-col">
         <div class="feature-content">
           <i class="fa fa-comments"></i>
           <h2>24/7 Support</h2>
-          <p>Lorem ipsum dolor sit amet consectetur elit</p>
+          <p></p>
         </div>
       </div>
     </div>
@@ -166,7 +158,7 @@
 </div>
 <!-- Feature End-->
 
-<!-- Category Start-->
+<!-- banner 2 Start-->
 <div class="category">
   <div class="container-fluid">
     <div class="row">
@@ -217,7 +209,7 @@
     </div>
   </div>
 </div>
-<!-- Category End-->
+<!-- banner 2 End -->
 
 <!-- Call to Action Start -->
 <div class="call-to-action">
@@ -227,7 +219,7 @@
         <h1>call us for any queries</h1>
       </div>
       <div class="col-md-6">
-        <a href="tel:0123456789">+19 1234567890</a>
+        <a href="tel:9072016196">+19 9072016196</a>
       </div>
     </div>
   </div>
@@ -238,7 +230,7 @@
 <div class="featured-product product">
   <div class="container-fluid">
     <div class="section-header">
-      <h1>Featured Product</h1>
+      <h1>top selling Product</h1>
     </div>
     <div class="row align-items-center product-slider product-slider-4">
       <% locals.products.forEach((product)=>{ %> <% if(
@@ -246,17 +238,18 @@
         <div class="col-lg-3" style="width: 450px;">
           <div class="product-item  ">
             <div class="product-title rounded-top">
-  
-  
               <div class="ratting d-flex justify-content-between">
                 <div>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                </div>
-               
+                  <%if(product.rating){%>
+                  <% for (let i = 1; i <= 5; i++) { %>
+                    <% if (i <= Math.round(product.rating)) { %>
+                      <i class="fa fa-star"></i>
+                    <% } else { %>
+                      <i class="fa fa-star-o"></i>
+                    <% } %>
+                  <% } %>
+               <%}%>
+              </div>
                 <% if (product.totalQuantity == 0 ) { %>
                 <span class="badge badge-danger"> Out Of Stock</span>
                 <% } else if (product.totalQuantity < 10) { %>
@@ -312,7 +305,6 @@
               <% } else { %>
                 <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
                 <% } %>
-              <!-- <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a> -->
             </div>
           </div>
         </div>   
@@ -334,17 +326,18 @@
       <div class="col-lg-3" style="width: 450px;">
         <div class="product-item  ">
           <div class="product-title rounded-top">
-
-
             <div class="ratting d-flex justify-content-between">
               <div>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-                <i class="fa fa-star"></i>
-              </div>
-             
+              <%if(product.rating){%>
+              <% for (let i = 1; i <= 5; i++) { %>
+                <% if (i <= Math.round(product.rating)) { %>
+                  <i class="fa fa-star"></i>
+                <% } else { %>
+                  <i class="fa fa-star-o"></i>
+                <% } %>
+              <% } %>
+           <%}%>
+          </div>
               <% if (product.totalQuantity == 0 ) { %>
               <span class="badge badge-danger"> Out Of Stock</span>
               <% } else if (product.totalQuantity < 10) { %>
@@ -398,7 +391,6 @@
             <% } else { %>
               <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
               <% } %>
-            <!-- <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a> -->
           </div>
         </div>
       </div>   
@@ -414,7 +406,6 @@
 <%- include('../userPartials/footer'); %>
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-
 
   const showInfoToast = (message) => {
       toastr.options = {
@@ -442,7 +433,6 @@ document.addEventListener("DOMContentLoaded", () => {
       };
       toastr.success(message);
     }
-  
 
   const addToWishlistButtons = document.querySelectorAll('.addToWishlist');
   addToWishlistButtons.forEach(item => {
@@ -466,7 +456,6 @@ document.addEventListener("DOMContentLoaded", () => {
           showErrorToast(`${data.message}`);
         }
 
-
       } catch (error) {
         console.log(error);
       showErrorToast("Failed to add to wishlist");
@@ -474,5 +463,4 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-
 </script>

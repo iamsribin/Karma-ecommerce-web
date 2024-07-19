@@ -5,24 +5,43 @@ const mongoose = require("mongoose");
 // Render coupons
 exports.renderCoupons = async (req, res, next) => {
   try {
-    const coupons = await Coupon.find({});
+    const { search, page = 1 } = req.query;
+    const ITEMS_PER_PAGE = 10;
+    const query = {};
+  
+    if (search) {
+      query.$or = [
+        { couponCode: { $regex: search, $options: 'i' } },
+        { name: { $regex: search, $options: 'i' } },
+      ];
+    }
+  
+      const totalItems = await Coupon.countDocuments(query);
+      const coupons = await Coupon.find(query)
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
 
-    const couponsWithExpiryStatus = coupons.map((coupon) => {
-      const isExpired = coupon.expiryDate < Date.now();
-      return {
-        ...coupon.toObject(),
-        isExpired,
-      };
-    });
 
+        const couponsWithExpiryStatus = coupons.map((coupon) => {
+          const isExpired = coupon.expiryDate < Date.now();
+          return {
+            ...coupon.toObject(),
+            isExpired,
+          };
+        });
+  
     res.render("admin/adminDasbord/coupens", {
       coupons: couponsWithExpiryStatus,
+      page: page,
+      totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
+      search: search
     });
   } catch (error) {
     console.error("Error rendering coupons:", error);
     next(createError(500, "Internal Server Error"));
+  
+    };
   }
-};
 
 // Render add coupon page
 exports.renderAddCoupons = (req, res) => {
@@ -160,3 +179,42 @@ exports.editCoupon = async (req, res, next) => {
     return next(createError(null, null));
   }
 };
+
+// exports.getCoupons = async (req, res, next) => {
+//   const { search, page = 1 } = req.query;
+//   const ITEMS_PER_PAGE = 10;
+//   const query = {};
+
+//   if (search) {
+//     query.$or = [
+//       { couponCode: { $regex: search, $options: 'i' } },
+//       { name: { $regex: search, $options: 'i' } },
+//     ];
+//   }
+
+//   try {
+//     const totalItems = await Coupon.countDocuments(query);
+//     const coupons = await Coupon.find(query)
+//       .skip((page - 1) * ITEMS_PER_PAGE)
+//       .limit(ITEMS_PER_PAGE);
+
+
+//       const couponsWithExpiryStatus = coupons.map((coupon) => {
+//         const isExpired = coupon.expiryDate < Date.now();
+//         return {
+//           ...coupon.toObject(),
+//           isExpired,
+//         };
+//       });
+
+//     res.render('admin/coupons', {
+//       coupons: couponsWithExpiryStatus,
+//       page: page,
+//       totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
+//       search: search
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.redirect('/admin');
+//   }
+// }

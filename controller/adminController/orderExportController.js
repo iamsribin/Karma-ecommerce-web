@@ -7,6 +7,7 @@ const stringify = csv.stringify;
 // Generating Excel sheet for orders.
 const generateOrderExcel = async (req, res) => {
   const { startingDate, endingDate } = req.body;
+  console.log("start end",startingDate, endingDate );
   try {
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Orders");
@@ -45,6 +46,7 @@ const generateOrderExcel = async (req, res) => {
       "products",
       "products.productId",
     ]);
+console.log("order",orders);
 
     orders.map((item) => {
       const productsDetails = item.products
@@ -82,6 +84,7 @@ const generateOrderExcel = async (req, res) => {
 
     res.send(buffer);
   } catch (error) {
+    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -251,6 +254,8 @@ const generateOrderPDF = async (req, res) => {
         'products.statusHistory'
       ]);
   
+      console.log("orders",orders);
+
       // Format the orders data for PDF generation
       const formattedOrders = orders.map(order => ({
         orderId: order.orderId,

@@ -47,11 +47,13 @@
                   <% } %>
                 </div>
                 <div class="ratting mb-3">
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
-                  <i class="fa fa-star"></i>
+                 <% if(averageRating){ %>
+                    <% for(let i = 0; i <= averageRating; i++ ){ %>
+                      <i class="fa fa-star"></i>
+                  <% } %>
+                <%  } %>
+
+
                 </div>
                 <div class="product-info mb-3">
                   <p class="mb-1">
@@ -120,7 +122,7 @@
                 <a class="nav-link" data-toggle="pill" href="#specification">Specification</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" data-toggle="pill" href="#reviews">Reviews (1)</a>
+                <a class="nav-link" data-toggle="pill" href="#reviews">Reviews (<%= reviews?.length ? reviews?.length: 0 %>)</a>
               </li>
             </ul>
             <div class="tab-content">
@@ -159,40 +161,22 @@
               </div>
               <div  id="reviews" class="container tab-pane fade">
                 <div class="reviews-submitted">
-                  <div class="reviewer">Phasellus Gravida l,ll, - <span>01 Jan 2020</span></div>
-                  <div class="ratting">
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                  </div>
-                  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam.</p>
+                <%  if(reviews.length !== 0){ %>
+                    <% reviews.forEach((review)=>{%>
+                      <div class="reviewer"><%=review.userId?.name %> - <span><%=review.createdAt.toDateString()%></span></div>
+                      <div class="ratting">
+                        <% if(review){ %>
+                          <% for(let i = 0; i <= review.rating; i++ ){ %>
+                            <i class="fa fa-star"></i>
+                        <% } %>
+                      <%  } %>
+                      </div>
+                      <p><%=review.Description%></p>
+                    <%})%>
+                <%  }else{ %>
+                    <h1 style="color: #000;">No reviews yet.</h1>
+                <%  } %>
                 </div>
-                <!-- <div class="reviews-submit">
-                  <h4>Give your Review:</h4>
-                  <div class="ratting">
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                    <i class="far fa-star"></i>
-                  </div>
-                  <div class="row form">
-                    <div class="col-sm-6">
-                      <input type="text" placeholder="Name" />
-                    </div>
-                    <div class="col-sm-6">
-                      <input type="email" placeholder="Email" />
-                    </div>
-                    <div class="col-sm-12">
-                      <textarea placeholder="Review"></textarea>
-                    </div>
-                    <div class="col-sm-12">
-                      <button>Submit</button>
-                    </div>
-                  </div>
-                </div> -->
               </div>
             </div>
           </div>
@@ -206,16 +190,20 @@
           <div class="row align-items-center product-slider product-slider-3">
             <% relatedProducts.forEach((product) => { %>
               <div class="col-lg-3" style="width: 450px;">
-                <div class="product-item  ">
+                <div class="product-item">
                   <div class="product-title rounded-top">
                     <div class="ratting d-flex justify-content-between">
                       <div>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                        <i class="fa fa-star"></i>
-                      </div>    
+                        <%if(product.rating){%>
+                        <% for (let i = 1; i <= 5; i++) { %>
+                          <% if (i <= Math.round(product.rating)) { %>
+                            <i class="fa fa-star"></i>
+                          <% } else { %>
+                            <i class="fa fa-star-o"></i>
+                          <% } %>
+                        <% } %>
+                     <%}%>
+                    </div>  
                       <% if (product.totalQuantity == 0 ) { %>
                       <span class="badge badge-danger"> Out Of Stock</span>
                       <% } else if (product.totalQuantity < 10) { %>
@@ -282,27 +270,23 @@
 
       <!-- Side Bar Start -->
       <div class="col-lg-4 sidebar">
-        <div class="sidebar-widget category">
-          <h2 class="title">Category</h2>
-          <nav class="navbar bg-light">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa fa-female"></i>Fashion & Beauty</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa fa-child"></i>Kids & Babies Clothes</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa fa-tshirt"></i>Men & Women Clothes</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa fa-mobile-alt"></i>Gadgets & Accessories</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#"><i class="fa fa-microchip"></i>Electronics & Accessories</a>
-              </li>
-            </ul>
-          </nav>
+        <div class="sidebar-widget tag">
+          <h2 class="title">Tags Cloud</h2>
+          <%   tags.forEach((brand)=>{ %>
+            <a href="/search?search=<%=brand.tagName%>"><%=brand.tagName%></a>
+        <%  }) %>
+          <!-- <a href="#">Lorem ipsum</a>
+          <a href="#">Nam lorem</a> -->
+        </div>
+        <div class="sidebar-widget brands">
+          <h2 class="title">Our Brands</h2>
+          <ul>
+       <%   brands.forEach((brand)=>{ %>
+            <li><a href="/search?search=<%=brand.name%>"><%= brand.name %></a></li>
+        <%  }) %>
+            <!-- <li><a href="#">Curabitur </a><span>(34)</span></li>
+            <li><a href="#">Sagittis</a><span>(28)</span></li> -->
+          </ul>
         </div>
 
         <div class="sidebar-widget widget-slider">
@@ -310,18 +294,19 @@
             <% relatedProducts.forEach((relatedProduct) => { %>
             <div class="product-item">
               <div class="product-item">
-                <div class="product-title">
-                  <div class="text-left">
-                    <a href="#"><%= relatedProduct.name %></a>
-                  </div>
+                <div class="product-title rounded-top"  style="background-color: rgb(203, 235, 235);">
                   <div class="ratting d-flex justify-content-between">
-                    <div>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                      <i class="fa fa-star"></i>
-                    </div>
+                  <div>
+                    <%if(relatedProduct.rating){%>
+                    <% for (let i = 1; i <= 5; i++) { %>
+                      <% if (i <= Math.round(relatedProduct.rating)) { %>
+                        <i class="fa fa-star"></i>
+                      <% } else { %>
+                        <i class="fa fa-star-o"></i>
+                      <% } %>
+                    <% } %>
+                 <%}%>
+                </div>
                     <% if (relatedProduct.totalQuantity == 0) { %>
                       <i style="background-color: rgb(255, 0, 0); color: rgb(0, 0, 0); border-radius: 7px;">&nbsp; Out Of Stock &nbsp;</i>
                       <% } else if (relatedProduct.totalQuantity < 10) { %>
@@ -336,35 +321,41 @@
                     <img src="<%= relatedProduct.imagePaths[0] %>" alt="Product Image" />
                   </a>
                   <div class="product-action">
-                    <!-- <a href="#" data-id="<%= relatedProduct._id %>" tabindex="0" data-toggle="tooltip" title="Add to cart">
-                      <i class="fa fa-cart-plus"></i>
-                    </a> -->
                     <a href="#" tabindex="0" class="addToWishlist" data-id="<%= product._id %>" data-toggle="tooltip" title="wishlist">
                       <i class="fa fa-heart"></i>
                     </a>
                     <a href="/product/<%= relatedProduct._id %>" tabindex="0" data-toggle="tooltip" title="view">
                       <i class="fa fa-search"></i>
                     </a>
-                    <!-- <a href="#" tabindex="0" data-toggle="tooltip" title="buy now">
-                      <i class="fa fa-shopping-cart"></i>
-                    </a> -->
                   </div>
                 </div>
-                <div class="product-price">
-                  <div class="text-white">
-                    <span><b>BRAND : &nbsp;&nbsp;&nbsp;</b></span>
-                    <span class="text-capitalize"><%= relatedProduct.brand.name %></span><br />
-                    <span><b>Category : &nbsp;</b></span>
-                    <span><%= relatedProduct.category.name %></span>
+                <div class="product-price rounded-bottom"  style="background-color: rgb(203, 235, 235);">
+                  <div class="d-flex justify-content-between">
+                    <div>
+                      <span><b><%= relatedProduct.name %></b></span>
+                    </div>
+                    <div>
+                      <span class="badge badge-light"><%= relatedProduct.brand.name %></span>
+                    </div>
                   </div>
+                  <div class="text-dark">
+                    <%
+                    function capitalizeFirstLetter(string) {
+                      return string.charAt(0).toUpperCase() + string.slice(1);
+                    }
+                    %>
+                    <span><%= capitalizeFirstLetter(relatedProduct.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(relatedProduct.tag.tagName.toLowerCase()) %> Shoe</span>
+                                </div>
                   <% if (relatedProduct.offerAmount) { %>
-                  <h3 class="">
+                  <h6 class="text-dark">
                     $ <%= relatedProduct.offerAmount %>&nbsp;&nbsp;
-                    <span style="text-decoration: line-through; color: crimson"><%= relatedProduct.basePrice %></span>
-                  </h3>
+                    <span style="text-decoration: line-through; color: crimson"
+                      ><%= relatedProduct.basePrice %></span
+                    >
+                  </h6>
                   <% } else { %>
-                  <h3 class=""><span>$</span><%= relatedProduct.basePrice %></h3>
-                  <% } %>
+                    <h6 class="text-dark"><span>$</span><%= relatedProduct.basePrice %></h6>
+                    <% } %>
                 </div>
               </div>
             </div>
@@ -373,32 +364,15 @@
         </div>
 
         <div class="sidebar-widget brands">
-          <h2 class="title">Our Brands</h2>
+          <h2 class="title">Our categories</h2>
           <ul>
-            <li><a href="#">Nulla </a><span>(45)</span></li>
-            <li><a href="#">Curabitur </a><span>(34)</span></li>
-            <li><a href="#">Nunc </a><span>(67)</span></li>
-            <li><a href="#">Ullamcorper</a><span>(74)</span></li>
-            <li><a href="#">Fusce </a><span>(89)</span></li>
-            <li><a href="#">Sagittis</a><span>(28)</span></li>
+            <%   categories.forEach((brand)=>{ %>
+              <li><a href="/search?search=<%=brand.name%>"><%= brand.name %></a></li>
+          <%  }) %>
           </ul>
         </div>
 
-        <div class="sidebar-widget tag">
-          <h2 class="title">Tags Cloud</h2>
-          <a href="#">Lorem ipsum</a>
-          <a href="#">Vivamus</a>
-          <a href="#">Phasellus</a>
-          <a href="#">pulvinar</a>
-          <a href="#">Curabitur</a>
-          <a href="#">Fusce</a>
-          <a href="#">Sem quis</a>
-          <a href="#">Mollis metus</a>
-          <a href="#">Sit amet</a>
-          <a href="#">Vel posuere</a>
-          <a href="#">orci luctus</a>
-          <a href="#">Nam lorem</a>
-        </div>
+
       </div>
       <!-- Side Bar End -->
     </div>

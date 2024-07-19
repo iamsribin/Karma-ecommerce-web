@@ -1,10 +1,11 @@
 <%- include('../userPartials/header'); %>
+
 <div class="container-fluid bg-light p-4">
     <div class="row justify-content-center">
         <div class="col-12 col-md-10 col-lg-8 text-white text-center p-4" style="background-color: #4D869C;">
             <h1>Your Karma order is confirmed.</h1>
             <p>And we're just as excited as you are.</p>
-            <a href="#" class="btn btn-light text-primary mt-2">CHECK YOUR ORDER STATUS</a>
+            <a href="/user-profile" class="btn btn-light text-primary mt-2">CHECK YOUR ORDER STATUS</a>
         </div>
     </div>
     <div class="row justify-content-center mt-4">
@@ -77,7 +78,7 @@
                 </div>
             </div>
             <hr>
-            <!-- <p class="mb-0 text-secondary">SHIPPING METHOD: <span class="text-primary">Free (5 Business Days*)</span></p> -->
+            <p class="mb-0 text-secondary">Payment Method: <span class="text-primary"><%=order.paymentMethod%></span></p>
             <p class="font-italic text-secondary">*Some shipping areas may take up to 7 days for delivery.</p>
         </div>
     </div>

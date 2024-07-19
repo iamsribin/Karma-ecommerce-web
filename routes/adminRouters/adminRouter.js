@@ -12,12 +12,7 @@ const {
 //dashboard controller
 const {
   renderDashboard,
-  renderBanner,
-  renderCategory,
   dashbord,
-  // renderPayments,
-  renderOrder,
-  renderPayments,
 } = require("../../controller/adminController/dashbordController");
 //orders controller
 const {
@@ -33,11 +28,13 @@ const {
   deleteCoupon,
   renderEditCouponPage,
   editCoupon,
+  // getCoupons,
 } = require("../../controller/adminController/couponController");
 
 //product controller
 const {
   renderAddproduct,
+  renderDeletedProducts,
   renderProducts,
   deleteProduct,
   addProduct,
@@ -45,6 +42,7 @@ const {
   renderEditProductPage,
   adminAddProductCheck_get,
   deleteImage,
+  recoverProduct,
 } = require("../../controller/adminController/productController");
 
 //customer controller
@@ -94,7 +92,8 @@ const {
 //return controller
 const {
   renderReturnProducts,
-  updateReturnStatus
+  updateReturnStatus,
+  returnProductView
 } = require("../../controller/adminController/returnProductController")
 
 // order export controller
@@ -107,7 +106,9 @@ generateOrderPDF
 const {
   renderManageOfferPage,
   updateReferralLink, 
-  deleteReferral
+  deleteReferral,
+  renderManageOfferCategory,
+  addNewCategoryOffer
 }= require("../../controller/adminController/offerController");
 
 //middlewares
@@ -128,18 +129,20 @@ router.delete("/delete-coupon/:id",verifyAdmin, deleteCoupon);
 router.get("/edit-coupon-page/:id",verifyAdmin, renderEditCouponPage);
 router.patch("/edit-coupon/:id", verifyAdmin,editCoupon);
 //orders
-// router.get("/payments",verifyAdmin, renderPayments);
 router.get("/orders", verifyAdmin, listOrders);
 router.get("/view-order/:id",verifyAdmin, renderViewOrder);
 router.post('/update-order-status', updateProductStatus);
 //products
 router.get("/products", verifyAdmin, renderProducts);
+router.get("/deleted-productList", verifyAdmin, renderDeletedProducts);
 router.get("/add-product", verifyAdmin, renderAddproduct);
 router.delete("/delete-product/:id", verifyAdmin, deleteProduct);
+router.patch("/recover-product/:id", verifyAdmin, recoverProduct);
 router.get("/edit-product/:id",verifyAdmin, renderEditProductPage);
 router.post("/add-product", verifyAdmin, upload.array('images'),   addProduct);
 router.post("/edit-product/:id", verifyAdmin, upload.array('images'),  editProduct);
 router.patch("/deleteImage",verifyAdmin, deleteImage);
+router.post('/admin-add-product-check',verifyAdmin, adminAddProductCheck_get);
 //customers
 router.get("/customers",verifyAdmin, renderCostumers);
 router.patch("/block-unblock-user/:id",verifyAdmin,  blockOrUnBlockUser);
@@ -170,15 +173,12 @@ router.delete("/delete-size/:id", verifyAdmin, deleteSize);
 router.get("/edit-size-page/:id", verifyAdmin, renderEditSizePage);
 router.patch("/edit-size/:id", verifyAdmin, editSize);
 
-router.post('/admin-add-product-check',verifyAdmin, adminAddProductCheck_get);
-
 //return products
 router.get("/retrun-products", verifyAdmin, renderReturnProducts);
 router.post("/update-return-order-status",verifyAdmin, updateReturnStatus);
-
+router.get("/retuenProduct-ditails/:orderId/:productId", verifyAdmin, returnProductView);
 //payments
 router.get("/payments", verifyAdmin, renderPaymentsList);
-
 //order downloads
 router.post("/order-generate-excel",verifyAdmin, generateOrderExcel);
 router.post("/order-generate-csv",verifyAdmin, generateOrderCSV);
@@ -187,5 +187,7 @@ router.get("/sales-report", dashbord);
 //offer
 router.get("/manage-offer", verifyAdmin, renderManageOfferPage);
 router.post("/update-referral-reward",verifyAdmin ,updateReferralLink);
-router.delete("/delete-referral-offer", verifyAdmin, deleteReferral)
+router.delete("/delete-referral-offer", verifyAdmin, deleteReferral);
+router.get("/offer-category", verifyAdmin, renderManageOfferCategory);
+router.post("/add-new-category-offer", verifyAdmin, addNewCategoryOffer);
 module.exports = router;

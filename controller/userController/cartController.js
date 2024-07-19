@@ -25,30 +25,81 @@ exports.renderCartPage = async (req, res, next) => {
     }
 
     const userDetails = await User.findById(userId).lean();
-    const userCart = await Cart.findOne({ userId })
-    .populate({
-      path: "cart.product",
-      model: "Product",
-    })
-    .populate({
-      path: "cart.size",
-      model: "Size",
-    })
-    .lean();
+
+    let userCart = await Cart.findOne({ userId })
+      .populate({
+        path: "cart.product",
+        model: "Product",
+        match: { isActive: true },
+      })
+      .populate({
+        path: "cart.size",
+        model: "Size",
+      })
+      .lean();
+
+    if (userCart?.cart.length === 0) {
+      await Cart.findOneAndDelete({ userId });
+      userCart = null;
+    } else if (userCart) {
+      const activeCartItems = userCart.cart.filter(item => item.product && item.product.isActive);
+
+      if (activeCartItems.length !== userCart.cart.length) {
+        let newSubTotal = 0;
+        let newDiscount = 0;
+        activeCartItems.forEach(item => {
+          newSubTotal += item.price * item.quantity;
+          if (item.offerPrice) {
+            newDiscount += (item.price - item.offerPrice) * item.quantity;
+          }
+        });
+
+        const newGrandTotal = newSubTotal - newDiscount;
+
+        await Cart.updateOne(
+          { _id: userCart._id },
+          { 
+            $set: { 
+              cart: activeCartItems,
+              subTotal: newSubTotal,
+              discount: newDiscount,
+              grandTotal: newGrandTotal
+            } 
+          }
+        );
+
+        // Refresh userCart after update
+        userCart = await Cart.findOne({ userId })
+          .populate({
+            path: "cart.product",
+            model: "Product",
+          })
+          .populate({
+            path: "cart.size",
+            model: "Size",
+          })
+          .lean();
+      }
+    }
+
+    if (userCart?.cart.length === 0) {
+      await Cart.findOneAndDelete({ userId });
+      userCart = null;
+    }
 
     const currentDate = new Date();
-  
+
     const coupons = await Coupon.find({
       isActive: true,
       expiryDate: { $gt: currentDate },
-      minimumPurchaseAmount: { $ne: null}
-  });
+      minimumPurchaseAmount: { $ne: null }
+    });
 
-  if(userCart?.coupon){
-    checkCoupon(userId);
-  }
+    if (userCart?.coupon) {
+      checkCoupon(userId);
+    }
 
-  console.log("carts",userCart);
+    console.log("carts", userCart);
 
     return res.render("user/pages/cartPage", {
       user: userDetails,
@@ -73,7 +124,7 @@ exports.addCart = async (req, res, next) => {
       return next(createError(401, "User not authenticated"));
     }
 
-    const product = await Product.findById(productId);
+    const product = await Product.findOne({_id: productId,   isActive: true});
     const userCart = await Cart.findOne({ userId });
 
     if (!product) {

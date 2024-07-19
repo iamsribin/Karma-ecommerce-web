@@ -1,5 +1,6 @@
 const Referral = require("../../models/adminModels/referral")
-
+const CategoryOffer = require("../../models/adminModels/categoryOffer");
+const Category = require("../../models/adminModels/category");
 
 exports.renderManageOfferPage = async (req, res) =>{
     const referralDetails = await Referral.find({}); 
@@ -40,5 +41,29 @@ exports.deleteReferral = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({ error: 'An error occurred while deleting the referral link.' });
+    }
+}
+
+exports.renderManageOfferCategory = async (req, res) =>{
+    try {
+        const offerCategorys = await CategoryOffer.find({isActive: true}).populate("category_id"); 
+        const categorys = await Category.find({isActive: true}); 
+
+        console.log("render offer",offerCategorys);
+        res.render('admin/adminDasbord/categoryOfferManage',{offerCategorys,categorys});
+    } catch (error) {
+        console.log(error);
+    }
+}
+exports.addNewCategoryOffer = async (req, res) =>{
+    try {
+        console.log("bosy",req.body);
+        const {offerPercentage,category_id, expiryDate} = req.body
+        const newCategoryOffer = new CategoryOffer({offerPercentage,category_id, expiryDate});
+        await newCategoryOffer.save();
+        
+        console.log("new",newCategoryOffer);
+    } catch (error) {
+        console.log(error);
     }
 }

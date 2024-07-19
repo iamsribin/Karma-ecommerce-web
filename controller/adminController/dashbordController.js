@@ -1,45 +1,255 @@
 
-const { createError } = require("../../utils/errors");
+const Order = require('../../models/userModels/orderModel');
+const Product = require('../../models/adminModels/product');
+const Brand = require('../../models/adminModels/brand');
+const Category = require('../../models/adminModels/category');
+const moment = require('moment');
+const User = require('../../models/userModels/userModel');
 
 //render dashboard page
 exports.renderDashboard = async (req, res) => {
   try {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const { range = '1day' } = req.query;
+    let startDate, endDate;
 
-    const dailySalesData = await Order.aggregate([
+    switch (range) {
+      case '1week':
+        startDate = moment().subtract(1, 'weeks').startOf('day');
+        endDate = moment().endOf('day');
+        break;
+      case '1month':
+        startDate = moment().subtract(1, 'months').startOf('day');
+        endDate = moment().endOf('day');
+        break;
+      default: // 1day
+        startDate = moment().startOf('day');
+        endDate = moment().endOf('day');
+    }
+
+    // Fetch sales data
+    const salesData = await Order.aggregate([
       {
         $match: {
-          createdAt: { $gte: today }
+          createdAt: { $gte: startDate.toDate(), $lte: endDate.toDate() },
+          paymentStatus: 'success'
         }
       },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
           totalSales: { $sum: "$totalPrice" },
-          totalOrders: { $sum: 1 },
-          totalDiscount: { $sum: "$discount" }
+          count: { $sum: 1 }
         }
       },
       { $sort: { _id: 1 } }
     ]);
 
-    const summary = dailySalesData.reduce((acc, curr) => {
-      acc.totalSales += curr.totalSales;
-      acc.totalOrders += curr.totalOrders;
-      acc.totalDiscount += curr.totalDiscount;
-      return acc;
-    }, { totalSales: 0, totalOrders: 0, totalDiscount: 0 });
+    // Fetch brand performance data
+    const brandPerformance = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate.toDate(), $lte: endDate.toDate() },
+          paymentStatus: 'success'
+        }
+      },
+      { $unwind: "$products" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productInfo"
+        }
+      },
+      { $unwind: "$productInfo" },
+      {
+        $group: {
+          _id: "$productInfo.brand",
+          totalSales: { $sum: "$products.totalPrice" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "_id",
+          foreignField: "_id",
+          as: "brandInfo"
+        }
+      },
+      { $unwind: "$brandInfo" },
+      {
+        $project: {
+          brandName: "$brandInfo.name",
+          totalSales: 1,
+          count: 1
+        }
+      },
+      { $sort: { totalSales: -1 } }
+    ]);
 
-    const chartData = {
-      labels: dailySalesData.map(item => item._id),
-      sales: dailySalesData.map(item => item.totalSales)
-    };
+    // Fetch category performance data
+    const categoryPerformance = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate.toDate(), $lte: endDate.toDate() },
+          paymentStatus: 'success'
+        }
+      },
+      { $unwind: "$products" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productInfo"
+        }
+      },
+      { $unwind: "$productInfo" },
+      {
+        $group: {
+          _id: "$productInfo.category",
+          totalSales: { $sum: "$products.totalPrice" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryInfo"
+        }
+      },
+      { $unwind: "$categoryInfo" },
+      {
+        $project: {
+          categoryName: "$categoryInfo.name",
+          totalSales: 1,
+          count: 1
+        }
+      },
+      { $sort: { totalSales: -1 } }
+    ]);
+console.log(
+ "salesData:", salesData,
+  "brandPerformance:",brandPerformance,
+ "categoryPerformance:",categoryPerformance,
+  "selectedRange:",range);
 
-    res.render("admin/adminDasbord/dashbord", { initialSalesData: { summary, chartData } });
+  // Fetch top 10 selling brands
+  const topBrands = await Order.aggregate([
+    { $unwind: "$products" },
+    { $lookup: {
+        from: "products",
+        localField: "products.productId",
+        foreignField: "_id",
+        as: "productDetails"
+      }
+    },
+    { $unwind: "$productDetails" },
+    { $lookup: {
+        from: "brands",
+        localField: "productDetails.brand",
+        foreignField: "_id",
+        as: "brandDetails"
+      }
+    },
+    { $unwind: "$brandDetails" },
+    { $group: {
+        _id: "$brandDetails._id",
+        name: { $first: "$brandDetails.name" },
+        totalSold: { $sum: "$products.quantity" },
+        totalRevenue: { $sum: { $multiply: ["$products.price", "$products.quantity"] } }
+      }
+    },
+    { $sort: { totalSold: -1 } },
+    { $limit: 10 }
+  ]);
+
+  const topProducts = await Order.aggregate([
+    { $unwind: "$products" },
+    { $group: {
+        _id: "$products.productId",
+        totalSold: { $sum: "$products.quantity" },
+        totalRevenue: { $sum: { $multiply: ["$products.price", "$products.quantity"] } }
+      }
+    },
+    { $sort: { totalSold: -1 } },
+    { $limit: 10 },
+    { $lookup: {
+        from: "products",
+        localField: "_id",
+        foreignField: "_id",
+        as: "productDetails"
+      }
+    },
+    { $unwind: "$productDetails" },
+    { $project: {
+        name: "$productDetails.name",
+        image: "$productDetails.imagePaths",
+        offerPrice: "$productDetails.offerAmount",
+        BasePrice: "$productDetails.basePrice",
+        totalQuantity: "$productDetails.totalQuantity",
+        numberOfReviews: "$productDetails.numberOfReviews",
+        rating : "$productDetails.rating",
+        totalSold: 1,
+        totalRevenue: 1
+      }
+    }
+  ]);
+
+     // Fetch top 10 selling categories
+     const topCategories = await Order.aggregate([
+      { $unwind: "$products" },
+      { $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productDetails"
+        }
+      },
+      { $unwind: "$productDetails" },
+      { $lookup: {
+          from: "caregories",
+          localField: "productDetails.category",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+      { $unwind: "$categoryDetails" },
+      { $group: {
+          _id: "$categoryDetails._id",
+          name: { $first: "$categoryDetails.name" },
+          totalSold: { $sum: "$products.quantity" },
+          totalRevenue: { $sum: { $multiply: ["$products.price", "$products.quantity"] } }
+        }
+      },
+      { $sort: { totalSold: -1 } },
+      { $limit: 10 }
+    ]);
+
+    //notification
+    const newOrder = await Order.find({ "products.status": { $in: ["pending"] }})
+    .populate("userId")
+    // .sort({ createdAt: -1 });
+
+    console.log("new oooooorder",newOrder);
+
+    // admin/adminDasbord/orders
+    res.render("admin/adminDasbord/dashbord", {
+      salesData,
+      brandPerformance,
+      categoryPerformance,
+      selectedRange: range,
+      topProducts,
+      topBrands,
+      topCategories,
+      newOrder
+    });
   } catch (error) {
-    console.error('Error fetching daily sales data:', error);
-    res.render("admin/adminDasbord/dashbord", { error: 'Failed to fetch daily sales data' });
+    console.error('Error fetching dashboard data:', error);
+    res.status(500).send('Error fetching dashboard data');
   }
 };
 
@@ -63,80 +273,148 @@ exports.renderPayments = async (req, res) => {
   res.render("admin/adminDasbord/payments");
 };
 
-const Order = require('../../models/userModels/orderModel');
+// const Order = require('../../models/userModels/orderModel');
 
 exports.dashbord = async (req, res) => {
   try {
-    const { filterType, startDate, endDate } = req.query;
-    let query = {};
-    let groupBy = {};
+    const { range } = req.query;
+    let startDate, endDate;
 
-    const now = new Date();
-    now.setHours(23, 59, 59, 999);
-
-    switch (filterType) {
-        case 'daily':
-            query.createdAt = { 
-                $gte: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0),
-                $lte: now
-            };
-            groupBy = { $dateToString: { format: "%Y-%m-%d %H:00", date: "$createdAt" } };
-            break;
-        case 'weekly':
-            const weekAgo = new Date(now);
-            weekAgo.setDate(weekAgo.getDate() - 7);
-            query.createdAt = { $gte: weekAgo, $lte: now };
-            groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
-            break;
-        case 'monthly':
-            const monthAgo = new Date(now);
-            monthAgo.setMonth(monthAgo.getMonth() - 1);
-            query.createdAt = { $gte: monthAgo, $lte: now };
-            groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
-            break;
-        case 'yearly':
-            const yearAgo = new Date(now);
-            yearAgo.setFullYear(yearAgo.getFullYear() - 1);
-            query.createdAt = { $gte: yearAgo, $lte: now };
-            groupBy = { $dateToString: { format: "%Y-%m", date: "$createdAt" } };
-            break;
-        case 'custom':
-            query.createdAt = { 
-                $gte: new Date(startDate), 
-                $lte: new Date(new Date(endDate).setHours(23, 59, 59, 999))
-            };
-            groupBy = { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } };
-            break;
+    switch (range) {
+      case 'day':
+        startDate = moment().startOf('day');
+        endDate = moment().endOf('day');
+        break;
+      case 'week':
+        startDate = moment().startOf('week');
+        endDate = moment().endOf('week');
+        break;
+      case 'month':
+        startDate = moment().startOf('month');
+        endDate = moment().endOf('month');
+        break;
+      case 'year':
+        startDate = moment().startOf('year');
+        endDate = moment().endOf('year');
+        break;
+      case 'custom':
+        startDate = moment(req.query.startDate);
+        endDate = moment(req.query.endDate);
+        break;
+      default:
+        startDate = moment().startOf('day');
+        endDate = moment().endOf('day');
     }
 
-    const result = await Order.aggregate([
-        { $match: query },
-        {
-            $group: {
-                _id: groupBy,
-                totalSales: { $sum: "$totalPrice" },
-                totalOrders: { $sum: 1 },
-                totalDiscount: { $sum: "$discount" }
-            }
-        },
-        { $sort: { _id: 1 } }
+    // Fetch sales data
+    const salesData = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate.toDate(), $lte: endDate.toDate() },
+          paymentStatus: 'success'
+        }
+      },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+          totalSales: { $sum: "$totalPrice" },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
     ]);
 
-    const summary = result.reduce((acc, curr) => {
-        acc.totalSales += curr.totalSales;
-        acc.totalOrders += curr.totalOrders;
-        acc.totalDiscount += curr.totalDiscount;
-        return acc;
-    }, { totalSales: 0, totalOrders: 0, totalDiscount: 0 });
+    // Fetch brand performance data
+    const brandPerformance = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate.toDate(), $lte: endDate.toDate() },
+          paymentStatus: 'success'
+        }
+      },
+      { $unwind: "$products" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productDetails"
+        }
+      },
+      { $unwind: "$productDetails" },
+      {
+        $group: {
+          _id: "$productDetails.brand",
+          totalSales: { $sum: "$products.totalPrice" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: "brands",
+          localField: "_id",
+          foreignField: "_id",
+          as: "brandDetails"
+        }
+      },
+      { $unwind: "$brandDetails" },
+      {
+        $project: {
+          brandName: "$brandDetails.name",
+          totalSales: 1,
+          count: 1
+        }
+      },
+      { $sort: { totalSales: -1 } }
+    ]);
 
-    const chartData = {
-        labels: result.map(item => item._id),
-        sales: result.map(item => item.totalSales)
-    };
+    // Fetch category performance data
+    const categoryPerformance = await Order.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: startDate.toDate(), $lte: endDate.toDate() },
+          paymentStatus: 'success'
+        }
+      },
+      { $unwind: "$products" },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productDetails"
+        }
+      },
+      { $unwind: "$productDetails" },
+      {
+        $group: {
+          _id: "$productDetails.category",
+          totalSales: { $sum: "$products.totalPrice" },
+          count: { $sum: 1 }
+        }
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryDetails"
+        }
+      },
+      { $unwind: "$categoryDetails" },
+      {
+        $project: {
+          categoryName: "$categoryDetails.name",
+          totalSales: 1,
+          count: 1
+        }
+      },
+      { $sort: { totalSales: -1 } }
+    ]);
 
-    res.json({ summary, chartData });
-} catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'An error occurred while generating the sales report' });
-}
+    res.json({ salesData, brandPerformance, categoryPerformance });
+  } catch (error) {
+    console.error('Error fetching dashboard data:', error);
+    res.status(500).json({ error: 'An error occurred while fetching dashboard data' });
+  }
 };

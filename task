@@ -1,15 +1,41 @@
 
+Pendings:
+User
+- product quantity validation should be based on quantity added by admin
+- add to cart bypasses stock validation 
+- cart quantity update stutter 
+- negative price after applying higher value coupon
+- payment method in invoice
+- profile input validation
+- mask password fields
+
+Admin
+- product list should have list/unlist instead of delete option
+- product name validation
+- offer price can’t be greater than product price 
+- image validation 
+- product edit input validation
+- coupon name validation
+- coupon discount value should be lower than min requirement 
+- dashboard doesn’t load
+- category offers
+
+- git log
+
+
+
+
 Pending:
 Admin
-- pagination
+<!-- - pagination -->
 <!-- - offer management -->
-- order details page for return order
+<!-- - order details page for return order -->
 - add summery in sales report
 User
-- wallet
-- handle deleted items in cart, details page
-- password change form validation
-- sorting products
+<!-- - wallet -->
+<!-- - handle deleted items in cart, details page -->
+<!-- - password change form validation -->
+<!-- - sorting products -->
 <!-- - coupon -->
 
 Theory: 5
@@ -18,16 +44,16 @@ Practical: 5
 Nextweek:
 User side :
 <!-- Invoice download (Pdf) -->
-product riview
+<!-- product riview -->
 add brands and category tag in frond end
-Order above Rs 1000 should not be allowed for COD
+<!-- Order above Rs 1000 should not be allowed for COD -->
 <!-- Delivery charge can be applied according to location / fixed charges (optional) -->
-Handle error for failed payments (update status as payment pending), 
-Should be able to continue payment from my order page in case of failed payment
+<!-- Handle error for failed payments (update status as payment pending), 
+Should be able to continue payment from my order page in case of failed payment -->
 Admin side :
-Admin Dashboard - Chart with filter(yearly,monthly etc.)
-Coupon Management (Create, Delete)
-Best selling product (top 10) 
+<!-- Admin Dashboard - Chart with filter(yearly,monthly etc.) -->
+<!-- Coupon Management (Create, Delete) -->
+<!-- Best selling product (top 10) 
 Best selling category (top 10) 
-Best selling brands (top 10) 
+Best selling brands (top 10)  -->
 <!-- Generate ledger book (optional) -->

@@ -85,21 +85,26 @@ exports.updateProductStatus = async (req, res) => {
     if(newStatus === "delivered"){
       product.deliveryDate = new Date();
       product.status = newStatus;
+
     }else{
       product.status = newStatus;
     }
 
-    await order.save();
+   
 
     if(order.paymentMethod === "cashOnDelivery" && newStatus === "delivered"){
       await Payment.create({
-        orderId: order._id,
+        orderId: order.orderId,
         payment_id: `cod_${uuid.v4()}`,
         user: order.userId,
+        amount: product.totalPrice,
         status: "success",
         paymentMode: "cashOnDelivery",
       });
+      order.paymentStatus = "success";
     }
+
+    await order.save();
 
     res.json({ message: 'Status updated successfully' });
   } catch (error) {

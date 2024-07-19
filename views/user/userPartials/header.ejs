@@ -6,16 +6,13 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <meta content="eCommerce HTML Template Free Download" name="keywords" />
     <meta content="eCommerce HTML Template Free Download" name="description" />
-
     <!-- Favicon -->
-    <link rel="shortcut icon" href="img/fav.png" />
-
+    <link rel="shortcut icon" href="/uploads/assets/fav.png" />
     <!-- Google Fonts -->
     <link
       href="https://fonts.googleapis.com/css?family=Open+Sans:300,400|Source+Code+Pro:700,900&display=swap"
       rel="stylesheet"
     />
-
     <!-- CSS Libraries -->
     <link
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -73,9 +70,7 @@
     };
 </script>
 
-
   </head>
-
   <body>
     <!-- Top bar Start -->
     <div class="top-bar">
@@ -83,11 +78,13 @@
         <div class="row" style="margin-right: 30px">
           <div class="col-sm-6">
             <i class="fa fa-envelope"></i>
-            support@email.com
+            <a href="mailto:sribink24@gmail.com" >karma@email.com
+            </a>
           </div>
           <div class="col-sm-6">
             <i class="fa fa-phone-alt"></i>
-            +012-345-6789
+            <a +91 href="tel:9072016196">9072016196
+            </a>
           </div>
         </div>
       </div>
@@ -143,11 +140,11 @@
                 />
               </a>
               <div class="dropdown-menu" aria-labelledby="userDropdown">
-                <a class="dropdown-item text-white" href="/user-profile"
-                  >Profile</a
+                <a class="dropdown-item text-dark" href="/user-profile"
+                  ><b>Profile</b></a
                 >
-                <a href="" class="dropdown-item logoutLink text-white"
-                  >Logout</a
+                <a href="" class="dropdown-item logoutLink text-dark"
+                  ><b>Logout</b></a
                 >
               </div>
             </div>
@@ -168,8 +165,8 @@
         <div class="row align-items-center">
           <div class="col-md-3">
             <div class="logo">
-              <a href="index.html">
-                <img src="/img/logo.png" alt="Logo" />
+              <a href="/">
+                <img src="/uploads/assets/logo.png" alt="Logo" />
               </a>
             </div>
           </div>
@@ -184,7 +181,7 @@
             <div class="user">
               <a href="/wishlist" class="btn wishlist">
                 <i class="fa fa-heart"></i>
-                <span></span>
+                <span><%=cartLength ? cartLength : 0 %></span>
               </a>
               <a href="/cart" class="btn cart">
                 <i class="fa fa-shopping-cart"></i>
@@ -196,7 +193,6 @@
         </div>
       </div>
     </div>
-
 
     <script>
       const logoutLink = document.querySelector(".logoutLink");
@@ -253,6 +249,5 @@ const showInfoToast = (message) => {
     window.location.href = `/search?search=${searchInput}`;
   });
 </script>
-
   </body>
 </html>

@@ -37,7 +37,7 @@
         <td><%= value.product.quantity %></td>
         <td class="text-center">
           <div class="d-flex justify-content-between">
-            <button class="btn">view</button>
+            <a href="/admin/retuenProduct-ditails/<%=value.orderId%>/<%=value.product.productId %>"><button class="btn">view</button></a>
             <%if(value.product.status !== "returned"){%>
             <select name="status" class="status-dropdown" data-order-id="<%=value.orderId%>" data-product-id="<%=value.product.productDetails._id%>">
               <option value="<%=value.product.status%>"><%=value.product.status%></option>
