@@ -219,7 +219,7 @@
         <h1>call us for any queries</h1>
       </div>
       <div class="col-md-6">
-        <a href="tel:9072016196">+19 9072016196</a>
+        <a href="tel:9072016196">9072016196</a>
       </div>
     </div>
   </div>
@@ -295,16 +295,22 @@
                 %>
                 <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
                             </div>
-              <% if (product.offerAmount) { %>
-              <h6 class="text-dark">
-                $ <%= product.offerAmount %>&nbsp;&nbsp;
-                <span style="text-decoration: line-through; color: crimson"
-                  ><%= product.basePrice %></span
-                >
-              </h6>
-              <% } else { %>
-                <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
-                <% } %>
+                            <% if (product.offerAmount) { %>
+                              <h6 class="text-dark">
+                                $ <%= product.offerAmount %>&nbsp;&nbsp;
+                                <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                                <span class="button11 badge badge-success text-white">Product Offer <%=Math.ceil(100-(product.offerAmount / product.basePrice) * 100 ) %>%</span>
+                              </h6>
+                            <% } else if (product?.categoryOfferAmount) { %>
+                
+                              <h6 class="text-dark">
+                                $ <%= product?.categoryOfferAmount?.toFixed(2) %>&nbsp;&nbsp;
+                                <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                                <span class="button11 badge badge-success text-white">Category Offer <%=Math.ceil(100-( product?.categoryOfferAmount / product.basePrice) * 100 ) %>%</span>
+                              </h6>
+                            <% } else { %>
+                              <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
+                            <% } %>
             </div>
           </div>
         </div>   
@@ -320,30 +326,30 @@
     <div class="section-header">
       <h1>Recent Product</h1>
     </div>
-    <div class="row align-items-center product-slider product-slider-4">
-      <% locals.products.forEach((product)=>{ %> <% if(
-      product.isActive===true){%>
+   <div class="row align-items-center product-slider product-slider-4">
+  <% locals.products.forEach((product) => { %>
+    <% if (product.isActive === true) { %>
       <div class="col-lg-3" style="width: 450px;">
-        <div class="product-item  ">
+        <div class="product-item">
           <div class="product-title rounded-top">
             <div class="ratting d-flex justify-content-between">
               <div>
-              <%if(product.rating){%>
-              <% for (let i = 1; i <= 5; i++) { %>
-                <% if (i <= Math.round(product.rating)) { %>
-                  <i class="fa fa-star"></i>
-                <% } else { %>
-                  <i class="fa fa-star-o"></i>
+                <% if (product.rating) { %>
+                  <% for (let i = 1; i <= 5; i++) { %>
+                    <% if (i <= Math.round(product.rating)) { %>
+                      <i class="fa fa-star"></i>
+                    <% } else { %>
+                      <i class="fa fa-star-o"></i>
+                    <% } %>
+                  <% } %>
                 <% } %>
-              <% } %>
-           <%}%>
-          </div>
-              <% if (product.totalQuantity == 0 ) { %>
-              <span class="badge badge-danger"> Out Of Stock</span>
+              </div>
+              <% if (product.totalQuantity == 0) { %>
+                <span class="badge badge-danger">Out Of Stock</span>
               <% } else if (product.totalQuantity < 10) { %>
-              <span class="badge badge-warning">Limited Stock</span>
+                <span class="badge badge-warning">Limited Stock</span>
               <% } else { %>
-              <span class="badge badge-success">In Stock</span>
+                <span class="badge badge-success">In Stock</span>
               <% } %>
             </div>
           </div>
@@ -355,13 +361,9 @@
               <a href="#" tabindex="0" class="addToWishlist" data-id="<%= product._id %>" data-toggle="tooltip" title="wishlist">
                 <i class="fa fa-heart"></i>
               </a>
-              <a
-                href="/product/<%= product._id %>"
-                tabindex="0"
-                data-toggle="tooltip"
-                title="view"
-                ><i class="fa fa-search"></i
-              ></a>
+              <a href="/product/<%= product._id %>" tabindex="0" data-toggle="tooltip" title="view">
+                <i class="fa fa-search"></i>
+              </a>
             </div>
           </div>
           <div class="product-price rounded-bottom">
@@ -380,22 +382,29 @@
               }
               %>
               <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
-                          </div>
+            </div>
             <% if (product.offerAmount) { %>
-            <h6 class="text-dark">
-              $ <%= product.offerAmount %>&nbsp;&nbsp;
-              <span style="text-decoration: line-through; color: crimson"
-                ><%= product.basePrice %></span
-              >
-            </h6>
+              <h6 class="text-dark">
+                $ <%= product.offerAmount %>&nbsp;&nbsp;
+                <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                <span class="button11 badge badge-success text-white">Product Offer %<%=Math.ceil(100-(product.offerAmount / product.basePrice) * 100 )%></span>
+              </h6>
+            <% } else if (product?.categoryOfferAmount) { %>
+
+              <h6 class="text-dark">
+                $ <%= product?.categoryOfferAmount?.toFixed(2) %>&nbsp;&nbsp;
+                <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                <span class="button11 badge badge-success text-whites">Category Offer <%=Math.ceil(100-( product?.categoryOfferAmount / product.basePrice) * 100 ) %>%</span>
+              </h6>
             <% } else { %>
               <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
-              <% } %>
+            <% } %>
           </div>
         </div>
       </div>   
-      <%}%> <%})%>
-    </div>
+    <% } %>
+  <% }) %>
+</div>
   </div>
 </div>
 <!-- Recent Product End -->

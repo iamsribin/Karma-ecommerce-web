@@ -108,7 +108,9 @@ const {
   updateReferralLink, 
   deleteReferral,
   renderManageOfferCategory,
-  addNewCategoryOffer
+  addNewCategoryOffer,
+  updateCategoryOffer,
+  deleteCategoryOffer
 }= require("../../controller/adminController/offerController");
 
 //middlewares
@@ -172,7 +174,6 @@ router.post("/add-size", verifyAdmin, AddNewSize);
 router.delete("/delete-size/:id", verifyAdmin, deleteSize);
 router.get("/edit-size-page/:id", verifyAdmin, renderEditSizePage);
 router.patch("/edit-size/:id", verifyAdmin, editSize);
-
 //return products
 router.get("/retrun-products", verifyAdmin, renderReturnProducts);
 router.post("/update-return-order-status",verifyAdmin, updateReturnStatus);
@@ -190,4 +191,7 @@ router.post("/update-referral-reward",verifyAdmin ,updateReferralLink);
 router.delete("/delete-referral-offer", verifyAdmin, deleteReferral);
 router.get("/offer-category", verifyAdmin, renderManageOfferCategory);
 router.post("/add-new-category-offer", verifyAdmin, addNewCategoryOffer);
+router.put("/update-category-offer", verifyAdmin, updateCategoryOffer);
+router.delete("/delete-category-offer/:id", verifyAdmin, deleteCategoryOffer);
+
 module.exports = router;

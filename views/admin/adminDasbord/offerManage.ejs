@@ -113,9 +113,8 @@
           <div class="offer-list">
             <% if(referralDetails.length !== 0) { %>
             <h3 style="color: white">
-           Currently 3 category have offer
+           Currently <%= CategoryOfferCount %> category have offer
             </h3>
-            <p style="color: white;">Currently, <%= referralDetails[0].userCount %> users have logged in with the referral link.</p>
             <% } else { %>
             <h3 style="color: white">
               No Category offer found 

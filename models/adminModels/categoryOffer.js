@@ -6,6 +6,7 @@ const { Schema } = mongoose;
 const OfferSchema = new Schema({
     category_id: {
         type: mongoose.Schema.Types.ObjectId, 
+        unique: true,
         ref: categories,
     },
     offerPercentage: {

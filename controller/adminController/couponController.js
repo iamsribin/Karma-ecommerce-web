@@ -3,7 +3,7 @@ const { createError } = require("../../utils/errors");
 const mongoose = require("mongoose");
 
 // Render coupons
-exports.renderCoupons = async (req, res, next) => {
+exports. renderCoupons = async (req, res, next) => {
   try {
     const { search, page = 1 } = req.query;
     const ITEMS_PER_PAGE = 10;
