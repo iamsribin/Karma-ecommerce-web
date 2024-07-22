@@ -142,7 +142,7 @@
       <div class="col-lg-3 col-md-6 feature-col">
         <div class="feature-content">
           <i class="fa fa-sync-alt"></i>
-          <h2>90 Days Return</h2>
+          <h2>5 Days Return</h2>
           <p></p>
         </div>
       </div>
@@ -164,45 +164,54 @@
     <div class="row">
       <div class="col-md-3">
         <div class="category-item ch-400">
-          <img src="/img2/797ce171-9e15-4505-8d15-3565090c424d.jpeg" />
-          <a class="category-name" href="">
-            <p>Some text goes here that describes the image</p>
+          <img src="/uploads/banner/download (2).jpeg" />
+          <a class="category-name" href="/category">
+            <p><b style="color: #4D869C;">"Trendy shoes for every occasion."</b>
+            </p>
           </a>
         </div>
       </div>
       <div class="col-md-3">
         <div class="category-item ch-250">
-          <img src="/img2/Men loafer.jpeg" />
-          <a class="category-name" href="">
-            <p>Some text goes here that describes the image</p>
+          <img src="/uploads/banner/British Trendy Shoes.jpeg" />
+          <a class="category-name" href="/category">
+            <p><b style="color: #4D869C;">"Elegant footwear for all."</b>
+            </p>
           </a>
         </div>
         <div class="category-item ch-150">
-          <img src="/img2/Tomford.jpeg" />
-          <a class="category-name" href="">
-            <p>Some text goes here that describes the image</p>
-          </a>
+          <img src="/uploads/banner/Jake Sardinelli Eva Sole Buckle Detailed Tan….jpeg" />
+          <a class="category-name" href="/category">
+            <p><b style="color: #4D869C;">"Step out in confidence."</b>
+            </p>
+          </a>>
         </div>
       </div>
       <div class="col-md-3">
         <div class="category-item ch-150">
-          <img src="/img2/d8dba3b3-9ab7-4bce-9606-d65b21a28ca6.jpeg" />
-          <a class="category-name" href="">
-            <p>Some text goes here that describes the image</p>
+          <img src="/uploads//banner/d8dba3b3-9ab7-4bce-9606-d65b21a28ca6.jpeg" />
+          <a class="category-name" href="/category">
+            <p><b style="color: #4D869C;">"Comfort meets style"</b>
+            </p>
           </a>
         </div>
         <div class="category-item ch-250">
-          <img src="/img2/41be01f6-c23a-40fc-b75e-fe38bd163421.jpeg" />
-          <a class="category-name" href="">
-            <p>Some text goes here that describes the image</p>
+          <img src="/uploads//banner/797ce171-9e15-4505-8d15-3565090c424d.jpeg" />
+          <a class="category-name" href="/category">
+            <p><b style="color: #4D869C;">"Shoes that define your style".</b>
+            </p>
           </a>
         </div>
       </div>
       <div class="col-md-3">
         <div class="category-item ch-400">
-          <img src=" /img2/7340c4ea-885e-45c4-8f14-2465ce5f4b54.jpeg" />
+          <img src="/uploads/banner/7340c4ea-885e-45c4-8f14-2465ce5f4b54.jpeg" />
+          <a class="category-name" href="/category">
+            <p><b style="color: #4D869C;">"Perfect fit for every step".</b>
+            </p>
+          </a>
           <a class="category-name" href="">
-            <p>Some text goes here that describes the image</p>
+            <p>"Perfect fit for every step".</p>
           </a>
         </div>
       </div>
@@ -226,185 +235,173 @@
 </div>
 <!-- Call to Action End -->
 
-<!-- Featured Product Start -->
+<!-- Top Selling Products -->
 <div class="featured-product product">
   <div class="container-fluid">
     <div class="section-header">
-      <h1>top selling Product</h1>
+      <h1>Top Selling Products</h1>
     </div>
     <div class="row align-items-center product-slider product-slider-4">
-      <% locals.products.forEach((product)=>{ %> <% if(
-      product.isActive===true){%>
-        <div class="col-lg-3" style="width: 450px;">
-          <div class="product-item  ">
-            <div class="product-title rounded-top">
-              <div class="ratting d-flex justify-content-between">
-                <div>
-                  <%if(product.rating){%>
-                  <% for (let i = 1; i <= 5; i++) { %>
-                    <% if (i <= Math.round(product.rating)) { %>
-                      <i class="fa fa-star"></i>
-                    <% } else { %>
-                      <i class="fa fa-star-o"></i>
+      <% locals.topProducts.forEach((product) => { %>
+        <% if(product.isActive === true) { %>
+          <div class="col-lg-3" style="width: 450px;">
+            <div class="product-item">
+              <div class="product-title rounded-top">
+                <div class="ratting d-flex justify-content-between">
+                  <div>
+                    <% if(product.rating) { %>
+                      <% for (let i = 1; i <= 5; i++) { %>
+                        <% if (i <= Math.round(product.rating)) { %>
+                          <i class="fa fa-star"></i>
+                        <% } else { %>
+                          <i class="fa fa-star-o"></i>
+                        <% } %>
+                      <% } %>
                     <% } %>
+                  </div>
+                  <% if (product.totalQuantity == 0 ) { %>
+                    <span class="badge badge-danger">Out Of Stock</span>
+                  <% } else if (product.totalQuantity < 10) { %>
+                    <span class="badge badge-warning">Limited Stock</span>
+                  <% } else { %>
+                    <span class="badge badge-success">In Stock</span>
                   <% } %>
-               <%}%>
+                </div>
               </div>
-                <% if (product.totalQuantity == 0 ) { %>
-                <span class="badge badge-danger"> Out Of Stock</span>
-                <% } else if (product.totalQuantity < 10) { %>
-                <span class="badge badge-warning">Limited Stock</span>
+              <div class="product-image">
+                <a href="/product/<%= product._id %>">
+                  <img src="<%= product.imagePaths[0] %>" alt="Product Image" />
+                </a>
+                <div class="product-action">
+                  <a href="#" tabindex="0" class="addToWishlist" data-id="<%= product._id %>" data-toggle="tooltip" title="wishlist">
+                    <i class="fa fa-heart"></i>
+                  </a>
+                  <a href="/product/<%= product._id %>" tabindex="0" data-toggle="tooltip" title="view">
+                    <i class="fa fa-search"></i>
+                  </a>
+                </div>
+              </div>
+              <div class="product-price rounded-bottom">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <span><b><%= product.name %></b></span>
+                  </div>
+                  <div>
+                    <span class="badge badge-light"><%= product.brand.name %></span>
+                  </div>
+                </div>
+                <div class="text-dark">
+                  <% function capitalizeFirstLetter(string) {
+                    return string.charAt(0).toUpperCase() + string.slice(1);
+                  } %>
+                  <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
+                </div>
+                <% if (product.offerAmount) { %>
+                  <h6 class="text-dark">
+                    $ <%= product.offerAmount %>&nbsp;&nbsp;
+                    <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                    <span class="button11 badge badge-success text-white">Product Offer <%= Math.ceil(100 - (product.offerAmount / product.basePrice) * 100) %>%</span>
+                  </h6>
+                <% } else if (product.categoryOfferAmount) { %>
+                  <h6 class="text-dark">
+                    $ <%= product.categoryOfferAmount %>&nbsp;&nbsp;
+                    <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                    <span class="button11 badge badge-success text-white">Category Offer <%= Math.ceil(100 - (product.categoryOfferAmount / product.basePrice) * 100) %>%</span>
+                  </h6>
                 <% } else { %>
-                <span class="badge badge-success">In Stock</span>
+                  <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
                 <% } %>
               </div>
             </div>
-            <div class="product-image">
-              <a href="product-detail.html">
-                <img src="<%= product.imagePaths[0] %>" alt="Product Image" />
-              </a>
-              <div class="product-action">
-  
-             <a href="#" tabindex="0" class="addToWishlist" data-id="<%= product._id %>" data-toggle="tooltip" title="wishlist">
-                <i class="fa fa-heart"></i>
-              </a>
-                <a
-                  href="/product/<%= product._id %>"
-                  tabindex="0"
-                  data-toggle="tooltip"
-                  title="view"
-                  ><i class="fa fa-search"></i
-                ></a>
-  
-              </div>
-            </div>
-            <div class="product-price rounded-bottom">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <span><b><%= product.name %></b></span>
-                </div>
-                <div>
-                  <span class="badge badge-light"><%= product.brand.name %></span>
-                </div>
-              </div>
-              <div class="text-dark">
-                <%
-                function capitalizeFirstLetter(string) {
-                  return string.charAt(0).toUpperCase() + string.slice(1);
-                }
-                %>
-                <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
-                            </div>
-                            <% if (product.offerAmount) { %>
-                              <h6 class="text-dark">
-                                $ <%= product.offerAmount %>&nbsp;&nbsp;
-                                <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
-                                <span class="button11 badge badge-success text-white">Product Offer <%=Math.ceil(100-(product.offerAmount / product.basePrice) * 100 ) %>%</span>
-                              </h6>
-                            <% } else if (product?.categoryOfferAmount) { %>
-                
-                              <h6 class="text-dark">
-                                $ <%= product?.categoryOfferAmount?.toFixed(2) %>&nbsp;&nbsp;
-                                <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
-                                <span class="button11 badge badge-success text-white">Category Offer <%=Math.ceil(100-( product?.categoryOfferAmount / product.basePrice) * 100 ) %>%</span>
-                              </h6>
-                            <% } else { %>
-                              <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
-                            <% } %>
-            </div>
           </div>
-        </div>   
-      <%}%> <%})%>
+        <% } %>
+      <% }) %>
     </div>
   </div>
 </div>
-<!-- Featured Product End -->
 
-<!-- Recent Product Start -->
-<div class="recent-product product">
+<!-- Recently Added Products -->
+<div class="featured-product product">
   <div class="container-fluid">
     <div class="section-header">
-      <h1>Recent Product</h1>
+      <h1>Recently Added Products</h1>
     </div>
-   <div class="row align-items-center product-slider product-slider-4">
-  <% locals.products.forEach((product) => { %>
-    <% if (product.isActive === true) { %>
-      <div class="col-lg-3" style="width: 450px;">
-        <div class="product-item">
-          <div class="product-title rounded-top">
-            <div class="ratting d-flex justify-content-between">
-              <div>
-                <% if (product.rating) { %>
-                  <% for (let i = 1; i <= 5; i++) { %>
-                    <% if (i <= Math.round(product.rating)) { %>
-                      <i class="fa fa-star"></i>
-                    <% } else { %>
-                      <i class="fa fa-star-o"></i>
+    <div class="row align-items-center product-slider product-slider-4">
+      <% locals.recentProducts.forEach((product) => { %>
+        <% if(product.isActive === true) { %>
+          <div class="col-lg-3" style="width: 450px;">
+            <div class="product-item">
+              <div class="product-title rounded-top">
+                <div class="ratting d-flex justify-content-between">
+                  <div>
+                    <% if(product.rating) { %>
+                      <% for (let i = 1; i <= 5; i++) { %>
+                        <% if (i <= Math.round(product.rating)) { %>
+                          <i class="fa fa-star"></i>
+                        <% } else { %>
+                          <i class="fa fa-star-o"></i>
+                        <% } %>
+                      <% } %>
                     <% } %>
+                  </div>
+                  <% if (product.totalQuantity == 0 ) { %>
+                    <span class="badge badge-danger">Out Of Stock</span>
+                  <% } else if (product.totalQuantity < 10) { %>
+                    <span class="badge badge-warning">Limited Stock</span>
+                  <% } else { %>
+                    <span class="badge badge-success">In Stock</span>
                   <% } %>
+                </div>
+              </div>
+              <div class="product-image">
+                <a href="/product/<%= product._id %>">
+                  <img src="<%= product.imagePaths[0] %>" alt="Product Image" />
+                </a>
+                <div class="product-action">
+                  <a href="#" tabindex="0" class="addToWishlist" data-id="<%= product._id %>" data-toggle="tooltip" title="wishlist">
+                    <i class="fa fa-heart"></i>
+                  </a>
+                  <a href="/product/<%= product._id %>" tabindex="0" data-toggle="tooltip" title="view">
+                    <i class="fa fa-search"></i>
+                  </a>
+                </div>
+              </div>
+              <div class="product-price rounded-bottom">
+                <div class="d-flex justify-content-between">
+                  <div>
+                    <span><b><%= product.name %></b></span>
+                  </div>
+                  <div>
+                    <span class="badge badge-light"><%= product.brand.name %></span>
+                  </div>
+                </div>
+                <div class="text-dark">
+                  <% function capitalizeFirstLetter(string) {
+                    return string.charAt(0).toUpperCase() + string.slice(1);
+                  } %>
+                  <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
+                </div>
+                <% if (product.offerAmount) { %>
+                  <h6 class="text-dark">
+                    $ <%= product.offerAmount %>&nbsp;&nbsp;
+                    <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                    <span class="button11 badge badge-success text-white">Product Offer <%= Math.ceil(100 - (product.offerAmount / product.basePrice) * 100) %>%</span>
+                  </h6>
+                <% } else if (product.categoryOfferAmount) { %>
+                  <h6 class="text-dark">
+                    $ <%= product.categoryOfferAmount %>&nbsp;&nbsp;
+                    <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                    <span class="button11 badge badge-success text-white">Category Offer <%= Math.ceil(100 - (product.categoryOfferAmount / product.basePrice) * 100) %>%</span>
+                  </h6>
+                <% } else { %>
+                  <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
                 <% } %>
               </div>
-              <% if (product.totalQuantity == 0) { %>
-                <span class="badge badge-danger">Out Of Stock</span>
-              <% } else if (product.totalQuantity < 10) { %>
-                <span class="badge badge-warning">Limited Stock</span>
-              <% } else { %>
-                <span class="badge badge-success">In Stock</span>
-              <% } %>
             </div>
           </div>
-          <div class="product-image">
-            <a href="product-detail.html">
-              <img src="<%= product.imagePaths[0] %>" alt="Product Image" />
-            </a>
-            <div class="product-action">
-              <a href="#" tabindex="0" class="addToWishlist" data-id="<%= product._id %>" data-toggle="tooltip" title="wishlist">
-                <i class="fa fa-heart"></i>
-              </a>
-              <a href="/product/<%= product._id %>" tabindex="0" data-toggle="tooltip" title="view">
-                <i class="fa fa-search"></i>
-              </a>
-            </div>
-          </div>
-          <div class="product-price rounded-bottom">
-            <div class="d-flex justify-content-between">
-              <div>
-                <span><b><%= product.name %></b></span>
-              </div>
-              <div>
-                <span class="badge badge-light"><%= product.brand.name %></span>
-              </div>
-            </div>
-            <div class="text-dark">
-              <%
-              function capitalizeFirstLetter(string) {
-                return string.charAt(0).toUpperCase() + string.slice(1);
-              }
-              %>
-              <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
-            </div>
-            <% if (product.offerAmount) { %>
-              <h6 class="text-dark">
-                $ <%= product.offerAmount %>&nbsp;&nbsp;
-                <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
-                <span class="button11 badge badge-success text-white">Product Offer %<%=Math.ceil(100-(product.offerAmount / product.basePrice) * 100 )%></span>
-              </h6>
-            <% } else if (product?.categoryOfferAmount) { %>
-
-              <h6 class="text-dark">
-                $ <%= product?.categoryOfferAmount?.toFixed(2) %>&nbsp;&nbsp;
-                <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
-                <span class="button11 badge badge-success text-whites">Category Offer <%=Math.ceil(100-( product?.categoryOfferAmount / product.basePrice) * 100 ) %>%</span>
-              </h6>
-            <% } else { %>
-              <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
-            <% } %>
-          </div>
-        </div>
-      </div>   
-    <% } %>
-  <% }) %>
-</div>
+        <% } %>
+      <% }) %>
+    </div>
   </div>
 </div>
 <!-- Recent Product End -->

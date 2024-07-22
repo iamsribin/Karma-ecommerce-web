@@ -1,125 +1,133 @@
 <!-- views/orders.ejs -->
 <%- include('../admin-partials/header'); %>
-<div class="row p-3 address-item">
-  <div class="col-md-11 p-4 border m-5" style="background-color: #ffffff">
-    <p><b> Order id: <%= order.orderId %></b></p>
-    <b
-      class="address-type"
-      style="
-        text-transform: uppercase;
-        font-size: 11px;
-        color: #878787;
-        vertical-align: middle;
-        padding: 4px 7px;
-        padding-bottom: 3px;
-        border-radius: 2px;
-        background-color: #f0f0f0;
-        font-weight: 500;
-        margin-right: 15px;
-      "
-    >
-      <%= order.address.addressType %>
-    </b>
-    <p>
+<% if(order){ %>
+  <div class="row p-3 address-item">
+    <div class="col-md-11 p-4 border m-5" style="background-color: #ffffff">
+      <p><b> Order id: <%= order.orderId %></b></p>
       <b
-        ><%= order.address.fullName %> &nbsp; &nbsp; &nbsp;<%=
-        order.address.phoneNumber%></b
+        class="address-type"
+        style="
+          text-transform: uppercase;
+          font-size: 11px;
+          color: #878787;
+          vertical-align: middle;
+          padding: 4px 7px;
+          padding-bottom: 3px;
+          border-radius: 2px;
+          background-color: #f0f0f0;
+          font-weight: 500;
+          margin-right: 15px;
+        "
       >
-    </p>
-    <p>
-      <%= order.address.houseNo %>, <%=order.address.address %>, <%=
-      order.address.district %>, <%=order.address.state %> - <%=
-      order.address.pincode %>
-    </p>
+        <%= order.address.addressType %>
+      </b>
+      <p>
+        <b
+          ><%= order.address.fullName %> &nbsp; &nbsp; &nbsp;<%=
+          order.address.phoneNumber%></b
+        >
+      </p>
+      <p>
+        <%= order.address.houseNo %>, <%=order.address.address %>, <%=
+        order.address.district %>, <%=order.address.state %> - <%=
+        order.address.pincode %>
+      </p>
+    </div>
   </div>
-</div>
-<div class="container">
-  <div class="row">
-    <div class="col-lg-12 pb-5">
-      <div class="table-responsive">
-        <table class="table table-hover">
-          <thead class="thead-dark">
-            <tr>
-              <th scope="col">PRODUCT</th>
-              <th scope="col">STATUS</th>
-              <!-- <th scope="col">TAG</th>
-              <th scope="col">CATEGORY</th> -->
-              <th scope="col">SIZE</th>
-              <th scope="col">QUANTITY</th>
-              <th scope="col">PRICE</th>
-              <th scope="col">TOTAL</th>
-              <th scope="col">ACTION</th>
-            </tr>
-          </thead>
-          <tbody>
-            <%order.products.forEach((product)=>{ %>
-            <tr>
-              <td>
-                <img
-                  src="<%= product.productId.imagePaths[0] %>"
-                  alt="Product Image"
-                  class="img-fluid product-image"
-                />
-                &nbsp; &nbsp;
-                <b><%=product.productId.name%></b>
-              </td>
-              <td>
-                <b>
-                  <div
-                    class="tm-status-circle <%= product.status === 'canceled' || product.status === 'return rejected' || product.status === 'return rejected'  ? 'cancelled' : product.status === 'delivered' || product.status=='returned' ? 'moving' : 'pending' %>"
-                  ></div>
-                  <%=product.status%></b
-                >
-              </td>
-              <!-- <td><b><%=product.tag%></b></td>
-              <td><b><%=product.category%></b></td> -->
-              <td><b><%=product.size.size%></b></td>
-              <td><b><%=product.quantity%></b></td>
-              <td>
-                <b
-                  ><%= product.offerPrice ? product.offerPrice :
-                  product.price%></b
-                >
-              </td>
-              <td><b><%=product.totalPrice%></b></td>
-              <td>
-                <% if (["delivered", "returned"].includes(product.status)) { %>
-                  <p class="mb-0 font-weight-bold" style="color: rgb(0, 255, 0)">
-                    <%= product.status %>
-                  </p>
-                <% } else if (["return approved", "pickup completed", "return request"].includes(product.status)) { %>
-                  <p class="mb-0 font-weight-bold" style="color: rgb(247, 218, 0)">
-                    <%= product.status %>
-                  </p>
-                <% } else if (product.status === "canceled" || product.status === "return rejected") { %>
-                  <p class="mb-0 font-weight-bold" style="color: rgb(247, 0, 0)">
-                    <%= product.status %>
-                  </p>
-                <% } else { %>
-                  <select
-                    name="status"
-                    class="status-dropdown"
-                    data-order-id="<%= order.orderId %>"
-                    data-product-id="<%= product._id %>"
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12 pb-5">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">PRODUCT</th>
+                <th scope="col">STATUS</th>
+                <!-- <th scope="col">TAG</th>
+                <th scope="col">CATEGORY</th> -->
+                <th scope="col">SIZE</th>
+                <th scope="col">QUANTITY</th>
+                <th scope="col">PRICE</th>
+                <th scope="col">TOTAL</th>
+                <th scope="col">ACTION</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%order.products.forEach((product)=>{ %>
+              <tr>
+                <td>
+                  <img
+                    src="<%= product.productId.imagePaths[0] %>"
+                    alt="Product Image"
+                    class="img-fluid product-image"
+                  />
+                  &nbsp; &nbsp;
+                  <b><%=product.productId.name%></b>
+                </td>
+                <td>
+                  <b>
+                    <div
+                      class="tm-status-circle <%= product.status === 'canceled' || product.status === 'return rejected' || product.status === 'return rejected'  ? 'cancelled' : product.status === 'delivered' || product.status=='returned' ? 'moving' : 'pending' %>"
+                    ></div>
+                    <%=product.status%></b
                   >
-                    <option value="<%= product.status %>"><%= product.status %></option>
-                    <option value="processing">Processing</option>
-                    <option value="shipped">Shipped</option>
-                    <option value="delivered">Delivered</option>
-                  </select>
-                <% } %>
-              </td>
-              
-              <!-- <td><b><%=product.status%></b></td> -->
-            </tr>
-            <%})%>
-          </tbody>
-        </table>
-        <!-- <h1 style="text-align: center"><b>No brands in the database</b></h1> -->
+                </td>
+                <!-- <td><b><%=product.tag%></b></td>
+                <td><b><%=product.category%></b></td> -->
+                <td><b><%=product.size.size%></b></td>
+                <td><b><%=product.quantity%></b></td>
+                <td>
+                  <b
+                    ><%= product.offerPrice ? product.offerPrice :
+                    product.price%></b
+                  >
+                </td>
+                <td><b><%=product.totalPrice%></b></td>
+                <td>
+                  <% if (["delivered", "returned"].includes(product.status)) { %>
+                    <p class="mb-0 font-weight-bold" style="color: rgb(0, 255, 0)">
+                      <%= product.status %>
+                    </p>
+                  <% } else if (["return approved", "pickup completed", "return request"].includes(product.status)) { %>
+                    <p class="mb-0 font-weight-bold" style="color: rgb(247, 218, 0)">
+                      <%= product.status %>
+                    </p>
+                  <% } else if (product.status === "canceled" || product.status === "return rejected") { %>
+                    <p class="mb-0 font-weight-bold" style="color: rgb(247, 0, 0)">
+                      <%= product.status %>
+                    </p>
+                  <% } else { %>
+                    <select
+                      name="status"
+                      class="status-dropdown"
+                      data-order-id="<%= order.orderId %>"
+                      data-product-id="<%= product._id %>"
+                    >
+                      <option value="<%= product.status %>"><%= product.status %></option>
+                      <option value="processing">Processing</option>
+                      <option value="shipped">Shipped</option>
+                      <option value="delivered">Delivered</option>
+                    </select>
+                  <% } %>
+                </td>
+                
+                <!-- <td><b><%=product.status%></b></td> -->
+              </tr>
+              <%})%>
+            </tbody>
+          </table>
+          <!-- <h1 style="text-align: center"><b>No brands in the database</b></h1> -->
+        </div>
       </div>
     </div>
   </div>
-</div>
+<% } else { %>
+
+  <h1 style="text-align: center; margin-top: 100px">
+    <b>No order found with this ID</b>
+  </h1>
+<% } %>
+
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>

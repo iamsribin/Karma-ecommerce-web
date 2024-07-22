@@ -78,6 +78,35 @@
       margin-bottom: 5px;
   }
 </style>
+<style>
+  .loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7); /* Semi-transparent white background */
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Make sure it's on top of everything */
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #333; /* Change spinner color here */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+</style>
 
 <div class="breadcrumb-wrap">
   <div class="container-fluid">
@@ -126,9 +155,11 @@
                   <td>
                     <%if(item.product.offerAmount ){%>
                     ₹ <%= item.product.offerAmount %> <span style="text-decoration: line-through; color: red;"><%=item.product.basePrice %></span>
-                    <%}else{%>
-                      ₹ <%= item.product.basePrice %> 
-                      <%}%>
+                    <%}else if(item.product.categoryOfferAmount){%>
+                      ₹ <%= item.product.categoryOfferAmount %> <span style="text-decoration: line-through; color: red;"><%=item.product.basePrice %></span>
+                      <%} else{ %>
+                        ₹ <%= item.product.basePrice %> 
+                        <%}%>
                   </td>
                   <td>
                     <div class="qty">
@@ -149,7 +180,7 @@
                       </button>
                     </div>
                   </td>
-                  <td><%= item.quantity * (item.product.offerAmount ?? item.product.basePrice) %></td>
+                  <td><%= item.quantity * (item.product.offerAmount ?? item.product.categoryOfferAmount ?? item.product.basePrice) %></td>
                   <td>
                     <button
                       class="btn-remove"
@@ -257,11 +288,28 @@
   </div>
 </div>
 
+<div class="loading-overlay">
+  <div class="spinner"></div>
+</div>
 
 <%- include('../userPartials/footer'); %>
 <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- loding  -->
+<script>
+    function showLoadingScreen() {
+    const loadingOverlay = document.querySelector(".loading-overlay");
+    loadingOverlay.style.display = "flex";
+  }
+
+  //Function to hide loading screen
+  function hideLoadingScreen() {
+    const loadingOverlay = document.querySelector(".loading-overlay");
+    loadingOverlay.style.display = "none";
+  }
+</script>
 
 <!-- coupon  -->
 <script>
@@ -420,11 +468,9 @@
   renderCoupons(coupons);
 </script>
 
-
+<!-- update cart quantity  -->
 <script>
   document.addEventListener("DOMContentLoaded", () => {
-
-
     // Increment quantity
     document.querySelectorAll(".btn-plus").forEach((button) => {
       button.addEventListener("click", async function (e) {
@@ -436,11 +482,10 @@
         if (quantity >= 11) {
           showInfoToast("You can only add 10 items");
           quantityInput.value = 10;
-          // this.disabled = true;
+          this.disabled = true;
           return;
         }
-        
-        quantityInput.value = quantity + 1;
+        showLoadingScreen()
 
         const response = await fetch("update-cart-quantity", {
           method: "PUT",
@@ -455,9 +500,14 @@
         });
 
         if (!response.ok) {
-          // Revert the quantity change in case of an error
-          quantityInput.value = quantity;
+          hideLoadingScreen()
+          this.disabled = true;
+          const data = await response.json();
+          quantityInput.value = quantity-1;
+          showErrorToast(data.message);
+
         } else {
+          hideLoadingScreen
           window.location.reload();
         }
       });
@@ -474,11 +524,12 @@
         if (quantity == 0) {
           showInfoToast("One item needed");
           quantityInput.value = 1;
-          // this.disabled = true;
+          this.disabled = true;
           return;
         }
         
-        quantityInput.value = quantity - 1;
+        // quantityInput.value = quantity - 1;
+        showLoadingScreen()
 
         const response = await fetch("update-cart-quantity", {
           method: "PUT",
@@ -493,9 +544,10 @@
         });
 
         if (!response.ok) {
-          // Revert the quantity change in case of an error
+          hideLoadingScreen()
           quantityInput.value = quantity;
         } else {
+          hideLoadingScreen();
           window.location.reload();
         }
       });

@@ -637,7 +637,7 @@ h2 {
     height: 100%;
     display: flex;
     align-items: center;
-    background: rgba(255, 111, 97, .7);
+    background: #ffffffc9;
     transition: all 0.3s;
     opacity: 0;
 }

@@ -91,157 +91,8 @@
 <div class="product-view">
   <div class="container-fluid">
     <div class="row">
-      <div class="col-lg-9">
-        <div class="row">
-          <div class="col-md-12">
-            <div class="product-view-top">
-              <div class="row">
-                <div class="">
-                  <div class="product-short">
-                    <div >
-                      <select style="width: 164px; height: 40px" id="sortProduct">
-                        <option value="Newest">Newest</option>
-                        <option value="LowtoHigh">Low to High</option>
-                        <option value="HightoLow">High to Low</option>
-                        <option value="aToz">aA to zZ</option>
-                        <option value="zToa">zZ to Aa</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div id="product-list" class="row col-md-12">
-            <% if (locals.products.length === 0) { %>
-            <p>No product found</p>
-            <% } else { %> <% locals.products.forEach((product) => { %> <% if
-            (product.isActive === true) { %>
-            <div class="col-lg-4 col-md-6 col-sm-12">
-              <div class="product-item">
-                <div class="product-title rounded-top">
-                  <div class="ratting d-flex justify-content-between">
-                    <div>
-                      <%if(product.rating){%>
-                      <% for (let i = 1; i <= 5; i++) { %>
-                        <% if (i <= Math.round(product.rating)) { %>
-                          <i class="fa fa-star"></i>
-                        <% } else { %>
-                          <i class="fa fa-star-o"></i>
-                        <% } %>
-                      <% } %>
-                   <%}%>
-                  </div>
-                    <% if (product.totalQuantity == 0) { %>
-                    <span class="badge badge-danger">Out Of Stock</span>
-                    <% } else if (product.totalQuantity < 10) { %>
-                    <span class="badge badge-warning">Limited Stock</span>
-                    <% } else { %>
-                    <span class="badge badge-success">In Stock</span>
-                    <% } %>
-                  </div>
-                </div>
-                <div class="product-image">
-                  <a href="product-detail.html">
-                    <img
-                      src="<%= product.imagePaths[0] %>"
-                      alt="Product Image"
-                    />
-                  </a>
-                  <div class="product-action">
-                    <a
-                      href=""
-                      tabindex="0"
-                      class="addToWishlist"
-                      data-id="<%= product._id %>"
-                      data-toggle="tooltip"
-                      title="wishlist"
-                    >
-                      <i class="fa fa-heart"></i>
-                    </a>
-                    <a
-                      href="/product/<%= product._id %>"
-                      tabindex="0"
-                      data-toggle="tooltip"
-                      title="view"
-                      ><i class="fa fa-search"></i
-                    ></a>
-                  </div>
-                </div>
-                <div class="product-price rounded-bottom">
-                  <div class="">
-                    <div>
-                      <span><b><%= product.name %></b></span>
-                    </div>
-                  </div>
-                  <div class="text-dark d-flex justify-content-between">
-                    <div>
-                      <% function capitalizeFirstLetter(string) { return
-                      string.charAt(0).toUpperCase() + string.slice(1); } %>
-                      <span
-                        ><%=
-                        product.tag.tagName.toLowerCase()
-                        %>'s <%=
-                        product.category.name.toLowerCase()
-                        %> shoe</span
-                      >
-                    </div>
-
-                    <div>
-                      <span class="badge badge-light"
-                        ><%= product.brand.name %></span
-                      >
-                    </div>
-                  </div>
-                  <% if (product.offerAmount) { %>
-                    <h6 class="text-dark">
-                      $ <%= product.offerAmount %>&nbsp;&nbsp;
-                      <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
-                      <span class="button11 badge badge-success text-white">Product Offer <%=Math.ceil((product.offerAmount / product.basePrice) * 100 ) %>%</span>
-                    </h6>
-                  <% } else if (product?.categoryOfferAmount) { %>
-      
-                    <h6 class="text-dark">
-                      $ <%= product?.categoryOfferAmount?.toFixed(2) %>&nbsp;&nbsp;
-                      <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
-                      <span class="button11 badge badge-success text-white">Category Offer <%=Math.ceil(100-( product?.categoryOfferAmount / product.basePrice) * 100 ) %>%</span>
-                    </h6>
-                  <% } else { %>
-                    <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
-                  <% } %>
-                </div>
-              </div>
-            </div>
-            <% } %> <% }) %> <% } %>
-          </div>
-
-          <!-- Pagination Start -->
-          <div class="col-md-12">
-            <nav aria-label="Page navigation example">
-              <ul class="pagination justify-content-center">
-                <%for(let i = 1; i <= totalPages; i++ ){%>
-                <li class="page-item">
-                  <a class="page-link" href="/filter?page=<%= i %>"><%=i%></a>
-                </li>
-                <%}%>
-                <!-- <li class="page-item disabled">
-                    <a class="page-link" href="#" tabindex="-1">Previous</a>
-                  </li>
-                  <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">3</a></li>
-                  <li class="page-item">
-                    <a class="page-link" href="#">Next</a>
-                  </li> -->
-              </ul>
-            </nav>
-          </div>
-        </div>
-      </div>
-
-      <!-- Side Bar Start -->
-      <div class="col-lg-3">
+      <div class="col-lg-3 col-md-4">
+        <!-- Side Bar Start -->
         <div class="sidebar-wrapper">
           <div class="sidebar-filter">
             <h4 class="filter-title">Product Filters</h4>
@@ -340,37 +191,203 @@
             <button class="apply-filters-btn">Apply Filters</button>
           </div>
         </div>
+        <!-- Side Bar End -->
       </div>
-      <!-- Side Bar End -->
 
-      <script>
-        const priceRange = document.getElementById("priceRange");
-        const priceValue = document.getElementById("priceValue");
+      <div class="col-lg-9 col-md-8">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="product-view-top">
+              <div class="row">
+                <div class="">
+                  <div class="product-short">
+                    <div>
+                      <select
+                        style="width: 164px; height: 40px"
+                        id="sortProduct"
+                      >
+                        <option value="Newest">Newest</option>
+                        <option value="LowtoHigh">Low to High</option>
+                        <option value="HightoLow">High to Low</option>
+                        <option value="aToz">aA to zZ</option>
+                        <option value="zToa">zZ to Aa</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-        priceRange.addEventListener("input", function () {
-          priceValue.textContent = this.value;
-        });
-      </script>
+          <div id="product-list" class="row col-md-12">
+            <% if (locals.products.length === 0) { %>
+              <p>No product found</p>
+            <% } else { %>
+              <% locals.products.forEach((product) => { %>
+                <% if (product.isActive === true) { %>
+                  <div class="col-lg-4 col-md-6 col-sm-12">
+
+                    <div class="product-item">
+                <div class="product-title rounded-top">
+                  <div class="ratting d-flex justify-content-between">
+                    <div>
+                      <%if(product.rating){%> <% for (let i = 1; i <= 5; i++) {
+                      %> <% if (i <= Math.round(product.rating)) { %>
+                      <i class="fa fa-star"></i>
+                      <% } else { %>
+                      <i class="fa fa-star-o"></i>
+                      <% } %> <% } %> <%}%>
+                    </div>
+                    <% if (product.totalQuantity == 0) { %>
+                    <span class="badge badge-danger">Out Of Stock</span>
+                    <% } else if (product.totalQuantity < 10) { %>
+                    <span class="badge badge-warning">Limited Stock</span>
+                    <% } else { %>
+                    <span class="badge badge-success">In Stock</span>
+                    <% } %>
+                  </div>
+                </div>
+                <div class="product-image">
+                  <a href="product-detail.html">
+                    <img
+                      src="<%= product.imagePaths[0] %>"
+                      alt="Product Image"
+                    />
+                  </a>
+                  <div class="product-action">
+                    <a
+                      href=""
+                      tabindex="0"
+                      class="addToWishlist"
+                      data-id="<%= product._id %>"
+                      data-toggle="tooltip"
+                      title="wishlist"
+                    >
+                      <i class="fa fa-heart"></i>
+                    </a>
+                    <a
+                      href="/product/<%= product._id %>"
+                      tabindex="0"
+                      data-toggle="tooltip"
+                      title="view"
+                      ><i class="fa fa-search"></i
+                    ></a>
+                  </div>
+                </div>
+                <div class="product-price rounded-bottom">
+                  <div class="">
+                    <div>
+                      <span><b><%= product.name %></b></span>
+                    </div>
+                  </div>
+                  <div class="text-dark d-flex justify-content-between">
+                    <div>
+                      <% function capitalizeFirstLetter(string) { return
+                      string.charAt(0).toUpperCase() + string.slice(1); } %>
+                      <span
+                        ><%= product.tag.tagName.toLowerCase() %>'s <%=
+                        product.category.name.toLowerCase() %> shoe</span
+                      >
+                    </div>
+
+                    <div>
+                      <span class="badge badge-light"
+                        ><%= product.brand.name %></span
+                      >
+                    </div>
+                  </div>
+                  <% if (product.offerAmount) { %>
+                  <h6 class="text-dark">
+                    $ <%= product.offerAmount %>&nbsp;&nbsp;
+                    <span style="text-decoration: line-through; color: crimson"
+                      ><%= product.basePrice %></span
+                    >&nbsp;&nbsp;
+                    <span class="button11 badge badge-success text-white"
+                      >Product Offer <%=Math.ceil((product.offerAmount /
+                      product.basePrice) * 100 ) %>%</span
+                    >
+                  </h6>
+                  <% } else if (product?.categoryOfferAmount) { %>
+
+                  <h6 class="text-dark">
+                    $ <%= product?.categoryOfferAmount %>&nbsp;&nbsp;
+                    <span style="text-decoration: line-through; color: crimson"
+                      ><%= product.basePrice %></span
+                    >&nbsp;&nbsp;
+                    <span class="button11 badge badge-success text-white"
+                      >Category Offer <%=Math.ceil(100-(
+                      product?.categoryOfferAmount / product.basePrice) * 100 )
+                      %>%</span
+                    >
+                  </h6>
+                  <% } else { %>
+                  <h6 class="text-dark">
+                    <span>$</span><%= product.basePrice %>
+                  </h6>
+                  <% } %>
+                </div>
+
+              </div>
+            </div>
+            <% } %>
+             <% }) %>
+              <% } %>
+
+<!-- Pagination Start -->
+<div class="col-md-12">
+  <nav aria-label="Page navigation">
+    <ul class="pagination justify-content-center">
+      <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+        <a class="page-link" href="" data-page="<%= currentPage - 1 %>" <%= currentPage === 1 ? 'tabindex="-1"' : '' %>>Previous</a>
+      </li>
+      
+      <% for(let i = 1; i <= totalPages; i++) { %>
+        <li class="page-item <%= i === currentPage ? 'active' : '' %>">
+          <a class="page-link" href=""  data-page="<%= i %>"><%= i %></a>
+        </li>
+      <% } %>
+      
+      <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+        <a class="page-link" href=""  data-page="<%= currentPage + 1 %>" <%= currentPage === totalPages ? 'tabindex="-1"' : '' %>>Next</a>
+      </li>
+    </ul>
+  </nav>
+</div>
+</div>
+
+      </div>
     </div>
   </div>
 </div>
-
 <!-- Product List End -->
 
 <!-- Brand Start -->
 <div class="brand">
   <div class="container-fluid">
     <div class="brand-slider">
-      <div class="brand-item"> <img src="/uploads/brands/brand-1.png" alt="brand imgage" /></div>
-      <div class="brand-item"><img src="/uploads/brands/brand-2.png" alt="brand imgage" /></div>
-      <div class="brand-item"><img src="/uploads/brands/brand-3.png" alt="brand imgage" /></div>
-      <div class="brand-item"><img src="/uploads/brands/brand-4.png" alt="brand imgage" /></div>
-      <div class="brand-item"><img src="/uploads/brands/brand-5.png" alt="brand imgage" /></div>
-      <div class="brand-item"><img src="/uploads/brands/brand-6.png" alt="brand imgage" /></div>
+      <div class="brand-item">
+        <img src="/uploads/brands/brand-1.png" alt="brand imgage" />
+      </div>
+      <div class="brand-item">
+        <img src="/uploads/brands/brand-2.png" alt="brand imgage" />
+      </div>
+      <div class="brand-item">
+        <img src="/uploads/brands/brand-3.png" alt="brand imgage" />
+      </div>
+      <div class="brand-item">
+        <img src="/uploads/brands/brand-4.png" alt="brand imgage" />
+      </div>
+      <div class="brand-item">
+        <img src="/uploads/brands/brand-5.png" alt="brand imgage" />
+      </div>
+      <div class="brand-item">
+        <img src="/uploads/brands/brand-6.png" alt="brand imgage" />
+      </div>
     </div>
   </div>
 </div>
 <!-- Brand End -->
+
 
 <link
   rel="stylesheet"
@@ -378,111 +395,89 @@
 />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-<!-- <script>
-  const showInfoToast = (message) => {
-    toastr.options = {
-      positionClass: "toast-top-center",
-      timeOut: "3000",
-      closeButton: true,
-    };
-    toastr.info(message);
-  };
-
-  const showErrorToast = (message) => {
-    toastr.options = {
-      positionClass: "toast-top-center",
-      timeOut: "3000",
-      closeButton: true,
-    };
-    toastr.error(message);
-  };
-
-  const showSuccessToast = (message) => {
-    toastr.options = {
-      positionClass: "toast-top-center",
-      timeOut: "3000",
-      closeButton: true,
-    };
-    toastr.success(message);
-  };
-</script> -->
-
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const applyFiltersBtn = document.querySelector(".apply-filters-btn");
+document.addEventListener("DOMContentLoaded", function () {
+  const applyFiltersBtn = document.querySelector(".apply-filters-btn");
+  const productList = document.getElementById("product-list");
 
-    applyFiltersBtn.addEventListener("click", async function () {
-      // Collect filter values
-      const gender = Array.from(
-        document.querySelectorAll('input[name="gender"]:checked')
-      ).map((el) => el.value);
-      const category = Array.from(
-        document.querySelectorAll('input[name="category"]:checked')
-      ).map((el) => el.value);
-      const brand = Array.from(
-        document.querySelectorAll('input[name="brand"]:checked')
-      ).map((el) => el.value);
-      const size = Array.from(
-        document.querySelectorAll('input[name="size"]:checked')
-      ).map((el) => el.value);
-      const priceRange = document.getElementById("priceRange").value;
+  applyFiltersBtn.addEventListener("click", async function () {
+    // Collect filter values
+    const gender = Array.from(
+      document.querySelectorAll('input[name="gender"]:checked')
+    ).map((el) => el.value);
+    const category = Array.from(
+      document.querySelectorAll('input[name="category"]:checked')
+    ).map((el) => el.value);
+    const brand = Array.from(
+      document.querySelectorAll('input[name="brand"]:checked')
+    ).map((el) => el.value);
+    const size = Array.from(
+      document.querySelectorAll('input[name="size"]:checked')
+    ).map((el) => el.value);
+    const priceRange = document.getElementById("priceRange").value;
+    const sort = document.getElementById("sortProduct").value;
 
-      const sort = document.getElementById("sortProduct").value; 
+    await fetchProducts({ gender, category, brand, size, priceRange, sort, page: 1 });
+  });
 
-      // Construct query string
-      const queryParams = new URLSearchParams({
-        tag: gender.join(","),
-        category: category.join(","),
-        brand: brand.join(","),
-        size: size.join(","),
-        maxPrice: priceRange,
-        sort: sort,
-      });
-
-      try {
-        const response = await fetch(`/filter?${queryParams.toString()}`, {
-          method: "GET",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          updateProductList(data);
-        } else {
-          console.log("else:", response);
-        }
-      } catch (error) {
-        console.log("error:", error);
+  productList.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("page-link")) {
+      e.preventDefault();
+      const page = e.target.getAttribute("data-page");
+      if (page) {
+        await fetchProducts({ page });
+        window.scrollTo(0, 0);
       }
-      // Fetch filtered products
+    }
+  });
 
-      //   .then(response => response.json())
-      //   .then(data => {
-      //     // Update product list
-      //     console.log("data",data);
-      //     updateProductList(data);
-      //   })
-      //   .catch(error => {
-      //     console.error('Error fetching filtered products:', error);
-      //   });
+  async function fetchProducts(params) {
+    const queryParams = new URLSearchParams({
+      tag: params.gender?.join(",") || "",
+      category: params.category?.join(",") || "",
+      brand: params.brand?.join(",") || "",
+      size: params.size?.join(",") || "",
+      maxPrice: params.priceRange || "",
+      sort: params.sort || "",
+      page: params.page || 1,
     });
 
-    function updateProductList(data) {
-      const productList = document.getElementById("product-list");
-      productList.innerHTML = "";
+    try {
+      const response = await fetch(`/filter?${queryParams.toString()}`, {
+        method: "GET",
+      });
 
-      if (data.products.length === 0) {
-        productList.innerHTML = "<p>No product found</p>";
+      if (response.ok) {
+        const data = await response.json();
+        updateProductList(data);
       } else {
-        data.products.forEach((product) => {
-  const productHTML = `
-    <div class="col-lg-4" style="width: 450px;">
-      <div class="product-item">
+        console.log("Error:", response);
+      }
+    } catch (error) {
+      console.log("Error:", error);
+    }
+  }
+
+  function updateProductList(data) {
+    const productList = document.getElementById("product-list");
+    productList.innerHTML = "";
+
+    if (data.products.length === 0) {
+      productList.innerHTML = "<p>No product found</p>";
+    } else {
+      const productsHTML = data.products.map((product) => `
+        <div class="col-lg-4 col-md-6 col-sm-12">
+          <div class="product-item">
         <div class="product-title rounded-top">
           <div class="ratting d-flex justify-content-between">
             <div>
-              ${Array.from({ length: 5 }, (_, i) => 
-                `<i class="fa ${i < Math.round(product.rating) ? 'fa-star' : 'fa-star-o'}"></i>`
-              ).join('')}
+              ${Array.from(
+                { length: 5 },
+                (_, i) =>
+                  `<i class="fa ${
+                    i < Math.round(product.rating) ? "fa-star" : "fa-star-o"
+                  }"></i>`
+              ).join("")}
             </div>
             ${
               product.totalQuantity === 0
@@ -498,10 +493,14 @@
             <img src="${product.imagePaths[0]}" alt="Product Image" />
           </a>
           <div class="product-action">
-            <a href="#" tabindex="0" class="addToWishlist" data-id="${product._id}" data-toggle="tooltip" title="wishlist">
+            <a href="" tabindex="0" class="addToWishlist" data-id="${
+              product._id
+            }" data-toggle="tooltip" title="wishlist">
               <i class="fa fa-heart"></i>
             </a>
-            <a href="/product/${product._id}" tabindex="0" data-toggle="tooltip" title="view">
+            <a href="/product/${
+              product._id
+            }" tabindex="0" data-toggle="tooltip" title="view">
               <i class="fa fa-search"></i>
             </a>
           </div>
@@ -516,72 +515,132 @@
             </div>
           </div>
           <div class="text-dark">
-            <span>${capitalizeFirstLetter(product.tag.tagName.toLowerCase())}'s ${capitalizeFirstLetter(product.category.name.toLowerCase())} Shoe</span>
+            <span>${capitalizeFirstLetter(
+              product.tag.tagName.toLowerCase()
+            )}'s ${capitalizeFirstLetter(
+              product.category.name.toLowerCase()
+            )} Shoe</span>
           </div>
           ${
-          product.offerAmount
-            ? `
+            product.offerAmount
+              ? `
               <h6 class="text-dark">
-                $ ${product.offerAmount.toFixed(2)}&nbsp;&nbsp;
-                <span style="text-decoration: line-through; color: crimson">${product.basePrice}</span>&nbsp;&nbsp;
-                <span class="button11 badge badge-success text-white">Product Offer ${Math.ceil(100-(product.offerAmount / product.basePrice) * 100)}%</span>
+                $ ${product.offerAmount}&nbsp;&nbsp;
+                <span style="text-decoration: line-through; color: crimson">${
+                  product.basePrice
+                }</span>&nbsp;&nbsp;
+                <span class="button11 badge badge-success text-white">Product Offer ${Math.ceil(
+                  100 - (product.offerAmount / product.basePrice) * 100
+                )}%</span>
               </h6>
             `
-            : product.categoryOfferAmount
-            ? `
+              : product.categoryOfferAmount
+              ? `
               <h6 class="text-dark">
-                $ ${product.categoryOfferAmount.toFixed(2)}&nbsp;&nbsp;
-                <span style="text-decoration: line-through; color: crimson">${product.basePrice}</span>&nbsp;&nbsp;
-                <span class="button11 badge badge-success text-white">Category Offer${Math.ceil(100-(product.categoryOfferAmount / product.basePrice) * 100)}%</span>
+                $ ${product.categoryOfferAmount}&nbsp;&nbsp;
+                <span style="text-decoration: line-through; color: crimson">${
+                  product.basePrice
+                }</span>&nbsp;&nbsp;
+                <span class="button11 badge badge-success text-white">Category Offer${Math.ceil(
+                  100 - (product.categoryOfferAmount / product.basePrice) * 100
+                )}%</span>
               </h6>
             `
-            : `<h6 class="text-dark">$ ${product.basePrice}</h6>`
-        }
+              : `<h6 class="text-dark">$ ${product.basePrice}</h6>`
+          }
         </div>
-      </div>
     </div>
-  `;
-  productList.innerHTML += productHTML;
-});
+        </div>
+      `).join("");
 
-      }
-    }
+      productList.innerHTML = productsHTML;
 
-    function capitalizeFirstLetter(string) {
+      function capitalizeFirstLetter(string) {
       
       return string.charAt(0).toUpperCase() + string.slice(1);
     }
-  });
+  
+      // Add pagination
+      const paginationHTML = `
+        <div class="col-md-12">
+          <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+              ${generatePaginationLinks(data.currentPage, data.totalPages)}
+            </ul>
+          </nav>
+        </div>
+      `;
+      productList.insertAdjacentHTML('beforeend', paginationHTML);
+    }
+  }
+
+  function generatePaginationLinks(currentPage, totalPages) {
+    let links = '';
+    const maxVisiblePages = 5;
+    const halfVisible = Math.floor(maxVisiblePages / 2);
+
+    let startPage = Math.max(currentPage - halfVisible, 1);
+    let endPage = Math.min(startPage + maxVisiblePages - 1, totalPages);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(endPage - maxVisiblePages + 1, 1);
+    }
+
+    // Previous button
+    links += `
+      <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+        <a class="page-link" href="#" data-page="${currentPage - 1}" ${currentPage === 1 ? 'tabindex="-1"' : ''}>Previous</a>
+      </li>
+    `;
+
+    // Page numbers
+    for (let i = startPage; i <= endPage; i++) {
+      links += `
+        <li class="page-item ${i === currentPage ? 'active' : ''}">
+          <a class="page-link" href="#" data-page="${i}">${i}</a>
+        </li>
+      `;
+    }
+
+    // Next button
+    links += `
+      <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+        <a class="page-link" href="#" data-page="${currentPage + 1}" ${currentPage === totalPages ? 'tabindex="-1"' : ''}>Next</a>
+      </li>
+    `;
+
+    return links;
+  }
+});
 
   const addToWishlistButtons = document.querySelectorAll(".addToWishlist");
-            addToWishlistButtons.forEach((item) => {
-                item.addEventListener("click", async (e) => {
-                    e.preventDefault();
-                    const productId = item.dataset.id;
-                    try {
-                        const response = await fetch("/add-wishlist", {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({ productId }),
-                        });
+  addToWishlistButtons.forEach((item) => {
+    item.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const productId = item.dataset.id;
+      try {
+        const response = await fetch("/add-wishlist", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ productId }),
+        });
 
-                        const data = await response.json();
-                        if (response.ok) {
-                            showSuccessToast("Item added to wishlist ");
-                        } else {
-                            showErrorToast(data.message);
-                        }
-                    } catch (error) {
-                        console.error(error);
-                        showErrorToast("Failed to add to wishlist");
-                    }
-                });
-            });
-
-
+        const data = await response.json();
+        if (response.ok) {
+          showSuccessToast("Item added to wishlist ");
+        } else {
+          showErrorToast(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+        showErrorToast("Failed to add to wishlist");
+      }
+    });
+  });
 </script>
 
+<!-- pagination  -->
 
 <%- include('../userPartials/footer'); %>

@@ -376,7 +376,7 @@ exports.renderOrderView = async (req, res, next) => {
     if (!order) return res.status(404).json({ message: "Order not found" });
 
     const orderProduct = order.products.find((item) => item._id.equals(id));
-
+console.log("order product",orderProduct);
     if (!orderProduct)
       return res.status(404).json({ message: "Product not found in order" });
 

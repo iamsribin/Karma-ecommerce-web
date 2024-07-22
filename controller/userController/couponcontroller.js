@@ -7,16 +7,12 @@ exports.checkCoupon = async (userId) => {
 
     if (cart.coupon) {
       const coupon = await Coupon.findOne({ _id: cart.coupon });
-    console.log("ccccccccccccooooooooooooooopuom",coupon);
-    console.log("cccccccccarrrrrrrrrrrt",cart);
-    console.log(  coupon.minimumPurchaseAmount ,"<", cart.grandTotal);
+
       if (
         coupon.minimumPurchaseAmount &&
         coupon.minimumPurchaseAmount > cart.grandTotal
       ) {
 
-        // cart.discount -= coupon.offerAmount;
-        // cart.grandTotal += coupon.offerAmount;
         cart.coupon = null;
         cart.couponCode = null,
         cart.couponDiscount = null,
@@ -31,7 +27,6 @@ exports.checkCoupon = async (userId) => {
 exports.applyCoupon = async (req, res) => {
   try {
     const { code } = req.body;
-    console.log("code",code);
     const userId = req.session.userId;
     const currentDate = new Date();
 
@@ -52,7 +47,7 @@ exports.applyCoupon = async (req, res) => {
     if (!cart) {
       throw Error("Cart not found!");
     }
-    console.log(cart.grandTotal ,"<", coupon.minimumPurchaseAmount);
+
     if (cart.grandTotal < coupon.minimumPurchaseAmount) {
       throw Error("Coupon Minimum Purchase Amount is not reached");
     }
@@ -72,13 +67,6 @@ exports.applyCoupon = async (req, res) => {
       throw Error("Cart couldn't update!");
     }
 
-    console.log(
-      coupon,
-      "discount: ", coupon.value,
-      "couponType:", coupon.type,
-     " couponCode:", code,
-    );
-
     res.status(200).json({
       discount: coupon.offerAmount,
       couponCode: code,
@@ -88,7 +76,6 @@ exports.applyCoupon = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 
 //remove coupon 
 exports.removeCoupon = async (req, res) => {
@@ -109,7 +96,6 @@ exports.removeCoupon = async (req, res) => {
   
       res.status(200).json({ success: true });
     } catch (error) {
-  
       res.status(400).json({ error: error.message });
     }
   };

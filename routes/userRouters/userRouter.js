@@ -27,6 +27,7 @@ const {
   deleteAddress,
   setNewPassword,
   getUserOrders,
+  getUserOrdersAPI
 } = require("../../controller/userController/userProfileController");
 
 //otp controller
@@ -71,8 +72,8 @@ const {
 
 //review controller
 const {
-  addReview,
-  getProductReviews,
+  deleteReview,
+  editReview,
   createNewReview,
 }= require("../../controller/userController/reviewController");
 
@@ -149,13 +150,18 @@ router.delete("/delete-cart-item",verifyUser, removeItemsFromCart);
 router.get("/checkout", verifyUser, renderCheckoutPage);
 router.post("/place-order", verifyUser, placeOrder);
 router.get("/order-confirmation/:id",verifyUser, renderOrderConfirmationPage);
+
 router.get('/orders',verifyUser, getUserOrders);
+router.get("user-orders-pagenation", verifyUser, getUserOrdersAPI );
+
 router.get("/order-view/:id/:orderId",verifyUser, renderOrderView);
 router.get("/failedOrder-view/:orderId",verifyUser, renderOrderFailedProducts);
 router.post("/cancel-product",verifyUser, cancelOrder);
 router.post("/return-product",verifyUser, returnProduct);
 //review 
 router.post("/submit-review", verifyUser, createNewReview);
+router.post('/edit-review', verifyUser, editReview);
+router.delete("/delete-review", verifyUser, deleteReview);
 //search and filrer
 router.get("/filter",getProducts);
 router.get("/search",searchProduct);
@@ -166,7 +172,6 @@ router.post("/razor-verify", verifyPayment);
 router.post("/razor-verify-failedPayment",verifyUser, verifyPaymentFailedPayment)
 router.post("/faildorder", createfailOrder);
 router.post("/repayment",verifyUser, repaymentOrder);
-
 //whishlist
 router.get("/wishlist",verifyUser, getWishlist);
 router.post("/add-wishlist", addToWishlist);

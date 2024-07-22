@@ -26,8 +26,8 @@ exports.listOrders = async (req, res, next) =>{
 
 exports.renderViewOrder = async (req, res, next) =>{
     try {
+      
         const id = req.params.id;
-
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).render('errorPages/404');
           }      

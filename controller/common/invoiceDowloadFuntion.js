@@ -44,48 +44,56 @@ const generateInvoicePDF = async (order) => {
       doc.on("error", (error) => reject(error));
 
       // Header for the PDF
-      doc
-        // .image("", 50, 45, { width: 50 })
-        .fillColor("#444444")
-        .fontSize(20)
-        .text("karma Inc.", 110, 65)
-        .fontSize(10)
-        .text("7th Avenue, Sector 801", 200, 65, { align: "right" })
-        .text("Calicut, Kerala, IN", 200, 80, { align: "right" })
-        .moveDown();
+     // Assuming 'doc' is your PDF document instance
+// and 'order' is the object containing order details
 
-      // Invoice details section
-      doc
-        .fontSize(20)
-        .text("Invoice", 50, 150)
-        .fontSize(10)
-        .moveTo(50, 190)
-        .lineTo(550, 190)
-        .lineWidth(0.5)
-        .strokeColor("#ccc")
-        .stroke()
-        .text(`Order Id: ${order.orderId ? order.orderId : order._id}`, 50, 200)
-        .text(
-          `Order Date: ${moment(new Date(order.createdAt)).format(
-            "DD/MM/YYYY"
-          )}`,
-          50,
-          215
-        )
-        .text(`Total Amount: ${order.totalPrice}`, 50, 230)
-        .text(order.address.fullName + " " + order.address.phoneNumber, 300, 200)
-        .text(order.address.address, 300, 215)
-        .text(
-          `${order.address.district}, ${order.address.state}, ${order.address.addressType}, ${order.address.pincode}`,
-          300,
-          230
-        )
-        .moveTo(50, 250)
-        .lineTo(550, 250)
-        .lineWidth(0.5)
-        .strokeColor("#ccc")
-        .stroke()
-        .moveDown();
+doc
+// .image("", 50, 45, { width: 50 })
+.fillColor("#444444")
+.fontSize(20)
+.text("karma Inc.", 110, 65)
+.fontSize(10)
+.text("7th Avenue, Sector 801", 200, 65, { align: "right" })
+.text("Calicut, Kerala, IN", 200, 80, { align: "right" })
+.moveDown();
+
+// Invoice details section
+doc
+.fontSize(20)
+.text("Invoice", 50, 150)
+.fontSize(10)
+.moveTo(50, 190)
+.lineTo(550, 190)
+.lineWidth(0.5)
+.strokeColor("#ccc")
+.stroke()
+.text(`Order Id: ${order.orderId ? order.orderId : order._id}`, 50, 200)
+.text(
+  `Order Date: ${moment(new Date(order.createdAt)).format("DD/MM/YYYY")}`,
+  50,
+  215
+)
+.text(`Total Amount: ${order.totalPrice}`, 50, 230)
+.text(order.address.fullName + " " + order.address.phoneNumber, 300, 200)
+.text(order.address.address, 300, 215)
+.text(
+  `${order.address.district}, ${order.address.state}, ${order.address.addressType}, ${order.address.pincode}`,
+  300,
+  230
+)
+.moveTo(50, 250)
+.lineTo(550, 250)
+.lineWidth(0.5)
+.strokeColor("#ccc")
+.stroke()
+.moveDown();
+
+// Payment method section
+doc
+.fontSize(10) // Keep the font size consistent
+.text(`Payment Method:  ${order.paymentMethod}`, 50, 260) 
+.moveDown(); // Add some space after the payment method
+
 
       // Products
       let i;

@@ -47,7 +47,7 @@
           id="images"
           name="images"
           accept="image/*"
-          multiple
+          multiple...
           onchange="displaySelectedImages(this)"
         />
         <div
@@ -337,7 +337,6 @@
                 class="custom-select tm-select-accounts"
                 name="size[]"
                 style="background-color: white; color: black"
-                required
               >
                 <option value="" disabled selected>Select a size</option>
                 <% sizes.forEach((size) => { %>
@@ -353,10 +352,11 @@
                 id="quantity"
                 name="quantity[]"
                 style="color: black"
-                required
                 oninput="validateInputQty(this)"
               />
+              <div id="variants-error" class="error-message" style="color: red"></div>
             </div>
+        
             <div class="col-sm-1 col-md-1 py-2 text-center">
               <button
                 type="button"
@@ -387,24 +387,203 @@
 <script src="/adminpublic/cropper/cropper.min.js"></script>
 
 <script>
-  const form = document.getElementById("addProductForm");
-  const errorMessages = {
-    name: "Please enter the product name.",
-    basePrice: "Please enter a valid base price (0 or greater).",
-    description: "Please enter a description.",
-    brand: "Please select a brand.",
-    tag: "Please select a tag.",
-    category: "Please select a category.",
-    weight: "Please enter a valid weight (greater than 0).",
-    midsoleDrop: "Please enter a valid midsole drop (greater than 0).",
-    heel: "Please enter a valid heel height (greater than 0).",
-    foreFoot: "Please enter a valid forefoot height (greater than 0).",
-    images: "Please upload at least one image.",
-    offerAmount: "Please enter a valid offer amount (greater than 0).",
-    offerExpiryDate: "Please enter an offer expiry date.",
-  };
+ const form = document.getElementById("addProductForm");
+const errorMessages = {
+  name: "Please enter a valid product name (no special characters allowed).",
+  basePrice: "Please enter a valid base price (0 or greater).",
+  description: "Please enter a description.",
+  brand: "Please select a brand.",
+  tag: "Please select a tag.",
+  category: "Please select a category.",
+  weight: "Please enter a valid weight (greater than 0).",
+  midsoleDrop: "Please enter a valid midsole drop (greater than 0).",
+  heel: "Please enter a valid heel height (greater than 0).",
+  foreFoot: "Please enter a valid forefoot height (greater than 0).",
+  images: "Please upload at least one image file (jpg, jpeg or png only).",
+  offerAmount: "Please enter a valid offer amount (greater than 0 and not exceeding the base price).",
+  offerExpiryDate: "Please enter an offer expiry date.",
+  variants: "Please ensure all variant fields are filled, quantities are greater than 0, and sizes are not duplicated.",
+};
 
-  function displaySelectedImages(input) {
+function clearError(errorId) {
+  document.getElementById(errorId).innerText = "";
+}
+
+function validateImageFile(file) {
+  const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+  return validTypes.includes(file.type);
+}
+
+function validateVariants() {
+  const variantContainers = document.querySelectorAll('#variants-container .variant');
+  const sizes = new Set();
+  let isValid = true;
+  let errorMessage = '';
+
+  variantContainers.forEach((container, index) => {
+    const sizeSelect = container.querySelector('select[name="size[]"]');
+    const quantityInput = container.querySelector('input[name="quantity[]"]');
+    
+    if (!sizeSelect.value || !quantityInput.value) {
+      isValid = false;
+      errorMessage = 'All variant fields must be filled.';
+      return;
+    }
+
+    const quantity = parseInt(quantityInput.value, 10);
+    if (isNaN(quantity) || quantity <= 0) {
+      isValid = false;
+      errorMessage = 'Quantity must be greater than 0 for all variants.';
+      return;
+    }
+
+    if (sizes.has(sizeSelect.value)) {
+      isValid = false;
+      errorMessage = 'Duplicate sizes are not allowed in variants.';
+      return;
+    }
+
+    sizes.add(sizeSelect.value);
+  });
+
+  return { isValid, errorMessage };
+}
+
+form.addEventListener("submit", function (event) {
+  let valid = true;
+
+  const name = document.getElementById("name").value.trim();
+  const basePrice = parseFloat(document.getElementById("basePrice").value.trim());
+  const description = document.getElementById("description").value.trim();
+  const brand = document.getElementById("brand").value;
+  const tag = document.getElementById("tag").value;
+  const category = document.getElementById("category").value;
+  const weight = document.getElementById("weight").value.trim();
+  const midsoleDrop = document.getElementById("midsoleDrop").value.trim();
+  const heel = document.getElementById("heel").value.trim();
+  const foreFoot = document.getElementById("foreFoot").value.trim();
+  const images = document.getElementById("images").files;
+  const offerAmount = parseFloat(document.getElementById("offerAmount").value.trim());
+  const offerExpiryDate = document.getElementById("offerExpiryDate").value.trim();
+
+  // Reset error messages
+  document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
+
+  // Name validation
+  if (!name || /[^a-zA-Z0-9\s]/.test(name)) {
+    valid = false;
+    document.getElementById("name-error").innerText = errorMessages.name;
+  }
+
+  // Base price validation
+  if (isNaN(basePrice) || basePrice <= 0) {
+    valid = false;
+    document.getElementById("basePrice-error").innerText = errorMessages.basePrice;
+  }
+
+  // Description validation
+  if (!description) {
+    valid = false;
+    document.getElementById("description-error").innerText = errorMessages.description;
+  }
+
+  // Brand validation
+  if (!brand || brand === "Select brand") {
+    valid = false;
+    document.getElementById("brand-error").innerText = errorMessages.brand;
+  }
+
+  // Tag error
+  if (!tag || tag === "Select tag") {
+    valid = false;
+    document.getElementById("tag-error").innerText = errorMessages.tag;
+  }
+
+  // Category validation
+  if (!category || category === "Select category") {
+    valid = false;
+    document.getElementById("category-error").innerText = errorMessages.category;
+  }
+
+  // Weight validation
+  if (!weight || isNaN(weight) || weight <= 0) {
+    valid = false;
+    document.getElementById("weight-error").innerText = errorMessages.weight;
+  }
+
+  // Midsole drop validation
+  if (!midsoleDrop || isNaN(midsoleDrop) || midsoleDrop <= 0) {
+    valid = false;
+    document.getElementById("midsoleDrop-error").innerText = errorMessages.midsoleDrop;
+  }
+
+  // Heel height validation
+  if (!heel || isNaN(heel) || heel <= 0) {
+    valid = false;
+    document.getElementById("heel-error").innerText = errorMessages.heel;
+  }
+
+  // Forefoot height validation
+  if (!foreFoot || isNaN(foreFoot) || foreFoot <= 0) {
+    valid = false;
+    document.getElementById("foreFoot-error").innerText = errorMessages.foreFoot;
+  }
+
+  // Image validation
+  if (!images.length) {
+    valid = false;
+    document.getElementById("images-error").innerText = errorMessages.images;
+  } else {
+    for (let i = 0; i < images.length; i++) {
+      if (!validateImageFile(images[i])) {
+        valid = false;
+        document.getElementById("images-error").innerText = errorMessages.images;
+        break;
+      }
+    }
+  }
+  console.log("offer",offerAmount);
+
+  // Offer amount validation
+  if (offerAmount) {
+    if (isNaN(offerAmount) || offerAmount <= 0 || offerAmount > basePrice) {
+      valid = false;
+      document.getElementById("offerAmount-error").innerText = errorMessages.offerAmount;
+    }
+    // Offer expiry date validation if offer amount is provided
+    if (!offerExpiryDate) {
+      valid = false;
+      document.getElementById("offerExpiryDate-error").innerText = errorMessages.offerExpiryDate;
+    }
+  }
+
+  // Variants validation
+  const variantValidation = validateVariants();
+  if (!variantValidation.isValid) {
+    valid = false;
+    document.getElementById("variants-error").innerText = variantValidation.errorMessage;
+  }
+
+  if (!valid) {
+    event.preventDefault();
+  }
+});
+
+// Add this function to dynamically validate quantity inputs
+function validateInputQty(input) {
+  const quantity = parseInt(input.value, 10);
+  if (isNaN(quantity) || quantity < 1) {
+    input.setCustomValidity("Please enter a quantity greater than 0.");
+    input.reportValidity();
+  } else {
+    input.setCustomValidity("");
+  }
+}
+</script>
+
+
+<script>
+   function displaySelectedImages(input) {
     const selectedImagesContainer = document.getElementById("selectedImagesContainer");
     selectedImagesContainer.innerHTML = "";
 
@@ -511,134 +690,8 @@
     }
   }
 
-  function validateInputQty(input) {
-    if (input.value < 1) {
-      input.setCustomValidity("Please enter a quantity greater than 0.");
-      input.reportValidity();
-    } else {
-      input.setCustomValidity("");
-    }
-  }
-
-  function clearError(errorId) {
-    document.getElementById(errorId).innerText = "";
-  }
-
-  form.addEventListener("submit", function (event) {
-    let valid = true;
-
-    const name = document.getElementById("name").value.trim();
-    const basePrice = document.getElementById("basePrice").value.trim();
-    const description = document.getElementById("description").value.trim();
-    const brand = document.getElementById("brand").value;
-    const tag = document.getElementById("tag").value;
-    const category = document.getElementById("category").value;
-    const weight = document.getElementById("weight").value.trim();
-    const midsoleDrop = document.getElementById("midsoleDrop").value.trim();
-    const heel = document.getElementById("heel").value.trim();
-    const foreFoot = document.getElementById("foreFoot").value.trim();
-    const images = document.getElementById("images").files;
-    const offerAmount = document.getElementById("offerAmount").value.trim();
-    const offerExpiryDate = document
-      .getElementById("offerExpiryDate")
-      .value.trim();
-
-    // Reset error messages
-    document
-      .querySelectorAll(".error-message")
-      .forEach((element) => (element.innerHTML = ""));
-
-    // Name validation
-    if (!name || !isNaN(parseInt(name, 10))) {
-      valid = false;
-      document.getElementById("name-error").innerText = errorMessages.name;
-    }
-
-    // Base price validation
-    if (!basePrice || isNaN(basePrice) || basePrice <= 0) {
-      valid = false;
-      document.getElementById("basePrice-error").innerText =
-        errorMessages.basePrice;
-    }
-
-    // Description validation
-    if (!description) {
-      valid = false;
-      document.getElementById("description-error").innerText =
-        errorMessages.description;
-    }
-
-    // Brand validation
-    if (!brand || brand === "Select brand") {
-      valid = false;
-      document.getElementById("brand-error").innerText = errorMessages.brand;
-    }
-
-    // Tag error
-    if (!tag || tag === "Select tag") {
-      valid = false;
-      document.getElementById("tag-error").innerText = errorMessages.tag;
-    }
-
-    // Category validation
-    if (!category || category === "Select category") {
-      valid = false;
-      document.getElementById("category-error").innerText =
-        errorMessages.category;
-    }
-
-    // Weight validation
-    if (!weight || isNaN(weight) || weight <= 0) {
-      valid = false;
-      document.getElementById("weight-error").innerText = errorMessages.weight;
-    }
-
-    // Midsole drop validation
-    if (!midsoleDrop || isNaN(midsoleDrop) || midsoleDrop <= 0) {
-      valid = false;
-      document.getElementById("midsoleDrop-error").innerText =
-        errorMessages.midsoleDrop;
-    }
-
-    // Heel height validation
-    if (!heel || isNaN(heel) || heel <= 0) {
-      valid = false;
-      document.getElementById("heel-error").innerText = errorMessages.heel;
-    }
-
-    // Forefoot height validation
-    if (!foreFoot || isNaN(foreFoot) || foreFoot <= 0) {
-      valid = false;
-      document.getElementById("foreFoot-error").innerText =
-        errorMessages.foreFoot;
-    }
-
-    // Image validation
-    if (!images.length) {
-      valid = false;
-      document.getElementById("images-error").innerText = errorMessages.images;
-    }
-
-    // Offer amount validation
-    if (offerAmount) {
-      if (isNaN(offerAmount) || offerAmount <= 0 || offerAmount.trim() === "") {
-        valid = false;
-        document.getElementById("offerAmount-error").innerText =
-          errorMessages.offerAmount;
-      }
-      // Offer expiry date validation if offer amount is provided
-      if (!offerExpiryDate) {
-        valid = false;
-        document.getElementById("offerExpiryDate-error").innerText =
-          errorMessages.offerExpiryDate;
-      }
-    }
-
-    if (!valid) {
-      event.preventDefault();
-    }
-  });
 </script>
+
 
 <script>
   let titleEl = document.getElementById("name");

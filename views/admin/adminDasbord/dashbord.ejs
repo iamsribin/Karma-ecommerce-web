@@ -89,7 +89,20 @@
     cursor: pointer;
     width: 100%;
   }
+
+  #pieChartContainer {
+  position: relative;
+  width: 100%;
+  height: 350px; 
+}
+
+#pieChart {
+  width: 100% !important;
+  height: 100% !important;
+}
 </style>
+
+
 
 <body id="reportsPage">
     <div class="" id="home">
@@ -175,9 +188,9 @@
             <div class="col-12 d-flex justify-content-between ">
               <div class="col-lg-6 mb-4">
                 <select id="dateRange" class="form-control">
-                  <option value="1day" <%= selectedRange === '1day' ? 'selected' : '' %>>1 Day</option>
-                  <option value="1week" <%= selectedRange === '1week' ? 'selected' : '' %>>1 Week</option>
-                  <option value="1month" <%= selectedRange === '1month' ? 'selected' : '' %>>1 Month</option>
+                  <option value="1day" <%= selectedRange === '1day' ? 'selected' : '' %> >1 Day</option>
+                  <option value="1week" <%= selectedRange === '1week' ? 'selected' : '' %> >1 Week</option>
+                  <option value="1month" <%= selectedRange === '1month' ? 'selected' : '' %> >1 Month</option>
                 </select>
               </div>
               <div class="col-lg-4">
@@ -205,7 +218,7 @@
                 <div class="tm-bg-primary-dark tm-block tm-block-taller">
                   <h2 class="tm-block-title">Category Performance</h2>
                   <div id="pieChartContainer">
-                    <canvas id="pieChart" class="chartjs-render-monitor" width="200" height="200"></canvas>
+                    <canvas id="pieChart" class="chartjs-render-monitor" width="300" height="300" ></canvas>
                   </div>                        
                 </div>
               </div>
@@ -241,8 +254,10 @@
               <th>No</th>
               <th>Preview</th>
               <th>Product</th>
-              <th>Price</th>
+              <th>Regular Price</th>
+              <th>Sold Price</th>
               <th>Sold</th>
+              <th>reviews</th>
               <th>Revenue</th>
           </tr>
           </thead>
@@ -252,9 +267,23 @@
                   <td><%= index + 1 %></td>
                   <td><img src="<%= product.image[0] %>" alt="<%= product.name %>" style="max-width: 50px; max-height: 50px; "></td>
                   <td><%= product?.name %></td>
-                  <td>$<%= product?.offerPrice%></td>
+                  <td>₹ <%= product?.basePrice%></td>
+                  <th>
+                    <% if(product?.offerPrice) { %>
+                       ₹ <%=product?.offerPrice%>
+                    <% }else{ %>
+                      no offer applied 
+                  <%  } %>
+                  </th>
                   <td><%= product?.totalSold %></td>
-                  <td>$<%= product?.totalRevenue %></td>
+                  <th>
+                  <%  if(product?.numberOfReviews){ %>
+                      <%= product?.numberOfReviews%>
+                   <% }else{ %>
+                      0
+                 <%   } %>
+                  </th>
+                  <td>₹ <%= product?.totalRevenue %></td>
               </tr>
           <% }); %>
           </tbody>
@@ -281,7 +310,7 @@
                                     <td><%= index + 1 %></td>
                                     <td><%= brand?.name %></td>
                                     <td><%= brand?.totalSold %></td>
-                                    <td>$<%= brand?.totalRevenue?.toFixed(2) %></td>
+                                    <td>₹ <%= brand?.totalRevenue %></td>
                                 </tr>
                             <% }); %>
                             </tbody>
@@ -308,10 +337,9 @@
                                 <td><%= index + 1 %></td>
                                 <td><%= category?.name %></td>
                                 <td><%= category?.totalSold %></td>
-                                <td>$<%= category?.totalRevenue?.toFixed(2) %></td>
+                                <td>₹ <%= category?.totalRevenue %></td>
                             </tr>
-                        <% }); %>
-                          </tbody>
+                        <% }) %>
                       </table>
                   </div>
               </div>
@@ -522,25 +550,14 @@ console.log("result",salesData, brandPerformance, categoryPerformance);
 function drawLineChart() {
   if (lineChart) lineChart.destroy();
   const ctx = document.getElementById('lineChart').getContext('2d');
-  
-  // Create dummy data for visualization
-  const dummyData = [
-    {_id: '2024-07-08', totalSales: 41000},
-    // {_id: '2024-07-09', totalSales: 41100},
-    // {_id: '2024-07-10', totalSales: 41200},
-    // {_id: '2024-07-11', totalSales: 41250},
-    // {_id: '2024-07-12', totalSales: 41300},
-    {_id: '2024-07-13', totalSales: 41310},
-    ...salesData 
-  ];
 
   lineChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: dummyData.map(d => moment(d._id).format('MMM DD')),
+      labels: salesData.map(d => moment(d._id).format('MMM DD')),
       datasets: [{
         label: 'Latest Hits',
-        data: dummyData.map(d => d.totalSales),
+        data: salesData.map(d => d.totalSales),
         borderColor: 'rgba(75, 192, 192, 1)',
         backgroundColor: 'rgba(75, 192, 192, 0.2)',
         tension: 0.4,
@@ -604,51 +621,30 @@ function drawLineChart() {
     });
   }
 
-  function drawCategoryChart() {
-  if (categoryChart) categoryChart.destroy();
-  const ctx = document.getElementById('categoryChart').getContext('2d');
-  
-  // Use brandPerformance data instead of categoryPerformance
-  const data = brandPerformance.map(b => ({
-    name: b.brandName,
-    value: b.totalSales
-  }));
-
-  categoryChart = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels: data.map(d => d.name),
-      datasets: [{
-        data: data.map(d => d.value),
-        backgroundColor: [
-          'rgba(255, 99, 132, 0.8)',
-          'rgba(75, 192, 192, 0.8)',
-          'rgba(255, 206, 86, 0.8)'
-        ]
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'right',
-          labels: {
-            color: 'white'
-          }
-        },
-        title: {
-          display: true,
-          text: 'Brand Performance',
-          color: 'white',
-          font: {
-            size: 16
-          }
-        }
+  function drawPieChart() {
+    if (pieChart) pieChart.destroy();
+    const ctx = document.getElementById('pieChart').getContext('2d');
+    pieChart = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: categoryPerformance.map(c => c.categoryName),
+        datasets: [{
+          data: categoryPerformance.map(c => c.totalSales),
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(255, 206, 86, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(153, 102, 255, 0.8)',
+          ]
+        }]
+      },
+      options: {
+        responsive: true
       }
-    }
-  });
-}
+    });
+  }
+
 
   $(function() {
     drawLineChart();

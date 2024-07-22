@@ -243,12 +243,12 @@
         <p><%=productReview.Description%></p>
        </div>
         <div class="col-4 ml-5">
-          <a class="text-danger deleteAction" >
+          <!-- <a class="text-danger deleteAction" >
             <i class="far fa-trash-alt"></i>
-          </a>
+          </a> -->
           &nbsp; &nbsp;
-          <a class="text-primary">
-            <i style="color: rgb(43, 0, 255)" class="fas fa-edit"></i>
+          <a onclick="openEditReviewModal('<%=productReview.rating%>' , '<%=productReview.Description%>')" class="text-primary">
+            <i style="color: rgb(43, 0, 255); cursor: pointer;" class="fas fa-edit">UPDATE</i>
           </a>
         </div>
       </div>
@@ -399,6 +399,39 @@
   </div>
 </div>
 
+<!-- Edit Review Modal -->
+<div class="modal fade" id="editReviewModal" tabindex="-1" aria-labelledby="editReviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editReviewModalLabel">Edit Your Review</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="star-rating mb-3">
+          <i class="fas fa-star" data-rating="1"></i>
+          <i class="fas fa-star" data-rating="2"></i>
+          <i class="fas fa-star" data-rating="3"></i>
+          <i class="fas fa-star" data-rating="4"></i>
+          <i class="fas fa-star" data-rating="5"></i>
+        </div>
+        <div class="mb-3">
+          <label for="editReviewText" class="form-label">Your Review (minimum 2 sentences):</label>
+          <textarea class="form-control" id="editReviewText" rows="5"></textarea>
+        </div>
+        <div id="editErrorMessage" class="text-danger"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" id="submitEditReview">Update Review</button>
+        <button type="button" class="btn btn-danger" id="deleteReview">Delete Review</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -505,5 +538,153 @@
 });
 
 </script>
+
+<!-- edit review modal  -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const editModal = document.getElementById('editReviewModal');
+    const starRating = editModal.querySelector('.star-rating');
+    const stars = starRating.querySelectorAll('.fa-star');
+    const reviewText = document.getElementById('editReviewText');
+    const errorMessage = document.getElementById('editErrorMessage');
+    const submitButton = document.getElementById('submitEditReview');
+    const deleteButton = document.getElementById('deleteReview');
+    let currentRating = 0;
+
+    const orderProduct = JSON.parse('<%= JSON.stringify(orderProduct) %>'.replace(/&#34;/g, '"'));
+    // Function to update star display
+    function updateStars(rating) {
+      stars.forEach((star, index) => {
+        star.classList.toggle('text-warning', index < rating);
+      });
+    }
+  
+    // Star rating event listeners
+    stars.forEach(star => {
+      star.addEventListener('click', () => {
+        currentRating = parseInt(star.getAttribute('data-rating'));
+        updateStars(currentRating);
+      });
+    });
+  
+    // Function to validate the review
+    function validateReview() {
+      const text = reviewText.value.trim();
+      const sentences = text.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0);
+  
+      if (currentRating === 0) {
+        errorMessage.textContent = 'Please select at least one star.';
+        return false;
+      }
+  
+      if (sentences.length < 1) {
+        errorMessage.textContent = 'Please write at least 2 sentences.';
+        return false;
+      }
+  
+      if (text.length === 0) {
+        errorMessage.textContent = 'Review text cannot be empty.';
+        return false;
+      }
+  
+      errorMessage.textContent = '';
+      return true;
+    }
+  
+    // Edit review submission
+    submitButton.addEventListener('click', async function() {
+      if (validateReview()) {
+        try {
+          const response = await fetch('/edit-review', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              order: orderProduct._id,
+              product: orderProduct.productId._id,
+              rating: currentRating,
+              description: reviewText.value.trim(),
+            }),
+          });
+  
+          if (response.ok) {
+
+            Swal.fire(
+              'review updated!',
+              'Your review has been review updated.',
+              'success'
+            ).then(()=>{
+              $('#editReviewModal').modal('hide');
+            window.location.reload();
+            })
+
+          } else {
+            throw new Error('Failed to update review');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          errorMessage.textContent = 'An error occurred while updating the review.';
+        }
+      }
+    });
+  
+    // Delete review
+    deleteButton.addEventListener('click', async function() {
+      const result = await Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, delete it!'
+      });
+  
+      if (result.isConfirmed) {
+        try {
+          const response = await fetch('/delete-review', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              product: orderProduct.productId._id,
+            }),
+          });
+  
+          if (response.ok) {
+            Swal.fire(
+              'Deleted!',
+              'Your review has been deleted.',
+              'success'
+            ).then(()=>{
+              $('#editReviewModal').modal('hide');
+            window.location.reload();
+            })
+           
+          } else {
+            throw new Error('Failed to delete review');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          Swal.fire(
+            'Error',
+            'An error occurred while deleting the review.',
+            'error'
+          );
+        }
+      }
+    });
+  
+    // Function to open the edit modal and pre-fill data
+    window.openEditReviewModal = function(rating, description) {
+      currentRating = parseInt(rating);
+      updateStars(currentRating);
+      reviewText.value = description;
+      $('#editReviewModal').modal('show');
+    }
+  });
+  </script>
 
 <%- include('../userPartials/footer'); %>

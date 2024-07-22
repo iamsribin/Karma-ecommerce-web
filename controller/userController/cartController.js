@@ -121,7 +121,7 @@ exports.addCart = async (req, res, next) => {
     const userId = req.session.userId;   
 
     if (!userId) {
-      return next(createError(401, "User not authenticated"));
+      return res.status(401).jsone({message:"User not authenticated"})
     }
 
     const product = await Product.findOne({_id: productId,   isActive: true});
@@ -131,13 +131,34 @@ exports.addCart = async (req, res, next) => {
       return next(createError(404, "Product not found"));
     }
 
+    const sizeIdx = product.variants.findIndex( item => item.size.toString() === size);
+
+    if(sizeIdx === -1) {
+      return res.status(400).json({message: "Invalid size"})
+    }
+
+    console.log("size id",product.variants[sizeIdx]);
+
+
     const price = product.basePrice;
-    const offerPrice = product.offerAmount ? product.offerAmount: undefined;
+    
+    const offerPrice = product.offerAmount ? product.offerAmount: product.categoryOfferAmount ? product.categoryOfferAmount : undefined;
 
     if (userCart) {
+
+      console.log("length",userCart.cart.length);
+
+      if(userCart.cart.length === 5){
+        return res.status(400).json({message: "Cart limit reached"});
+      }
+
       const existingProductIndex = userCart.cart.findIndex(
         item => item.product.toString() === productId && item.size.toString() === size
       );
+
+      if(product.variants[sizeIdx].quantity <  userCart.cart[existingProductIndex]?.quantity || product.variants[sizeIdx].quantity < quantity ) {
+        return res.status(400).json({message: "Not enough stock"});
+      }
 
       if (existingProductIndex !== -1) {
         userCart.cart[existingProductIndex].quantity += parseInt(quantity, 10);
@@ -146,14 +167,40 @@ exports.addCart = async (req, res, next) => {
       }
 
       userCart.subTotal += product.basePrice * quantity;
-      userCart.discount += product.offerAmount ? (product.basePrice - product.offerAmount) * quantity : 0;
+
+      if(product.offerAmount){
+        userCart.discount +=  (product.basePrice - product.offerAmount) * quantity;
+
+      }else if(product.categoryOfferAmount){
+        userCart.discount +=  (product.basePrice - product.categoryOfferAmount) * quantity;
+
+      }else{
+        userCart.discount += 0;
+      }
+
       calculateTotals(userCart);
 
       await userCart.save();
     } else {
+
+      let offerPrice ;
+      if(product.variants[sizeIdx].quantity < quantity) {
+        return res.status(400).json({message: "Not enough stock"});
+      }
+
       const subTotal = product.basePrice * quantity;
-      const discount = product.offerAmount ? (product.basePrice - product.offerAmount) * quantity : 0;
+      const discount = product.offerAmount ? (product.basePrice - product.offerAmount) * quantity : product.categoryOfferAmount ? (product.basePrice - product.categoryOfferAmount) * quantity :0;
       // const tax = Math.floor((subTotal - discount) * TAX_PERCENTAGE);
+      if(product.offerAmount){
+        offerPrice = (product.basePrice - product.offerAmount) * quantity ;
+
+      }else if(product.categoryOfferAmount){
+        offerPrice = (product.basePrice - product.categoryOfferAmount) * quantity;
+
+      }else{
+        offerPrice = 0;
+      }
+
       const grandTotal = subTotal  - discount;
 
       await Cart.create({
@@ -200,15 +247,44 @@ exports.updateCartQuantity = async (req, res, next) => {
     const product = await Product.findById(productId);
     const price = product.offerAmount || product.basePrice;
 
+const sizeIndex = product.variants.findIndex( items => items.size.toString() === size);
+
+console.log("sizeidx",sizeIndex,size);
+console.log(product.variants[sizeIndex].quantity ,"<", userCart.cart[productIndex].quantity );
+
+
+
     if (action === "increment") {
+      if(product.variants[sizeIndex].quantity === userCart.cart[productIndex].quantity ){
+        return res.status(400).send({ message: "Product quantity is insufficient" });
+      }
+
+      if(product.offerAmount){
+        userCart.discount += product.basePrice - product.offerAmount;
+      }else if(product.categoryOfferAmount){
+        userCart.discount += product.basePrice - product.categoryOfferAmount;
+      }else{
+        userCart.discount += 0;
+      }
+
       userCart.cart[productIndex].quantity += 1;
       userCart.subTotal += product.basePrice;
-      userCart.discount += product.offerAmount ? product.basePrice - product.offerAmount : 0;
+      // userCart.discount += product.offerAmount ? product.basePrice - product.offerAmount : 0;
     } else if (action === "decrement") {
       userCart.cart[productIndex].quantity -= 1;
       userCart.subTotal -= product.basePrice;
-      userCart.discount -= product.offerAmount ? product.basePrice - product.offerAmount : 0;
 
+      if(product.offerAmount){
+        userCart.discount -= product.basePrice - product.offerAmount;
+
+      }else if(product.categoryOfferAmount){
+        userCart.discount -= product.basePrice - product.categoryOfferAmount;
+
+      }else{
+        userCart.discount -= 0;
+      }
+
+      // userCart.discount -= product.offerAmount ? product.basePrice - product.offerAmount : 0;
       if (userCart.cart[productIndex].quantity <= 0) {
         userCart.cart.splice(productIndex, 1);
       }

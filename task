@@ -2,25 +2,25 @@
 Pendings:
 User
 - product quantity validation should be based on quantity added by admin
-- add to cart bypasses stock validation 
-- cart quantity update stutter 
-- negative price after applying higher value coupon
-- payment method in invoice
-- profile input validation
-- mask password fields
-
+<!-- - add to cart bypasses stock validation  -->
+<!-- - cart quantity update stutter  -->
+<!-- - negative price after applying higher value coupon -->
+<!-- - payment method in invoice -->
+<!-- - profile input validation -->
+<!-- - mask password fields -->
+  <!-- pagination -->
 Admin
-- product list should have list/unlist instead of delete option
-- product name validation
+<!-- - product list should have list/unlist instead of delete option -->
+<!-- - product name validation
 - offer price can’t be greater than product price 
-- image validation 
-- product edit input validation
-- coupon name validation
-- coupon discount value should be lower than min requirement 
-- dashboard doesn’t load
-- category offers
-
-- git log
+- image validation  -->
+<!-- - product edit input validation -->
+<!-- - coupon name validation -->
+<!-- - coupon discount value should be lower than min requirement  -->
+<!-- - dashboard doesn’t load -->
+<!-- - category offers -->
+<!-- add cart size  -->
+<!-- - git log -->
 
 
 

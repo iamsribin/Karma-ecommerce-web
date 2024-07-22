@@ -10,23 +10,20 @@ exports.home = async (req, res) => {
       await userDB.deleteOne({ otp: { $exists: true } });
       req.session.destroy((err) => {
         if (err) {
-    
           return next(createError(null, null));
         }
-        // return res.json({ loggedIn: false, redirectTo: "/" });
       });
     }
-    const user = req.session?.userGmail;
-
+    const user = req.session?.userId;
+    
     let userDetalis = null;
     let cartLength = 0;
     if (user) {
-     userDetalis = await userDB.findOne({email: req.session.userGmail});
-     const cart = await cartDB.findOne({userId: req.session.userId});
-     cartLength = cart?.cart?.length;
+      userDetalis = await userDB.findOne({email: req.session.userId});
+      const cart = await cartDB.findOne({userId: req.session.userId});
+      cartLength = cart?.cart?.length;
     }
-
-
+    
     const topProducts = await Order.aggregate([
       { $unwind: "$products" },
       { $group: {
@@ -36,7 +33,7 @@ exports.home = async (req, res) => {
         }
       },
       { $sort: { totalSold: -1 } },
-      { $limit: 10 },
+      { $limit: 6 },
       { $lookup: {
           from: "products",
           localField: "_id",
@@ -70,36 +67,38 @@ exports.home = async (req, res) => {
       },
       { $unwind: "$tagDetails" },
       { $project: {
-          name: "$productDetails.name",
-          image: "$productDetails.imagePaths",
-          offerPrice: "$productDetails.offerAmount",
-          basePrice: "$productDetails.basePrice",
-          brandName: "$brandDetails.name",
-          categoryName: "$categoryDetails.name",
-          tagName: "$tagDetails.tagName",
-          totalSold: 1,
-          totalRevenue: 1
-        }
-      }
-    ])
+        _id: "$productDetails._id",
+        name: "$productDetails.name",
+        description: "$productDetails.description",
+        basePrice: "$productDetails.basePrice",
+        offerAmount: "$productDetails.offerAmount",
+        offerExpiryDate: "$productDetails.offerExpiryDate",
+        categoryOfferAmount: "$productDetails.categoryOfferAmount",
+        categoryOfferExpiryDate: "$productDetails.categoryOfferExpiryDate",
+        brand: "$brandDetails",
+        category: "$categoryDetails",
+        tag: "$tagDetails",
+        imagePaths: "$productDetails.imagePaths",
+        totalQuantity: "$productDetails.totalQuantity",
+        rating: "$productDetails.rating",
+        isActive: "$productDetails.isActive",
+        createdAt: "$productDetails.createdAt"
+      }}
+    ]);
 
-
-console.log("top:" ,topProducts);
-
-
-    const products = await productDB.find({})
-    .populate('brand')
-    .populate('category')
-    .populate('tag')
-
-
-
+    const recentProducts = await productDB.find({})
+      .populate('brand')
+      .populate('category')
+      .populate('tag')
+      .sort({createdAt: -1})
+      .limit(6);
+    
     return res.render("user/pages/home", {
       user: userDetalis,
-      products: products,
+      topProducts: topProducts,
+      recentProducts: recentProducts,
       cartLength,
-      topProducts,
-      title:"Home page"
+      title: "Home page"
     });
     
   } catch (error) {

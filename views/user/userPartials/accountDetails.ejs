@@ -1,32 +1,46 @@
 <h4 class="text-center pt-3">Password Change</h4>
-  <form id="changePasswordForm">
-<div class="row p-5">
-  <div class="col-md-12">
-    <input
-      class="form-control"
-      type="password"
-      name="currPassword"
-      placeholder="Current Password"
-    />
-    <span id="newPassword" class="text-danger"></span>
+<form id="changePasswordForm">
+  <div class="row p-5">
+    <div class="col-md-12 position-relative">
+      <input
+        class="form-control"
+        type="password"
+        name="currPassword"
+        placeholder="Current Password"
+      />
+      <span id="newPassword" class="text-danger"></span>
+      <i class="toggle-password fas fa-eye" data-target="currPassword" style="padding: 0px 14px 12px;"></i>
+    </div>
+    <div class="col-md-6 position-relative">
+      <input class="form-control" type="password" name="Password" placeholder="New Password" />
+      <span id="passwordSignIn" class="text-danger"></span>
+      <i class="toggle-password fas fa-eye" data-target="Password" style="padding: 0px 14px 12px;"></i>
+    </div>
+    <div class="col-md-6 position-relative">
+      <input class="form-control" type="password" name="newPassword" placeholder="Confirm Password" />
+      <span id="conformPassword" class="text-danger"></span>
+      <i class="toggle-password fas fa-eye" data-target="newPassword" style="padding: 0px 14px 12px;"></i>
+    </div>
+    <div class="col-md-12">
+      <button class="btn">Save Changes</button>
+      <a href="/sendmail" class="pl-5">forgot password? </a>
+    </div>
   </div>
-  <div class="col-md-6">
-    <input class="form-control" type="text" name="Password" placeholder="New Password" />
-     <span id="passwordSignIn" class="text-danger"></span> 
-  </div>
-  <div class="col-md-6">
-    <input class="form-control" type="text" name="newPassword" placeholder="Confirm Password" />
-    <span id="conformPassword" class="text-danger"></span>
-  </div>
-  <div class="col-md-12">
-    <button class="btn">Save Changes</button>
-    <a href="/sendmail" class="pl-5">forgot password? </a>
-  </div>
-</div>
 </form>
 
 <script src="https://jsuites.net/v4/jsuites.js"></script>
 <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<style>
+  .toggle-password {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+  }
+</style>
+
 <script>
 const form = document.getElementById("changePasswordForm");
 
@@ -109,6 +123,28 @@ else {
     }
 x
 }
+
+function setupPasswordToggles() {
+  const toggles = document.querySelectorAll('.toggle-password');
+  toggles.forEach(toggle => {
+    toggle.addEventListener('click', function() {
+      const targetName = this.getAttribute('data-target');
+      const input = document.querySelector(`input[name="${targetName}"]`);
+      if (input.type === 'password') {
+        input.type = 'text';
+        this.classList.remove('fa-eye');
+        this.classList.add('fa-eye-slash');
+      } else {
+        input.type = 'password';
+        this.classList.remove('fa-eye-slash');
+        this.classList.add('fa-eye');
+      }
+    });
+  });
+}
+
+document.addEventListener('DOMContentLoaded', setupPasswordToggles);
+
 
 form.addEventListener("submit", async (e) => {
 e.preventDefault();

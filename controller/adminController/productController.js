@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const Product = require("../../models/adminModels/product");
 const productDB = require("../../models/adminModels/product");
-const { createError } = require("../../utils/errors");
 const brandDB = require("../../models/adminModels/brand");
 const categoriesDB = require("../../models/adminModels/category");
 const sizeDB = require("../../models/adminModels/size");
@@ -9,8 +8,7 @@ const tagDB = require("../../models/adminModels/tag");
 const fs = require("fs");
 const path = require('path');
 const { ObjectId } = require("mongodb");
-const size = require("../../models/adminModels/size");
-const tag = require("../../models/adminModels/tag");
+const categoryOfferDB = require("../../models/adminModels/categoryOffer");
 
 // render products list page
 exports.renderProducts = async (req, res, next) => {
@@ -19,7 +17,6 @@ exports.renderProducts = async (req, res, next) => {
       .find({isActive: true})
       .populate("brand")
       .populate("category");
-    console.log(products);
     return res.render("admin/adminDasbord/products", { products });
   } catch (error) {
     return res.redirect("/internalError");
@@ -33,7 +30,6 @@ exports.renderDeletedProducts = async (req, res, next) => {
       .find({isActive: false})
       .populate("brand")
       .populate("category");
-    console.log(products);
     return res.render("admin/adminDasbord/deletedProducts", { products });
   } catch (error) {
     return res.redirect("/internalError");
@@ -100,7 +96,6 @@ exports.addProduct = async (req, res, next) => {
       return res.redirect("/admin/add-product");
     }
 
-
     const variants = size.map((sizeValue, index) => {
       const quantityValue = parseInt(quantity[index], 10) || 0;
       let status;
@@ -134,8 +129,6 @@ exports.addProduct = async (req, res, next) => {
 
     let product;
 
-    
-
     if (offerAmount) {
       product = new Product({
         name: mainName,
@@ -155,7 +148,15 @@ exports.addProduct = async (req, res, next) => {
         offerAmount,
         offerExpiryDate,
       });
-    } else {
+    } else {  
+  const isCategoryOffer = categoryOfferDB.findOne({category_id : category});
+  let categoryOffer, categoryOfferExpiryDate;
+
+if(isCategoryOffer){
+    categoryOffer = (isCategoryOffer.offerPercentage * basePrice) / 100;  
+    categoryOfferExpiryDate = isCategoryOffer.expiryDate
+}
+
       product = new Product({
         name: mainName,
         description,
@@ -169,9 +170,12 @@ exports.addProduct = async (req, res, next) => {
         imagePaths,
         midsoleDrop,
         heel,
+        categoryOffer, 
+        categoryOfferExpiryDate,
         foreFoot,
         weight,
       });
+
     }
 
     await product.save();
@@ -257,7 +261,6 @@ exports.renderEditProductPage = async (req, res, next) => {
       sizes,
     });
   } catch (error) {
-    console.log(error);
     return res.redirect("/internalError");
   }
 };
@@ -367,6 +370,16 @@ exports.editProduct = async (req, res, next) => {
 
     const totalQuantity = quantity.map(Number).reduce((acc, curr) => acc + curr, 0);
 
+    let categoryOfferAmount=null, categoryOfferExpiryDate=null;
+
+    if(!offerAmount){
+      const isCategoryOffer = await categoryOfferDB.findOne({category_id : category});
+     if(isCategoryOffer){
+      categoryOfferAmount = (isCategoryOffer.offerPercentage * basePrice) / 100;  
+        categoryOfferExpiryDate = isCategoryOffer.expiryDate
+     }
+    }
+
     // Update product
     product = await Product.findOneAndUpdate(
       { _id: id },
@@ -386,6 +399,8 @@ exports.editProduct = async (req, res, next) => {
           weight,
           offerAmount,
           offerExpiryDate,
+          categoryOfferAmount,
+          categoryOfferExpiryDate,
           imagePaths,
         },
       },

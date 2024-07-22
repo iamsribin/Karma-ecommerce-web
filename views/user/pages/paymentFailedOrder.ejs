@@ -76,8 +76,18 @@
     content: "\2714";
   }
 </style>
-
-<div class="container-fluid bg-light p-4">
+<!-- Breadcrumb Start -->
+<div class="breadcrumb-wrap">
+  <div class="container-fluid">
+      <ul class="breadcrumb">
+          <li class="breadcrumb-item"><a href="/">Home</a></li>
+          <li class="breadcrumb-item"><a href="/user-profile">My Account</a></li>
+          <li class="breadcrumb-item active">Failed Orders Details</li>
+      </ul>
+  </div>
+</div>
+<!-- Breadcrumb End -->
+<div class="container-fluid bg-light p-4" style="padding: 0">
   <div class="row justify-content-center">
     <div
       class="col-12 col-md-11 col-lg-11 text-white p-4 d-flex justify-content-between"
@@ -99,6 +109,13 @@
       <hr />
       <div class="d-flex justify-content-between">
         <span>Order id: <%=order.orderId%></span>
+        <button
+        class="btn btn-danger"
+        id="cancelBtn"
+        style="background-color: red; color: white"
+      >
+        Cancel this order
+      </button>
       </div>
       <hr />
       <div class="row">
@@ -129,7 +146,8 @@
               <span>SIZE: <%=orderProduct.size.size%></span>
               <br />
               <span
-                ><%= orderProduct.productId.tag.tagName.toLowerCase() %>'s <%= orderProduct.productId.category.name.toLowerCase() %> Shoe</span
+                ><%= orderProduct.productId.tag.tagName.toLowerCase() %>'s <%=
+                orderProduct.productId.category.name.toLowerCase() %> Shoe</span
               >
               <br />
               <% if (orderProduct.offerPrice) { %>
@@ -174,13 +192,112 @@
             <div class="col-1 text-right">₹<%=orderProduct.totalPrice%></div>
           </div>
 
-        <% })%>
+          <% })%>
         </div>
       </div>
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    </div>
+  </div>
+</div>
 
 
-  
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-
+<!-- Cancel Reason Modal -->
+<div
+  class="modal fade"
+  id="cancelModal"
+  tabindex="-1"
+  aria-labelledby="cancelModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cancelModalLabel">Reason for Cancelling</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <textarea
+          id="cancelReason"
+          class="form-control"
+          rows="3"
+          placeholder="Please provide the reason for cancelling the product (at least 5 words)"
+        ></textarea>
+        <div
+          id="cancelReasonError"
+          class="text-danger mt-2"
+          style="display: none"
+        >
+          Please enter at least 5 words.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          Cancel
+        </button>
+        <button type="button" class="btn btn-primary" id="submitCancelReason">
+          Submit
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
 <%- include('../userPartials/footer'); %>
+
+<script>
+      $("#cancelBtn").click(function () {
+        $("#cancelModal").modal("show");
+    });
+
+
+    $("#submitCancelReason").click(async function () {
+        const cancelReason = $("#cancelReason").val().trim();
+        if (cancelReason.split("").length < 5) {
+            $("#cancelReasonError").show();
+        } else {
+            $("#cancelReasonError").hide();
+            try {
+                const response = await fetch("/cancel-product", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                 
+                        reason: cancelReason,
+                    }),
+                });
+
+                $("#cancelModal").modal("hide");
+                if (response.status === 200) {
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Your cancellation request has been submitted successfully.",
+                        icon: "success",
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Error!",
+                        text: "There was an error processing your cancellation request. Please try again.",
+                        icon: "error",
+                    });
+                }
+            } catch (error) {
+                $("#cancelModal").modal("hide");
+                Swal.fire({
+                    title: "Error!",
+                    text: "There was an error processing your cancellation request. Please try again.",
+                    icon: "error",
+                });
+            }
+        }
+    });
+</script>

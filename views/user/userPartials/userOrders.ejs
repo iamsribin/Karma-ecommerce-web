@@ -1,93 +1,139 @@
 <div class="container mt-5">
-   
-    <% if (orders.length > 0) { %>
-        <% orders.forEach(order => { %>
-            <%if(order.paymentStatus === "failed"){%>
-        <div class="row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center">
-            <div class="d-flex align-items-center col-md-10">
-                <div class="col-md-2 mr-3">
-                    <img src="/uploads/assets/paymentFailed.png" alt="Product Image" class="img-fluid product-image">
-                </div>
-                <div class="col-md-7 mr-3">
-                    <p><b>Order id: <%=order.orderId%></b></p>
-                    <p><b>Total Quantity: <%= order .totalQuantity %></b></p>
-                        <b>
-                          <div class="tm-status-circle cancelled ">
-                          </div>
-                           Payment: <%= order.paymentStatus %> 
-                        </b>
+  <% if (orders.length > 0) { %> <% orders.forEach(order => { %>
+  <%if(order.paymentStatus === "failed"){%>
+  <div
+    class="row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center"
+  >
+    <div class="d-flex align-items-center col-md-10">
+      <div class="col-md-2 mr-3">
+        <img
+          src="/uploads/assets/paymentFailed.png"
+          alt="Product Image"
+          class="img-fluid product-image"
+        />
+      </div>
+      <div class="col-md-7 mr-3">
+        <p><b>Order id: <%=order.orderId%></b></p>
+        <p><b>Total Quantity: <%= order .totalQuantity %></b></p>
+        <b>
+          <div class="tm-status-circle cancelled"></div>
+          Payment: <%= order.paymentStatus %>
+        </b>
 
-                   <%if(order.coupon){%>
-                   <p>coupon applyed. code: <b><%= order.coupon.couponCode %></b> discount: <b><%= order.couponDiscount %></b></p>
-                   <%}%>
-                </div>
-                <div class="col-md-2">
-                    <p><b>₹ <%= order.totalPrice %></b></p>
-                </div>
-            </div>
-            <div class="d-flex flex-column">
-                <a href="/failedOrder-view/<%= order._id %>">
-                    <button class="btn btn-primary mb-2 w-100">View</button>
-                </a>    
-                <burtton class="btn btn-primary w-100 repaymentBtn" data-amount="<%=order.totalPrice%>" data-id="<%=order._id%>"  > Repayment</burtton>    
-            </div>
-        </div>
+        <%if(order.coupon){%>
+        <p>
+          coupon applyed. code: <b><%= order.coupon.couponCode %></b> discount:
+          <b><%= order.couponDiscount %></b>
+        </p>
         <%}%>
-<%})%>
+      </div>
+      <div class="col-md-2">
+        <p><b>₹ <%= order.totalPrice %></b></p>
+      </div>
+    </div>
+    <div class="d-flex flex-column">
+      <a href="/failedOrder-view/<%= order._id %>">
+        <button class="btn btn-primary mb-2 w-100">View</button>
+      </a>
+      <burtton
+        class="btn btn-primary w-100 repaymentBtn"
+        data-amount="<%=order.totalPrice%>"
+        data-id="<%=order._id%>"
+      >
+        Repayment</burtton
+      >
+    </div>
+  </div>
+  <%}%> <%})%>
 
-<h2 class="mb-4">Your Orders</h2>
-        <% orders.forEach(order => { %>
-            <% order.products.forEach(product => { %>
-                <% if(order.paymentStatus !== "failed"){ %>
-                    <div class="row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center">
-                        <div class="d-flex align-items-center col-md-10">
-                            <div class="col-md-2 mr-3">
-                                <img src="<%= product.productId.imagePaths[0] %>" alt="Product Image" class="img-fluid product-image">
-                            </div>
-                            <div class="col-md-7 mr-3">
-                                <p><b><%= product.productId.name %></b></p>
-                                <p>
-                                    <b>
-                                      <div class="tm-status-circle 
-                                        <%= product.status === 'canceled' || product.status === 'returned' || product.status === 'return rejected' ? 'cancelled' : 
-                                            product.status === 'delivered' ? 'moving' : 'pending' %>">
-                                      </div>
-                                      <%= product.status.charAt(0).toUpperCase() + product.status.slice(1) %> 
-                                    </b>
-                                  </p>   
-                              <b>Size: <%= product.size.size %></b>
-                               <%if(order.coupon){%>
-                               <p>coupon applyed. code: <b><%= order.coupon.couponCode %></b> discount: <b><%= order.couponDiscount %></b></p>
-                               <%}%>
-                            </div>
-                            <div class="col-md-2">
-                                <p><b>₹ <%= product.totalPrice %></b></p>
-                            </div>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <a href="/order-view/<%= product._id %>/<%= order.orderId %>">
-                                <button class="btn btn-primary mb-2 w-100">View</button>
-                            </a>
-                            <% if (product.status === "delivered") { %>
-                            <button class="btn btn-primary w-100 reviewBtn" data-product-id="<%= product.productId._id %>" data-order-id ="<%= order._id%>" >Review</button>
-                            <% } %>
-                        </div>
-                    </div>
-               <% } %>
-            <% }) %>
-        <% }); %>
-    <% } else { %>
-        <p>You have no orders.</p>
-    <% } %>
+  <h2 class="mb-4">Your Orders</h2>
+  <% orders.forEach(order => { %> <% order.products.forEach(product => { %> <%
+  if(order.paymentStatus !== "failed"){ %>
+  <div
+    class="row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center"
+  >
+    <div class="d-flex align-items-center col-md-10">
+      <div class="col-md-2 mr-3">
+        <img
+          src="<%= product.productId.imagePaths[0] %>"
+          alt="Product Image"
+          class="img-fluid product-image"
+        />
+      </div>
+      <div class="col-md-7 mr-3">
+        <p><b><%= product.productId.name %></b></p>
+        <p>
+          <b>
+            <div
+              class="tm-status-circle <%= product.status === 'canceled' || product.status === 'returned' || product.status === 'return rejected' ? 'cancelled' : product.status === 'delivered' ? 'moving' : 'pending' %>"
+            ></div>
+            <%= product.status.charAt(0).toUpperCase() + product.status.slice(1)
+            %>
+          </b>
+        </p>
+        <b>Size: <%= product.size.size %></b>
+        <%if(order.coupon){%>
+        <p>
+          coupon applyed. code: <b><%= order.coupon.couponCode %></b> discount:
+          <b><%= order.couponDiscount %></b>
+        </p>
+        <%}%>
+      </div>
+      <div class="col-md-2">
+        <p><b>₹ <%= product.totalPrice %></b></p>
+      </div>
+    </div>
+    <div class="d-flex flex-column">
+      <a href="/order-view/<%= product._id %>/<%= order.orderId %>">
+        <button class="btn btn-primary mb-2 w-100">View</button>
+      </a>
+      <% if (product.status === "delivered") { %>
+      <button
+        class="btn btn-primary w-100 reviewBtn"
+        data-product-id="<%= product.productId._id %>"
+        data-order-id="<%= order._id%>"
+      >
+        Review
+      </button>
+      <% } %>
+    </div>
+  </div>
+
+  <% } %> <% }) %> <% }); %> 
+  <div class="pagination-controls">
+    <button id="prev-page" class="btn btn-secondary">Previous</button>
+    <span id="page-info"></span>
+    <button id="next-page" class="btn btn-secondary">Next</button>
+  </div>
+  <% } else { %>
+  <div
+    id="no-address-alert"
+    class="alert alert-warning text-center"
+    role="alert"
+  >
+    No Order found!
+  </div>
+  <% } %>
 </div>
 
 <!-- Review Modal -->
-<div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+<div
+  class="modal fade"
+  id="reviewModal"
+  tabindex="-1"
+  aria-labelledby="reviewModalLabel"
+  aria-hidden="true"
+>
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="reviewModalLabel">Write a Review</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
       </div>
       <div class="modal-body">
         <div class="star-rating mb-3">
@@ -98,214 +144,335 @@
           <i class="fas fa-star" data-rating="5"></i>
         </div>
         <div class="mb-3">
-          <label for="reviewText" class="form-label">Your Review (minimum 5 sentences):</label>
+          <label for="reviewText" class="form-label"
+            >Your Review (minimum 5 sentences):</label
+          >
           <textarea class="form-control" id="reviewText" rows="5"></textarea>
         </div>
         <div id="errorMessage" class="text-danger"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" id="submitReview">Submit Review</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" id="submitReview">
+          Submit Review
+        </button>
       </div>
     </div>
   </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+<script
+  src="https://kit.fontawesome.com/your-fontawesome-kit.js"
+  crossorigin="anonymous"
+></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+  document.addEventListener("DOMContentLoaded", function () {
     let selectedRating = 0;
     let currentProductId = null;
     const body = {};
-    const starRating = document.querySelector('.star-rating');
-    const stars = starRating.querySelectorAll('.fa-star');
-    const reviewModal = new bootstrap.Modal(document.getElementById('reviewModal'));
-    const submitButton = document.getElementById('submitReview');
-    const errorMessage = document.getElementById('errorMessage');
+    const starRating = document.querySelector(".star-rating");
+    const stars = starRating.querySelectorAll(".fa-star");
+    const reviewModal = new bootstrap.Modal(
+      document.getElementById("reviewModal")
+    );
+    const submitButton = document.getElementById("submitReview");
+    const errorMessage = document.getElementById("errorMessage");
 
     // Open modal and set product ID
-    document.querySelectorAll('.reviewBtn').forEach(btn => {
-        btn.addEventListener('click', function() {
-            body.product = this.dataset.productId;
-            body.order = this.dataset.orderId;
-            reviewModal.show();
-        });
+    document.querySelectorAll(".reviewBtn").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        body.product = this.dataset.productId;
+        body.order = this.dataset.orderId;
+        reviewModal.show();
+      });
     });
 
     // Star rating functionality
-    stars.forEach(star => {
-        star.addEventListener('click', function() {
-            body.rating = this.dataset.rating;
-            stars.forEach((s, index) => {
-                s.classList.toggle('text-warning', index < body.rating);
-            });
+    stars.forEach((star) => {
+      star.addEventListener("click", function () {
+        body.rating = this.dataset.rating;
+        stars.forEach((s, index) => {
+          s.classList.toggle("text-warning", index < body.rating);
         });
+      });
     });
 
     // Submit review
-    submitButton.addEventListener('click', async function() {
-        const reviewText = document.getElementById('reviewText').value;
-        const words = reviewText.split(/\s+/).filter(word => word.trim().length > 0);
+    submitButton.addEventListener("click", async function () {
+      const reviewText = document.getElementById("reviewText").value;
+      const words = reviewText
+        .split(/\s+/)
+        .filter((word) => word.trim().length > 0);
 
-        if (body.rating === 0) {
-            errorMessage.textContent = 'Please select a star rating.';
-            return;
-        }
+      if (body.rating === 0) {
+        errorMessage.textContent = "Please select a star rating.";
+        return;
+      }
 
-        if (words.length < 2) {
-            errorMessage.textContent = 'Please write at least 2 words.';
-            return;
-        }
+      if (words.length < 2) {
+        errorMessage.textContent = "Please write at least 2 words.";
+        return;
+      }
 
-        // Clear any previous error messages
-        errorMessage.textContent = '';
-        body.Description = reviewText;
+      // Clear any previous error messages
+      errorMessage.textContent = "";
+      body.Description = reviewText;
 
-        // Send review to backend
-    const response = await fetch('/submit-review', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(body)
-        })
-        if(response.ok){
-            reviewModal.hide();
-                Swal.fire({
-                    title: "Success!",
-                    text: "Your review has been submitted successfully.",
-                    icon: "success"
-                });
-        }else{
-            const data = await response.json();
-                console.log(data);
-                errorMessage.textContent = `${data.error}`;
-        }
+      // Send review to backend
+      const response = await fetch("/submit-review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(body),
+      });
+      if (response.ok) {
+        reviewModal.hide();
+        Swal.fire({
+          title: "Success!",
+          text: "Your review has been submitted successfully.",
+          icon: "success",
+        });
+      } else {
+        const data = await response.json();
+        console.log(data);
+        errorMessage.textContent = `${data.error}`;
+      }
     });
 
     // Reset modal when it's closed
-    document.getElementById('reviewModal').addEventListener('hidden.bs.modal', function () {
+    document
+      .getElementById("reviewModal")
+      .addEventListener("hidden.bs.modal", function () {
         selectedRating = 0;
-        stars.forEach(s => s.classList.remove('text-warning'));
-        document.getElementById('reviewText').value = '';
-        errorMessage.textContent = '';
-    });
+        stars.forEach((s) => s.classList.remove("text-warning"));
+        document.getElementById("reviewText").value = "";
+        errorMessage.textContent = "";
+      });
 
     // Close modal on cancel button click
-    document.querySelectorAll('.btn-close').forEach(button => {
-        button.addEventListener('click', function() {
-            reviewModal.hide();
-        });
+    document.querySelectorAll(".btn-close").forEach((button) => {
+      button.addEventListener("click", function () {
+        reviewModal.hide();
+      });
     });
 
     // Hide modal on clicking the close button in the footer
-    document.querySelector('.btn-secondary').addEventListener('click', function() {
+    document
+      .querySelector(".btn-secondary")
+      .addEventListener("click", function () {
         reviewModal.hide();
-    });
-});
+      });
+  });
 </script>
 
 <style>
-.star-rating .fa-star {
+  .star-rating .fa-star {
     cursor: pointer;
     color: #ccc;
-}
-.star-rating .fa-star.text-warning {
+  }
+  .star-rating .fa-star.text-warning {
     color: #ffc107;
-}
+  }
 </style>
 
 <!-- save backend  -->
 <script>
-    async function saveOrderRazor(amount,orderId, razorResponse) {
-        try {
-            const response = await fetch("/repayment", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ amount,orderId })
-            });
+  async function saveOrderRazor(amount, orderId, razorResponse) {
+    try {
+      const response = await fetch("/repayment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount, orderId }),
+      });
 
-            const data = await response.json();
+      const data = await response.json();
 
-            const verifyData = await fetch("/razor-verify", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...razorResponse,
-                    orderId,
-                 })
-            });
+      const verifyData = await fetch("/razor-verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...razorResponse, orderId }),
+      });
 
-            if (response.ok) {
-                Swal.fire({
-                    title: `payment successfully completed ₹${amount}`,
-                    icon: "success",
-                    confirmButtonColor: "#3085d6",
-                    confirmButtonText: "OK"
-                }).then(() => {
-                    window.location.reload();
-                });
-            } else {
-                throw new Error("Verification failed");
-            }
-        } catch (error) {
-            Swal.fire({
-                title: "Error",
-                text: error.message || "Something went wrong",
-                icon: "error"
-            });
-        }
+      if (response.ok) {
+        Swal.fire({
+          title: `payment successfully completed ₹${amount}`,
+          icon: "success",
+          confirmButtonColor: "#3085d6",
+          confirmButtonText: "OK",
+        }).then(() => {
+          window.location.reload();
+        });
+      } else {
+        throw new Error("Verification failed");
+      }
+    } catch (error) {
+      Swal.fire({
+        title: "Error",
+        text: error.message || "Something went wrong",
+        icon: "error",
+      });
     }
+  }
 </script>
 
 <script>
-document.querySelectorAll('.repaymentBtn').forEach(btn => {
-        btn.addEventListener('click', async function() {
-            const amount = this.dataset.amount;
-            const orderId = this.dataset.id;
-            
-            try {
-                const keyResponse = await fetch("/razor-key");
-                const { key } = await keyResponse.json();
+  document.querySelectorAll(".repaymentBtn").forEach((btn) => {
+    btn.addEventListener("click", async function () {
+      const amount = this.dataset.amount;
+      const orderId = this.dataset.id;
 
-                const orderResponse = await fetch("/razor-order", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ amount })
-                });
-                const { order } = await orderResponse.json();
+      try {
+        const keyResponse = await fetch("/razor-key");
+        const { key } = await keyResponse.json();
 
-                const options = {
-                    key,
-                    amount: amount * 100,
-                    currency: "INR",
-                    name: "KARMA",
-                    description: "order repayment ",
-                    image: "img/fav.png",
-                    order_id: order.id,
-                    handler: function(response) {
-                        saveOrderRazor(amount, orderId, response);
-                    },
-                    prefill: {
-                        name: "John Doe",
-                        email: "john@example.com",
-                        contact: "9000090000"
-                    },
-                    theme: { color: "#1818c4" }
-                };
-
-                const razorpay = new Razorpay(options);
-                razorpay.open();
-
-            } catch (error) {
-                Swal.fire({
-                    title: "Error",
-                    text: "Failed to initiate payment",
-                    icon: "error"
-                });
-            }
+        const orderResponse = await fetch("/razor-order", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount }),
         });
+        const { order } = await orderResponse.json();
+
+        const options = {
+          key,
+          amount: amount * 100,
+          currency: "INR",
+          name: "KARMA",
+          description: "order repayment ",
+          image: "img/fav.png",
+          order_id: order.id,
+          handler: function (response) {
+            saveOrderRazor(amount, orderId, response);
+          },
+          prefill: {
+            name: "John Doe",
+            email: "john@example.com",
+            contact: "9000090000",
+          },
+          theme: { color: "#1818c4" },
+        };
+
+        const razorpay = new Razorpay(options);
+        razorpay.open();
+      } catch (error) {
+        Swal.fire({
+          title: "Error",
+          text: "Failed to initiate payment",
+          icon: "error",
+        });
+      }
     });
+  });
 </script>
+
+<!-- pagination  -->
+<script>
+    let currentPage = 1;
+    let totalPages = 1;
+    
+    function fetchOrders(page) {
+      $.ajax({
+        url: '/user-profile',
+        method: 'GET',
+        data: { page: page },
+        success: function(response) {
+          renderOrders(response.orders);
+          currentPage = response.currentPage;
+          totalPages = response.totalPages;
+          updatePaginationControls();
+        },
+        error: function(error) {
+          console.error('Error fetching orders:', error);
+        }
+      });
+    }
+    
+    function renderOrders(orders) {
+      const container = $('#orders-container');
+      container.empty();
+      
+      orders.forEach(order => {
+        order.products.forEach(product => {
+          if (order.paymentStatus !== "failed") {
+            const productHtml = `
+  <div class="row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center">
+    <div class="d-flex align-items-center col-md-10">
+      <div class="col-md-2 mr-3">
+        <img
+          src="${product.productId.imagePaths[0]}"
+          alt="Product Image"
+          class="img-fluid product-image"
+        />
+      </div>
+      <div class="col-md-7 mr-3">
+        <p><b>${product.productId.name}</b></p>
+        <p>
+          <b>
+            <div
+              class="tm-status-circle ${product.status === 'canceled' || product.status === 'returned' || product.status === 'return rejected' ? 'cancelled' : product.status === 'delivered' ? 'moving' : 'pending'}"
+            ></div>
+            ${product.status.charAt(0).toUpperCase() + product.status.slice(1)}
+          </b>
+        </p>
+        <b>Size: ${product.size.size}</b>
+        ${order.coupon ? `
+        <p>
+          coupon applied. code: <b>${order.coupon.couponCode}</b> discount:
+          <b>${order.couponDiscount}</b>
+        </p>
+        ` : ''}
+      </div>
+      <div class="col-md-2">
+        <p><b>₹ ${product.totalPrice}</b></p>
+      </div>
+    </div>
+    <div class="d-flex flex-column">
+      <a href="/order-view/${product._id}/${order.orderId}">
+        <button class="btn btn-primary mb-2 w-100">View</button>
+      </a>
+      ${product.status === "delivered" ? `
+      <button
+        class="btn btn-primary w-100 reviewBtn"
+        data-product-id="${product.productId._id}"
+        data-order-id="${order._id}"
+      >
+        Review
+      </button>
+      ` : ''}
+    </div>
+  </div>
+`;
+container.append(productHtml);
+
+          }
+        });
+      });
+    }
+    
+    function updatePaginationControls() {
+      $('#page-info').text(`Page ${currentPage} of ${totalPages}`);
+      $('#prev-page').prop('disabled', currentPage === 1);
+      $('#next-page').prop('disabled', currentPage === totalPages);
+    }
+    
+    $(document).ready(function() {
+      fetchOrders(currentPage);
+    
+      $('#prev-page').click(function() {
+        if (currentPage > 1) {
+          fetchOrders(currentPage - 1);
+        }
+      });
+    
+      $('#next-page').click(function() {
+        if (currentPage < totalPages) {
+          fetchOrders(currentPage + 1);
+        }
+      });
+    });
+    </script>

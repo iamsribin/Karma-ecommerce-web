@@ -115,7 +115,7 @@ exports.renderDashboard = async (req, res) => {
       },
       {
         $lookup: {
-          from: "categories",
+          from: "caregories",
           localField: "_id",
           foreignField: "_id",
           as: "categoryInfo"
@@ -131,11 +131,6 @@ exports.renderDashboard = async (req, res) => {
       },
       { $sort: { totalSales: -1 } }
     ]);
-console.log(
- "salesData:", salesData,
-  "brandPerformance:",brandPerformance,
- "categoryPerformance:",categoryPerformance,
-  "selectedRange:",range);
 
   // Fetch top 10 selling brands
   const topBrands = await Order.aggregate([
@@ -160,7 +155,7 @@ console.log(
         _id: "$brandDetails._id",
         name: { $first: "$brandDetails.name" },
         totalSold: { $sum: "$products.quantity" },
-        totalRevenue: { $sum: { $multiply: ["$products.price", "$products.quantity"] } }
+        totalRevenue: { $sum: "$products.totalPrice" },
       }
     },
     { $sort: { totalSold: -1 } },
@@ -169,15 +164,22 @@ console.log(
 
   const topProducts = await Order.aggregate([
     { $unwind: "$products" },
-    { $group: {
+    { 
+      $match: { "products.status": "delivered" } 
+    },
+    { 
+      $group: {
         _id: "$products.productId",
         totalSold: { $sum: "$products.quantity" },
-        totalRevenue: { $sum: { $multiply: ["$products.price", "$products.quantity"] } }
+        totalRevenue: { $sum: "$products.totalPrice" },
+        basePrice: { $first: "$products.price" },
+        offerPrice: { $first: "$products.offerPrice" }
       }
     },
     { $sort: { totalSold: -1 } },
     { $limit: 10 },
-    { $lookup: {
+    { 
+      $lookup: {
         from: "products",
         localField: "_id",
         foreignField: "_id",
@@ -185,19 +187,21 @@ console.log(
       }
     },
     { $unwind: "$productDetails" },
-    { $project: {
+    { 
+      $project: {
         name: "$productDetails.name",
         image: "$productDetails.imagePaths",
-        offerPrice: "$productDetails.offerAmount",
-        BasePrice: "$productDetails.basePrice",
-        totalQuantity: "$productDetails.totalQuantity",
+        basePrice: "$basePrice",
+        offerPrice: "$offerPrice",
         numberOfReviews: "$productDetails.numberOfReviews",
-        rating : "$productDetails.rating",
+        rating: "$productDetails.rating",
         totalSold: 1,
         totalRevenue: 1
       }
     }
   ]);
+  
+  
 
      // Fetch top 10 selling categories
      const topCategories = await Order.aggregate([
@@ -222,7 +226,8 @@ console.log(
           _id: "$categoryDetails._id",
           name: { $first: "$categoryDetails.name" },
           totalSold: { $sum: "$products.quantity" },
-          totalRevenue: { $sum: { $multiply: ["$products.price", "$products.quantity"] } }
+          totalRevenue: { $sum: "$products.totalPrice" },
+
         }
       },
       { $sort: { totalSold: -1 } },
@@ -233,9 +238,7 @@ console.log(
     const newOrder = await Order.find({ "products.status": { $in: ["pending"] }})
     .populate("userId")
     // .sort({ createdAt: -1 });
-
-    console.log("new oooooorder",newOrder);
-
+    
     // admin/adminDasbord/orders
     res.render("admin/adminDasbord/dashbord", {
       salesData,

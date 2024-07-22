@@ -975,7 +975,6 @@
 <!-- //razorPay method -->
 <script>
   const initiateRazorPayPayment = async (totalAmt, selectedPayment, selectedAddress) => {
-    console.log("calling razor pay function");
 
     //getting razor-pay secret key
     const response = await fetch("/razor-key", {

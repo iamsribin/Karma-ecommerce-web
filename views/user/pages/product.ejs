@@ -1,11 +1,36 @@
 <%- include('../userPartials/header'); %>
+<style>
+  .reviewer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
 
+.reviewer-img {
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%; 
+    object-fit: cover;
+    margin-right: 10px; 
+}
+
+.reviewer-name {
+    font-weight: bold;
+    margin-right: 5px; 
+}
+
+.review-date {
+    color: grey;
+    font-size: 0.9em;
+}
+
+</style>
 <!-- Breadcrumb Start -->
 <div class="breadcrumb-wrap">
   <div class="container-fluid">
     <ul class="breadcrumb">
-      <li class="breadcrumb-item"><a href="#">Home</a></li>
-      <li class="breadcrumb-item"><a href="#">Products</a></li>
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item"><a href="/category">Products</a></li>
       <li class="breadcrumb-item active">Product Detail</li>
     </ul>
   </div>
@@ -36,26 +61,28 @@
             <!-- Column for Product Details -->
             <div class="col-md-5" style="height: 100%; width: 100%; padding: 0px; margin: 0px;">
               <div class="product-content" style="padding: 30px; width: 120%;">
-                <div class="title d-flex justify-content-between align-items-center mb-3">
-                  <h2 style="margin-bottom: 0; font-size: 20px"><%= product.name %></h2>
+                <div class="text-right">                  
                   <% if (product.totalQuantity == 0) { %>
-                  <b style="color: red">Out of Stock</b>
+                  <b class="badge badge-danger">Out of Stock</b>
                   <% } else if (product.totalQuantity < 10) { %>
-                    <b style="color: rgb(255, 136, 0)">Limited Stock</b>
+                    <b class="badge badge-warning">Limited Stock</b>
                   <% } else { %>
-                  <b style="color: rgb(0, 255, 17)">In Stock</b>
-                  <% } %>
-                </div>
+                  <b class="badge badge-success">In Stock</b>
+                  <% } %></div>
                 <div class="ratting mb-3">
                  <% if(averageRating){ %>
                     <% for(let i = 0; i <= averageRating; i++ ){ %>
                       <i class="fa fa-star"></i>
                   <% } %>
                 <%  } %>
-
-
+                </div>
+                <div class="title d-flex justify-content-between align-items-center mb-3">
+                  <h2 style="margin-bottom: 0; font-size: 20px"><%= product.name %></h2>
                 </div>
                 <div class="product-info mb-3">
+                  <p class="mb-1">
+                    <span><b style="color: black"><%= product.tag.tagName %>'S SHOE</b></span>
+                  </p>
                   <p class="mb-1">
                     <span><b style="color: black">BRAND:</b></span>
                     <b style="color: #000; margin-left: 10px;"><%= product.brand.name %></b>
@@ -65,6 +92,7 @@
                     <b style="color: #000; margin-left: 10px;"><%= product.category.name %></b>
                   </p>
                 </div>
+                
                 <div class="price mb-4">
                   <h4 class="mb-2">Price:</h4>
                   <% if (product.offerAmount) { %>
@@ -72,9 +100,15 @@
                     $<%= product.offerAmount %>
                     <span style="text-decoration: line-through; margin-left: 10px;">$<%= product.basePrice %></span>
                   </p>
+                  <% } else if(product?.categoryOfferAmount) { %>
+                    <p>
+                      $<%= product.categoryOfferAmount %>
+                      <span style="text-decoration: line-through; margin-left: 10px;">$<%= product.basePrice %></span>
+                    </p>
                   <% } else { %>
-                  <p>$<%= product.basePrice %></p>
-                  <% } %>
+                    <p>$<%= product.basePrice %></p>
+
+                 <% } %>
                 </div>
                 <div class="quantity mb-4">
                   <h4 id="getQuntity" data-id="<%=product.totalQuantity%>" class="mb-2">Quantity:</h4>
@@ -82,7 +116,7 @@
                     <button class="btn-minus" style="margin-right: 10px;">
                       <i class="fa fa-minus"></i>
                     </button>
-                    <input type="text" id="quantity" value="1" style="width: 50px; text-align: center;" />
+                    <input type="text" readonly id="quantity" value="1" style="width: 50px; text-align: center;" />
                     <button class="btn-plus" style="margin-left: 10px;">
                       <i class="fa fa-plus"></i>
                     </button>
@@ -92,11 +126,13 @@
                   <h4 class="mb-2">Size:</h4>
                   <div class="btn-group btn-group-sm" id="size-buttons">
                     <% product.variants.forEach((variant) => { %>
-                    <button type="button" class="btn size-button" data-size="<%= variant.size._id %>" style="margin-right: 5px;">
+                    <button type="button" class="btn size-button" data-quantity="<%= variant.quantity %>" data-size="<%= variant.size._id %>" style="margin-right: 5px;">
                       <%= variant.size.size %>
                     </button>
                     <% }) %>
                   </div>
+                  <br><br>
+                  <div class="d-flex" id="sizeStock"></div>
                 </div>
                 <div class="action">
                   <a class="btn btn-primary mr-2" href="" id="addToCart" data-id="<%= product._id %>" style="margin-right: 10px;">
@@ -163,8 +199,11 @@
                 <div class="reviews-submitted">
                 <%  if(reviews.length !== 0){ %>
                     <% reviews.forEach((review)=>{%>
-                      <div class="reviewer"><%=review.userId?.name %> - <span><%=review.createdAt.toDateString()%></span></div>
-                      <div class="ratting">
+                      <div class="reviewer">
+                        <img src="<%= review.userId?.profilePicture %>" alt="Reviewer Profile Picture" class="reviewer-img">
+                        <span class="reviewer-name"><%= review.userId?.name %></span> - 
+                        <span class="review-date"><%= review.createdAt.toDateString() %></span>
+                    </div>                      <div class="ratting">
                         <% if(review){ %>
                           <% for(let i = 0; i <= review.rating; i++ ){ %>
                             <i class="fa fa-star"></i>
@@ -249,17 +288,22 @@
                       %>
                       <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
                                   </div>
-                    <% if (product.offerAmount) { %>
-                    <h6 class="text-dark">
-                     <span class="text-success"> ₹<%= product.offerAmount %></span>&nbsp;&nbsp;
-                      <span style="text-decoration: line-through; color: crimson"
-                        ><%= product.basePrice %></span
-                      >
-                    </h6>
-                    <% } else { %>
-                      <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
-                      <% } %>
-                    <!-- <a class="btn" href=""><i class="fa fa-shopping-cart"></i>Buy Now</a> -->
+                                  <% if (product.offerAmount) { %>
+                                    <h6 class="text-dark">
+                                      $ <%= product.offerAmount %>&nbsp;&nbsp;
+                                      <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                                      <span class="button11 badge badge-success text-white">Product Offer <%=Math.ceil(100-(product.offerAmount / product.basePrice) * 100 ) %>%</span>
+                                    </h6>
+                                  <% } else if (product?.categoryOfferAmount) { %>
+                      
+                                    <h6 class="text-dark">
+                                      $ <%= product?.categoryOfferAmount?.toFixed(2) %>&nbsp;&nbsp;
+                                      <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
+                                      <span class="button11 badge badge-success text-white">Category Offer <%=Math.ceil(100-( product?.categoryOfferAmount / product.basePrice) * 100 ) %>%</span>
+                                    </h6>
+                                  <% } else { %>
+                                    <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>
+                                  <% } %>
                   </div>
                 </div>
               </div> 
@@ -275,8 +319,7 @@
           <%   tags.forEach((brand)=>{ %>
             <a href="/search?search=<%=brand.tagName%>"><%=brand.tagName%></a>
         <%  }) %>
-          <!-- <a href="#">Lorem ipsum</a>
-          <a href="#">Nam lorem</a> -->
+
         </div>
         <div class="sidebar-widget brands">
           <h2 class="title">Our Brands</h2>
@@ -284,8 +327,6 @@
        <%   brands.forEach((brand)=>{ %>
             <li><a href="/search?search=<%=brand.name%>"><%= brand.name %></a></li>
         <%  }) %>
-            <!-- <li><a href="#">Curabitur </a><span>(34)</span></li>
-            <li><a href="#">Sagittis</a><span>(28)</span></li> -->
           </ul>
         </div>
 
@@ -346,16 +387,22 @@
                     %>
                     <span><%= capitalizeFirstLetter(relatedProduct.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(relatedProduct.tag.tagName.toLowerCase()) %> Shoe</span>
                                 </div>
-                  <% if (relatedProduct.offerAmount) { %>
-                  <h6 class="text-dark">
-                    $ <%= relatedProduct.offerAmount %>&nbsp;&nbsp;
-                    <span style="text-decoration: line-through; color: crimson"
-                      ><%= relatedProduct.basePrice %></span
-                    >
-                  </h6>
-                  <% } else { %>
-                    <h6 class="text-dark"><span>$</span><%= relatedProduct.basePrice %></h6>
-                    <% } %>
+                                <% if (relatedProduct.offerAmount) { %>
+                                  <h6 class="text-dark">
+                                    $ <%= relatedProduct.offerAmount %>&nbsp;&nbsp;
+                                    <span style="text-decoration: line-through; color: crimson"><%= relatedProduct.basePrice %></span>&nbsp;&nbsp;
+                                    <span class="button11 badge badge-success text-white">Product Offer <%=Math.ceil(100-(relatedProduct.offerAmount / relatedProduct.basePrice) * 100 ) %>%</span>
+                                  </h6>
+                                <% } else if (relatedProduct?.categoryOfferAmount) { %>
+                    
+                                  <h6 class="text-dark">
+                                    $ <%= relatedProduct?.categoryOfferAmount?.toFixed(2) %>&nbsp;&nbsp;
+                                    <span style="text-decoration: line-through; color: crimson"><%= relatedProduct.basePrice %></span>&nbsp;&nbsp;
+                                    <span class="button11 badge badge-success text-white">Category Offer <%=Math.ceil(100-( relatedProduct?.categoryOfferAmount / relatedProduct.basePrice) * 100 ) %>%</span>
+                                  </h6>
+                                <% } else { %>
+                                  <h6 class="text-dark"><span>$</span><%= relatedProduct.basePrice %></h6>
+                                <% } %>
                 </div>
               </div>
             </div>
@@ -408,6 +455,7 @@
   const totalQuantity = parseInt(getQuntity.getAttribute("data-id"));
   const btnPlus = document.querySelector(".btn-plus");
   const btnMinus = document.querySelector(".btn-minus");
+  const sizeStock = document.querySelector("#sizeStock")
 
   const showToast = (message) => {
   toastr.options = {
@@ -428,6 +476,7 @@ const showSuccessToast = (message) => {
   toastr.success(message);
 };
 
+
 const showErrorToast = (message) => {
   toastr.options = {
     "positionClass": "toast-top-center",
@@ -437,17 +486,63 @@ const showErrorToast = (message) => {
   toastr.error(message);
 };
 
+
+  // Highlight selected size
+  let selectedSize = null;
+  let selectedSizeQuantity = null;
+  document.getElementById("size-buttons").addEventListener("click", (e) => {
+    if (e.target.classList.contains("size-button")) {
+      document.querySelectorAll(".size-button").forEach(button => button.classList.remove("selected"));
+      e.target.classList.add("selected");
+      selectedSize = e.target.getAttribute("data-size");
+      selectedSizeQuantity = e.target.getAttribute("data-quantity");
+      if (selectedSizeQuantity == 0 ) {
+         sizeStock.textContent = `this size currently not available`
+         sizeStock.style.color = "red"
+      } else if ( selectedSizeQuantity < 10){
+        sizeStock.textContent = `Hurry only ${selectedSizeQuantity} is left in stock`
+         sizeStock.style.color = "red"
+      }else{
+        sizeStock.textContent ="Available"
+        sizeStock.style.color = "#2eb800"
+      }
+     
+    }
+  });
+
   btnPlus.addEventListener("click", () => {
+    const productId = addToCartButton.getAttribute("data-id");
+    const size = selectedSize;
+    
+    if (!size) {
+      showErrorToast("Please select a size");
+      quantityInput.value = parseInt(quantityInput.value)-1;
+      
+      return;
+    }
+
+if (selectedSizeQuantity == 0) {
+  showErrorToast(`This size is not available`);
+      quantityInput.value = parseInt(quantityInput.value)-1;
+      btnPlus.disabled = true;
+      return;
+} else if(selectedSizeQuantity < parseInt(quantityInput.value)) {
+  showErrorToast(`only ${selectedSizeQuantity} is available in this size`);
+      quantityInput.value = parseInt(quantityInput.value)-1;
+      btnPlus.disabled = true;
+      return;
+}
+
     let quantity = parseInt(quantityInput.value);
 
     if (quantity >= totalQuantity) {
-      showToast(`Only ${totalQuantity} items available`);
+      showErrorToast(`Only ${totalQuantity} items available`);
       quantityInput.value = totalQuantity ? totalQuantity: 1;
-      // btnPlus.disabled = true;
+      btnPlus.disabled = true;
     } else if (quantity >= 9) {
-      showToast("You can only add 10 items");
+      showErrorToast("You can only add 10 items");
       quantityInput.value = 10;
-      // btnPlus.disabled = true;
+      btnPlus.disabled = true;
     } else {
       quantityInput.value = quantity + 1;
     }
@@ -459,9 +554,9 @@ const showErrorToast = (message) => {
     let quantity = parseInt(quantityInput.value);
 
     if (quantity <= 1) {
-      showToast("One item needed");
+      showErrorToast("One item needed");
       quantityInput.value = 1;
-      // btnMinus.disabled = true;
+      btnMinus.disabled = true;
     } else {
       quantityInput.value = quantity - 1;
     }
@@ -469,15 +564,7 @@ const showErrorToast = (message) => {
     btnPlus.disabled = quantityInput.value >= totalQuantity || quantityInput.value >= 10;
   });
 
-  // Highlight selected size
-  let selectedSize = null;
-  document.getElementById("size-buttons").addEventListener("click", (e) => {
-    if (e.target.classList.contains("size-button")) {
-      document.querySelectorAll(".size-button").forEach(button => button.classList.remove("selected"));
-      e.target.classList.add("selected");
-      selectedSize = e.target.getAttribute("data-size");
-    }
-  });
+
 
   // Add to Cart
   const addToCartButton = document.getElementById("addToCart");
@@ -487,8 +574,16 @@ const showErrorToast = (message) => {
     const productId = addToCartButton.getAttribute("data-id");
     const quantity = quantityInput.value;
     const size = selectedSize;
+    
     if (!size) {
-      showToast("Please select a size");
+      showErrorToast("Please select a size");
+      return;
+    }
+
+    const user = JSON.parse('<%= JSON.stringify(user) %>'.replace(/&#34;/g, '"'));
+
+    if(!user){
+      showErrorToast("Please login and explore more");
       return;
     }
 

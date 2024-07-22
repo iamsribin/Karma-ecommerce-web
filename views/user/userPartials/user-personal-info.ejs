@@ -168,6 +168,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
+      <!-- edit modal  -->
       <div class="modal-body">
         <form id="editProfileForm" enctype="multipart/form-data">
           <div class="form-group">
@@ -184,6 +185,7 @@
               id="imageView"
               style="width: 200px; height: 200px; border-radius: 50%; margin-top: 10px;"
             />
+            <span id="error-message-image" style="color: red;"></span>
           </div>
           <div class="form-group">
             <label for="fullName">Full Name</label>
@@ -209,20 +211,7 @@
               value="<%= userDetalis.email %>"
               placeholder="Email"
             />
-            <!-- <span id="error-message-email"></span> -->
           </div>
-          <!-- <div class="form-group">
-            <label for="phone">Phone</label>
-            <input
-              type="number"
-              class="form-control"
-              id="number"
-              name="phone"
-              value="<%= userDetalis.number ? userDetalis.number : 'NULL' %>"
-              placeholder="Phone"
-            />
-            <span id="error-message-number"></span>
-          </div> -->
           <button type="submit" id="updateButton" class="btn btn-primary">
             Update Account
           </button>
@@ -234,69 +223,65 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <script>
   document.getElementById("profilePicture").addEventListener("change", function (event) {
     const file = event.target.files[0];
-    if (file) {
+    const errorMessageElement = document.getElementById("error-message-image");
+    if (file && file.type.startsWith("image/")) {
+      errorMessageElement.textContent = "";
       const reader = new FileReader();
       reader.onload = function (e) {
         document.getElementById("imageView").src = e.target.result;
       };
       reader.readAsDataURL(file);
+    } else {
+      errorMessageElement.textContent = "*Please upload a valid image file*";
+      event.target.value = "";
     }
   });
 
-  // Utility function to check if a string contains only spaces
-  function isOnlySpaces(str) {
-    return str.trim().length === 0;
+  function validateName(name) {
+    const regex = /^[A-Za-z]{3,18}$/;
+    return regex.test(name);
   }
 
-  // Function to validate individual fields
   function validateField(fieldId, errorMessageId, validationFn, errorMessage) {
     const field = document.getElementById(fieldId);
     const errorMessageElement = document.getElementById(errorMessageId);
-    if (validationFn(field.value)) {
+    if (!validationFn(field.value)) {
       errorMessageElement.textContent = errorMessage;
-      field.classList.add('is-invalid');
+      field.classList.add("is-invalid");
       return false;
     } else {
       errorMessageElement.textContent = "";
-      field.classList.remove('is-invalid');
+      field.classList.remove("is-invalid");
       return true;
     }
   }
 
-  // Form validation function
   function validateForm() {
     let isValid = true;
 
     isValid &= validateField(
       "fullName",
       "error-message-product-name",
-      isOnlySpaces,
-      "*Please enter a valid name*"
+      validateName,
+      "*Name must be between 3 and 18 characters long and contain only letters*"
     );
-    return isValid;
+
+    return !!isValid;
   }
 
-  const fieldsToValidate = [
-    {
-      fieldId: "fullName",
-      errorMessageId: "error-message-product-name",
-      validationFn: isOnlySpaces || value.length <= 5,
-      errorMessage: "*Please enter a valid name*",
-    },
-  ];
+  document.getElementById("fullName").addEventListener("input", function () {
+    validateField(
+      "fullName",
+      "error-message-product-name",
+      validateName,
+      "*Name must be between 3 and 18 characters long and contain only letters*"
+    );
+  });
 
-  fieldsToValidate.forEach(
-    ({ fieldId, errorMessageId, validationFn, errorMessage }) => {
-      document.getElementById(fieldId).addEventListener("input", function () {
-        validateField(fieldId, errorMessageId, validationFn, errorMessage);
-      });
-    }
-  );
-
-  // Submit form
   document.getElementById("editProfileForm").addEventListener("submit", async function (event) {
     event.preventDefault();
     if (validateForm()) {

@@ -71,7 +71,8 @@ const {
 //payment controller
 const{
 renderPaymentsList
-} = require("../../controller/adminController/paymentController")
+} = require("../../controller/adminController/paymentController");
+
 //tag and size controller
 const {
   //tag
@@ -114,8 +115,7 @@ const {
 }= require("../../controller/adminController/offerController");
 
 //middlewares
-const { adminAuthCheck, checkAdmin, verifyAdmin } = require("../../middleware/adminAuth");
-
+const { checkAdmin, verifyAdmin } = require("../../middleware/adminAuth");
 
 //admin authentication router
 router.get("/login", checkAdmin, renderLogin);
