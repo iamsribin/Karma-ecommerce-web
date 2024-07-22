@@ -19,7 +19,7 @@ exports.home = async (req, res) => {
     let userDetalis = null;
     let cartLength = 0;
     if (user) {
-      userDetalis = await userDB.findOne({email: req.session.userId});
+      userDetalis = await userDB.findOne({_id: req.session.userId});
       const cart = await cartDB.findOne({userId: req.session.userId});
       cartLength = cart?.cart?.length;
     }

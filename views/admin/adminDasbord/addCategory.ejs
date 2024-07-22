@@ -52,15 +52,21 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+  // Utility functions
   function isOnlySpaces(str) {
     return str.trim().length === 0;
   }
-
-  // Function to validate individual fields
+  
+  function isValidTagName(tagName) {
+    const regex = /^[a-zA-Z]{3,10}$/;
+    return regex.test(tagName);
+  }
+  
+  // Field validation function
   function validateField(fieldId, errorMessageId, validationFn, errorMessage) {
     const field = document.getElementById(fieldId);
     const errorMessageElement = document.getElementById(errorMessageId);
-    if (validationFn(field.value)) {
+    if (!validationFn(field.value)) {
       errorMessageElement.innerHTML = errorMessage;
       return false;
     } else {
@@ -68,103 +74,93 @@
       return true;
     }
   }
-
+  
+  // Form validation function
   function validateForm() {
-    let isValid = true;
-
-    isValid &= validateField(
+    const nameValid = validateField(
       "name",
       "error-message-category-name",
-      isOnlySpaces,
-      "*Please enter a valid category name*"
+      value => !isOnlySpaces(value),
+      "*Please enter a valid tag*"
     );
-    isValid &= validateField(
+  
+    const nameFormatValid = validateField(
+      "name",
+      "error-message-category-name",
+      isValidTagName,
+      "*Tag must be only characters, no spaces, and between 3 and 10 characters long*"
+    );
+  
+    const descriptionValid = validateField(
       "description",
       "error-message-description",
-      isOnlySpaces,
-      "Please enter a valid description."
+      value => !isOnlySpaces(value),
+      "*Description must be filled*"
     );
-    if (!isValid) return false;
-   
-    return isValid;
+  
+    return nameValid && nameFormatValid && descriptionValid;
   }
-
-  const fieldsToValidate = [
-    {
-      fieldId: "name",
-      errorMessageId: "error-message-category-name",
-      validationFn: isOnlySpaces,
-      errorMessage: "*Please enter a valid category name*",
-    },
-    {
-      fieldId: "description",
-      errorMessageId: "error-message-description",
-      validationFn: isOnlySpaces,
-      errorMessage: "Please enter a valid description.",
-    },
-  ];
-
-  fieldsToValidate.forEach(
-    ({ fieldId, errorMessageId, validationFn, errorMessage }) => {
-      document.getElementById(fieldId).addEventListener("input", function () {
-        validateField(fieldId, errorMessageId, validationFn, errorMessage);
-      });
-    }
-  );
-
-  //send data to server
-  const addCategoryForm = document.querySelector("#categoryForm");
-  addCategoryForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (validateForm()) {
-      const formData = new FormData(addCategoryForm);
-      const name = formData.get("name");
-      const discription = formData.get("discription");
-
-      try {
-        const response = await fetch("/admin/add-category", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            name,
-            discription,
-          }),
-        });
-        const data = await response.json();
-        if (response.ok) {
-          Swal.fire({
-            title: `category "${data.name}" successfully Added `,
-            icon: "success",
-            showCancelButton: false,
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              window.location.href = "/admin/add-category-page";
-            }
+  
+  // Form submission event listener
+  document.addEventListener('DOMContentLoaded', () => {
+    const addCategoryForm = document.querySelector("#categoryForm");
+    addCategoryForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      console.log("Form submitted");  // Debug log
+      if (validateForm()) {
+        console.log("Form validation passed");  // Debug log
+        const formData = new FormData(addCategoryForm);
+        const name = formData.get("name");
+        const discription = formData.get("discription");
+  
+        try {
+          const response = await fetch("/admin/add-category", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              name,
+              discription,
+            }),
           });
-        } else {
+          const data = await response.json();
+          if (response.ok) {
+            Swal.fire({
+              title: `category "${data.name}" successfully Added `,
+              icon: "success",
+              showCancelButton: false,
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = "/admin/add-category-page";
+              }
+            });
+          } else {
+            Swal.fire({
+              title: data.message,
+              icon: "error",
+              showCancelButton: false,
+              confirmButtonColor: "#3085d6",
+              confirmButtonText: "OK",
+            });
+          }
+        } catch (error) {
+          console.error("Error submitting form:", error);  // Debug log
           Swal.fire({
-            title: data.message,
+            title: "An error occurred",
             icon: "error",
             showCancelButton: false,
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
           });
         }
-      } catch (error) {
-        Swal.fire({
-          title: "An error occurred",
-          icon: "error",
-          showCancelButton: false,
-          confirmButtonColor: "#3085d6",
-          confirmButtonText: "OK",
-        });
+      } else {
+        console.log("Form validation failed");  // Debug log
       }
-    }
+    });
   });
-</script>
+  </script>
 
 <%- include('../admin-partials/footer'); %>

@@ -40,15 +40,16 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  function isOnlySpaces(str) {
-    return str.trim().length === 0;
+  function isValidTag(tag) {
+    const regex = /^[A-Za-z]{3,}$/;
+    return regex.test(tag);
   }
 
   // Function to validate individual fields
   function validateField(fieldId, errorMessageId, validationFn, errorMessage) {
     const field = document.getElementById(fieldId);
     const errorMessageElement = document.getElementById(errorMessageId);
-    if (validationFn(field.value)) {
+    if (!validationFn(field.value)) {
       errorMessageElement.innerHTML = errorMessage;
       return false;
     } else {
@@ -63,8 +64,8 @@
     isValid &= validateField(
       "name",
       "error-message-category-name",
-      isOnlySpaces,
-      "*Please enter a valid tag*"
+      isValidTag,
+      "*Please enter a valid tag (only letters, at least 3 characters)*"
     );
     if (!isValid) return false;
 
@@ -75,8 +76,8 @@
     {
       fieldId: "name",
       errorMessageId: "error-message-category-name",
-      validationFn: isOnlySpaces,
-      errorMessage: "*Please enter a tag category*",
+      validationFn: isValidTag,
+      errorMessage: "*Please enter a valid tag (only letters, at least 3 characters)*",
     },
   ];
 
@@ -109,7 +110,7 @@
         const data = await response.json();
         if (response.ok) {
           Swal.fire({
-            title: `tag "${data.tagName}" successfully Added `,
+            title: `Tag "${data.tagName}" successfully added`,
             icon: "success",
             showCancelButton: false,
             confirmButtonColor: "#3085d6",
@@ -140,5 +141,4 @@
     }
   });
 </script>
-
 <%- include('../admin-partials/footer'); %>

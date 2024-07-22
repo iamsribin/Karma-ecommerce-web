@@ -3,6 +3,7 @@ const Category = require("../adminModels/category");
 const Brand = require("../adminModels/brand");
 const Tag = require("./tag");
 const Size = require("../adminModels/size");
+const CategoryOffer = require("../adminModels/categoryOffer");
 const { Schema } = mongoose;
 
 const productSchema = new mongoose.Schema(
@@ -57,5 +58,40 @@ const productSchema = new mongoose.Schema(
       },
   { timestamps: true }
 );
+
+productSchema.methods.checkAndUpdateOffers = async function() {
+  const now = new Date();
+  let isModified = false;
+  
+  if (this.offerExpiryDate && this.offerExpiryDate < now) {
+    this.offerAmount = undefined;
+    this.offerExpiryDate = undefined;
+    isModified = true;
+  }
+  
+  if (this.categoryOfferExpiryDate && this.categoryOfferExpiryDate < now) {
+    this.categoryOfferAmount = undefined;
+    this.categoryOfferExpiryDate = undefined;
+    isModified = true;
+  }
+  
+  // Check for category offer if product offer is not active
+  if (!this.offerAmount) {
+    const categoryOffer = await CategoryOffer.findOne({
+      category_id: this.category,
+      expiryDate: { $gt: now }
+    });
+    
+    if (categoryOffer) {
+      this.categoryOfferAmount = (categoryOffer.offerPercentage * this.basePrice) / 100;
+      this.categoryOfferExpiryDate = categoryOffer.expiryDate;
+      isModified = true;
+    }
+  }
+  
+  if (isModified) {
+    await this.save();
+  }
+};
 
 module.exports = mongoose.model("Product", productSchema);

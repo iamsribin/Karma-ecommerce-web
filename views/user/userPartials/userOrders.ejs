@@ -172,7 +172,8 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
-    let selectedRating = 0;
+    try {
+      let selectedRating = 0;
     let currentProductId = null;
     const body = {};
     const starRating = document.querySelector(".star-rating");
@@ -186,6 +187,7 @@
     // Open modal and set product ID
     document.querySelectorAll(".reviewBtn").forEach((btn) => {
       btn.addEventListener("click", function () {
+
         body.product = this.dataset.productId;
         body.order = this.dataset.orderId;
         reviewModal.show();
@@ -268,6 +270,10 @@
       .addEventListener("click", function () {
         reviewModal.hide();
       });
+    } catch (error) {
+      console.log("error",error);
+    }
+    
   });
 </script>
 

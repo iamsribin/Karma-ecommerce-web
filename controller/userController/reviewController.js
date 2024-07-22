@@ -65,7 +65,6 @@ exports.createNewReview = async (req, res) => {
     }
   };    
 
-  //edit review
   // Edit review
 exports.editReview = async (req, res) => {
   try {

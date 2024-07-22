@@ -1028,7 +1028,7 @@
 
     // If failed toast it.
     razor.on("payment.failed", async function (response) {
-      console.log("faild respose",response);
+    
       try {
         const newOrder = await fetch("/faildOrder", {
           method: "POST",
@@ -1042,8 +1042,7 @@
           }),
         });
         const data = await newOrder.json();
-        console.log("data",data);
-
+ 
 //saving payment
 const verifyData = await fetch("/razor-verify-failedPayment", {
   method: "POST",

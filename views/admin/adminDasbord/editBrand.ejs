@@ -54,15 +54,20 @@
 </div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  function isOnlySpaces(str) {
+   function isOnlySpaces(str) {
     return str.trim().length === 0;
+  }
+
+  function isValidBrandName(brandName) {
+    const regex = /^[a-zA-Z]{3,}$/;
+    return regex.test(brandName);
   }
 
   // Function to validate individual fields
   function validateField(fieldId, errorMessageId, validationFn, errorMessage) {
     const field = document.getElementById(fieldId);
     const errorMessageElement = document.getElementById(errorMessageId);
-    if (validationFn(field.value)) {
+    if (!validationFn(field.value)) {
       errorMessageElement.innerHTML = errorMessage;
       return false;
     } else {
@@ -72,37 +77,42 @@
   }
 
   function validateForm() {
-    let isValid = true;
-
-    isValid &= validateField(
+    const nameValid = validateField(
       "name",
       "error-message-brand-name",
-      isOnlySpaces,
+      value => !isOnlySpaces(value),
       "*Please enter a valid brand name*"
     );
-    isValid &= validateField(
+
+    const nameFormatValid = validateField(
+      "name",
+      "error-message-brand-name",
+      isValidBrandName,
+      "*Brand name must be only characters, no spaces, and at least 3 characters long*"
+    );
+
+    const descriptionValid = validateField(
       "description",
       "error-message-description",
-      isOnlySpaces,
-      "Please enter a valid description."
+      value => !isOnlySpaces(value),
+      "*Description must be filled*"
     );
-    if (!isValid) return false;
-   
-    return isValid;
+
+    return nameValid && nameFormatValid && descriptionValid;
   }
 
   const fieldsToValidate = [
     {
       fieldId: "name",
       errorMessageId: "error-message-brand-name",
-      validationFn: isOnlySpaces,
-      errorMessage: "*Please enter a valid brand name*",
+      validationFn: value => !isOnlySpaces(value) && isValidBrandName(value),
+      errorMessage: "*Brand name must be only characters, no spaces, and at least 3 characters long*",
     },
     {
       fieldId: "description",
       errorMessageId: "error-message-description",
-      validationFn: isOnlySpaces,
-      errorMessage: "Please enter a valid description.",
+      validationFn: value => !isOnlySpaces(value),
+      errorMessage: "*Description must be filled*",
     },
   ];
 

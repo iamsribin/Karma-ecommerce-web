@@ -663,6 +663,35 @@
     }
   }
 
+  //add variants
+  function addVariant() {
+    const container = document.getElementById("variants-container");
+    const newVariant = container.children[0].cloneNode(true);
+    container.appendChild(newVariant);
+
+    // Enable delete button for all variants except the first one
+    const deleteButtons = container.querySelectorAll(".delete-variant");
+    deleteButtons.forEach((button, index) => {
+      button.disabled = index === 0;
+    });
+  }
+
+  function removeVariant(button) {
+    const container = document.getElementById("variants-container");
+    const variantToRemove = button.closest(".variant");
+
+    if (container.contains(variantToRemove) && container.children.length > 1) {
+      container.removeChild(variantToRemove);
+
+      // Enable delete button for all variants except the first one after removal
+      const deleteButtons = container.querySelectorAll(".delete-variant");
+      deleteButtons.forEach((button, index) => {
+        button.disabled = index === 0;
+      });
+    }
+  }
+
+
   // Function to preview and validate new images
   function previewImage(event, previewId, index) {
     const file = event.target.files[0];

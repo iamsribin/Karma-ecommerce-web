@@ -12,6 +12,7 @@ const googleAuthController = require("./routes/userRouters/googleAuthRouter");
 const adminRouter = require("./routes/adminRouters/adminRouter");
 require("./connetion/passport");
 const connectToDatabase = require("./connetion/mongo-connetion");
+require("./utils/offerExpiryJob");
 
 app.set("view engine", "ejs");
 

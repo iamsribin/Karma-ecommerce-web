@@ -59,11 +59,16 @@
     return str.trim().length === 0;
   }
 
+  function isValidTagName(tagName) {
+    const regex = /^[a-zA-Z]{3,10}$/;
+    return regex.test(tagName);
+  }
+
   // Function to validate individual fields
   function validateField(fieldId, errorMessageId, validationFn, errorMessage) {
     const field = document.getElementById(fieldId);
     const errorMessageElement = document.getElementById(errorMessageId);
-    if (validationFn(field.value)) {
+    if (!validationFn(field.value)) {
       errorMessageElement.innerHTML = errorMessage;
       return false;
     } else {
@@ -73,36 +78,41 @@
   }
 
   function validateForm() {
-    let isValid = true;
-
-    isValid &= validateField(
+    const nameValid = validateField(
       "name",
       "error-message-category-name",
-      isOnlySpaces,
+      value => !isOnlySpaces(value),
       "*Please enter a valid category name*"
     );
-    isValid &= validateField(
+
+    const nameFormatValid = validateField(
+      "name",
+      "error-message-category-name",
+      isValidTagName,
+      "*Category name must be only characters, no spaces, and between 3 and 10 characters long*"
+    );
+
+    const descriptionValid = validateField(
       "description",
       "error-message-description",
-      isOnlySpaces,
+      value => !isOnlySpaces(value),
       "Please enter a valid description."
     );
-    if (!isValid) return false;
-   
-    return isValid;
+
+    return nameValid && nameFormatValid && descriptionValid;
   }
 
   const fieldsToValidate = [
     {
       fieldId: "name",
       errorMessageId: "error-message-category-name",
-      validationFn: isOnlySpaces,
-      errorMessage: "*Please enter a valid category name*",
+      validationFn: value => !isOnlySpaces(value) && isValidTagName(value),
+      errorMessage: "*Please enter a valid category name (3-10 characters, letters only)*",
     },
     {
       fieldId: "description",
       errorMessageId: "error-message-description",
-      validationFn: isOnlySpaces,
+      validationFn: value => !isOnlySpaces(value),
       errorMessage: "Please enter a valid description.",
     },
   ];
@@ -115,12 +125,14 @@
     }
   );
 
-  //send data to server
-  const addCategoryForm = document.querySelector("#editCategoryForm");
-  addCategoryForm.addEventListener("submit", async (event) => {
+  // Form submission
+  const editCategoryForm = document.querySelector("#editCategoryForm");
+  editCategoryForm.addEventListener("submit", async (event) => {
     event.preventDefault();
+    console.log("Form submitted");  // Debug log
     if (validateForm()) {
-      const formData = new FormData(addCategoryForm);
+      console.log("Form validation passed");  // Debug log
+      const formData = new FormData(editCategoryForm);
       const name = formData.get("name");
       const discription = formData.get("discription");
       const inputField = document.querySelector('#name');
@@ -139,14 +151,14 @@
         });
         const data = await response.json();
         if (response.ok) {
-            console.log(data);
+          console.log(data);
           Swal.fire({
-            title: `category "${data.category.name}" successfully edited `,
+            title: `Category "${data.category.name}" successfully edited`,
             icon: "success",
             showCancelButton: false,
             confirmButtonColor: "#3085d6",
             confirmButtonText: "OK",
-          }).then(async (result) => {
+          }).then((result) => {
             if (result.isConfirmed) {
               window.location.href = "/admin/categories-and-brand";
             }
@@ -161,6 +173,7 @@
           });
         }
       } catch (error) {
+        console.error("Error submitting form:", error);  // Debug log
         Swal.fire({
           title: "An error occurred",
           icon: "error",
@@ -169,6 +182,8 @@
           confirmButtonText: "OK",
         });
       }
+    } else {
+      console.log("Form validation failed");  // Debug log
     }
   });
 </script>

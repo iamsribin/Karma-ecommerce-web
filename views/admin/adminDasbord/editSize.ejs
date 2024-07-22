@@ -42,6 +42,11 @@
     return str.trim().length === 0;
   }
 
+  function isValidSize(size) {
+    const num = Number(size);
+    return Number.isInteger(num) && num > 1 && !size.includes(" ");
+  }
+
   // Function to validate individual fields
   function validateField(fieldId, errorMessageId, validationFn, errorMessage) {
     const field = document.getElementById(fieldId);
@@ -65,6 +70,13 @@
       "*Please enter a valid size*"
     );
 
+    isValid &= validateField(
+      "name",
+      "error-message-category-name",
+      (value) => !isValidSize(value),
+      "*Size must be a positive integer greater than 1 without spaces*"
+    );
+
     if (!isValid) return false;
    
     return isValid;
@@ -76,6 +88,12 @@
       errorMessageId: "error-message-category-name",
       validationFn: isOnlySpaces,
       errorMessage: "*Please enter a valid size*",
+    },
+    {
+      fieldId: "name",
+      errorMessageId: "error-message-category-name",
+      validationFn: (value) => !isValidSize(value),
+      errorMessage: "*Size must be a positive integer greater than 1 without spaces*",
     },
   ];
 
@@ -141,3 +159,4 @@
 </script>
 
 <%- include('../admin-partials/footer'); %>
+

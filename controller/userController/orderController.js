@@ -595,8 +595,7 @@ exports.generateOrderInvoice = async (req, res) => {
     if (!userId) {
       return res.status(401).json({ message: "User not authenticated" });
     }
-
-    console.log("add, pay",addressId, paymentMethod);
+    
     if (!addressId ) {
       return res.status(400).json({ message: "Address required" });
     }

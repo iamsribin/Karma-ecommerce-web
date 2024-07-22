@@ -16,6 +16,11 @@ exports.listOrders = async (req, res, next) =>{
             "shipped",
             "delivered",
             "canceled",
+          ]},
+          "paymentStatus" :{
+          $in: [
+           "pending",
+            "success"
           ]}
     }).sort({ createdAt: -1 }); 
         res.render("admin/adminDasbord/orders",{orders});

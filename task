@@ -1,7 +1,10 @@
-
+6695dd783b75908111350698 ABCD
 Pendings:
 User
 - product quantity validation should be based on quantity added by admin
+tag  validation
+category  validation
+ brant validation
 <!-- - add to cart bypasses stock validation  -->
 <!-- - cart quantity update stutter  -->
 <!-- - negative price after applying higher value coupon -->
