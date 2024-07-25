@@ -20,9 +20,9 @@ exports.checkCoupon = async (userId) => {
       }
     }
   } catch (error) {
-    console.log("check user",error);
-  }
+   console.log(error);
 };
+}
 
 exports.applyCoupon = async (req, res) => {
   try {
@@ -72,7 +72,6 @@ exports.applyCoupon = async (req, res) => {
       couponCode: code,
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };

@@ -70,6 +70,7 @@
                   name="startDate"
                   type="date"
                   class="form-control"
+                  required
                   style="background-color: white; color: black"
                 />
                 <span id="error-message-start-date" class="text-danger"></span>
@@ -171,6 +172,10 @@ function validateOfferAmountLowerThanHalfMinPurchase(offerAmount, minPurchaseAmo
 function validateForm() {
   let isValid = true;
 
+  fieldsToValidate.forEach(({ fieldId, errorMessageId, validationFn, errorMessage }) => {
+    isValid &= validateField(fieldId, errorMessageId, validationFn, errorMessage);
+  });
+
   isValid &= validateField(
     "name",
     "error-message-name",
@@ -201,6 +206,15 @@ function validateForm() {
 
   const startDate = document.getElementById("startDate").value;
   const expiryDate = document.getElementById("expiryDate").value;
+
+  if (startDate && expiryDate) {
+    isValid &= validateField(
+      "startDate",
+      "error-message-start-date",
+      (value) => validateStartDateBeforeEndDate(value, expiryDate),
+      "Start date must be before the expiry date."
+    );
+  }
 
   isValid &= validateField(
     "startDate",
@@ -294,7 +308,7 @@ fieldsToValidate.forEach(({ fieldId, errorMessageId, validationFn, errorMessage 
   field.addEventListener("input", function () {
     validateField(fieldId, errorMessageId, validationFn, errorMessage);
     
-    // Special case for offer amount
+    // Special case for offer amount and start/expiry date comparison
     if (fieldId === "offerAmount" || fieldId === "minAmount") {
       const minAmount = document.getElementById("minAmount").value;
       const offerAmount = document.getElementById("offerAmount").value;
@@ -304,6 +318,17 @@ fieldsToValidate.forEach(({ fieldId, errorMessageId, validationFn, errorMessage 
         (value) => validateOfferAmountLowerThanHalfMinPurchase(value, minAmount),
         "Offer amount must be less than half of the minimum purchase amount."
       );
+    } else if (fieldId === "startDate" || fieldId === "expiryDate") {
+      const startDate = document.getElementById("startDate").value;
+      const expiryDate = document.getElementById("expiryDate").value;
+      if (startDate && expiryDate) {
+        validateField(
+          "startDate",
+          "error-message-start-date",
+          (value) => validateStartDateBeforeEndDate(value, expiryDate),
+          "Start date must be before the expiry date."
+        );
+      }
     }
   });
 });

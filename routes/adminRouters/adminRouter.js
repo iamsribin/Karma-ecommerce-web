@@ -14,12 +14,14 @@ const {
   renderDashboard,
   dashbord,
 } = require("../../controller/adminController/dashbordController");
+
 //orders controller
 const {
 listOrders,
 renderViewOrder,
 updateProductStatus,
-} = require("../../controller/adminController/orderController")
+} = require("../../controller/adminController/orderController");
+
 //coupon controller
 const {
   addCoupon,

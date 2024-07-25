@@ -291,19 +291,19 @@
                   <% function capitalizeFirstLetter(string) {
                     return string.charAt(0).toUpperCase() + string.slice(1);
                   } %>
-                  <span><%= capitalizeFirstLetter(product.category.name.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.tag.tagName.toLowerCase()) %> Shoe</span>
+                  <span><%= capitalizeFirstLetter( product.tag.tagName.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.category.name.toLowerCase()  ) %> Shoe</span>
                 </div>
                 <% if (product.offerAmount) { %>
                   <h6 class="text-dark">
                     $ <%= product.offerAmount %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
-                    <span class="button11 badge badge-success text-white">Product Offer <%= Math.ceil(100 - (product.offerAmount / product.basePrice) * 100) %>%</span>
+                    <span class="button11 badge badge-success text-white">Product Offer <%= Math.ceil( (product.offerAmount / product.basePrice) * 100) %>%</span>
                   </h6>
                 <% } else if (product.categoryOfferAmount) { %>
                   <h6 class="text-dark">
                     $ <%= product.categoryOfferAmount %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"><%= product.basePrice %></span>&nbsp;&nbsp;
-                    <span class="button11 badge badge-success text-white">Category Offer <%= Math.ceil(100 - (product.categoryOfferAmount / product.basePrice) * 100) %>%</span>
+                    <span class="button11 badge badge-success text-white">Category Offer <%= Math.ceil((( product.basePrice - product.categoryOfferAmount) / product.basePrice) * 100 ) %>%</span>
                   </h6>
                 <% } else { %>
                   <h6 class="text-dark"><span>$</span><%= product.basePrice %></h6>

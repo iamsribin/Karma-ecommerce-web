@@ -19,7 +19,6 @@ exports.logCheck = (req, res, next) => {
       return next(createError(400, "invalid password or email"));
     }
   } catch (error) {
-    console.log("error in admin login:", error);
     return next(createError(null, null));
   }
 };
@@ -37,7 +36,6 @@ exports.logOut = (req, res, next) => {
 
     }
   } catch (error) {
-console.log(error);
     return next(createError(null, null));
   }
 };

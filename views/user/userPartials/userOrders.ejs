@@ -1,3 +1,41 @@
+  
+  <style>
+
+  .star-rating .fa-star {
+    cursor: pointer;
+    color: #ccc;
+  }
+  .star-rating .fa-star.text-warning {
+    color: #ffc107;
+  }
+    .pagination-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+    }
+  
+    .pagination-controls button {
+      margin: 0 10px;
+    }
+  
+    #page-info {
+      font-weight: bold;
+    }
+  
+    .tm-status-circle {
+      display: inline-block;
+      margin-right: 5px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+  
+    .tm-status-circle.cancelled { background-color: #dc3545; }
+    .tm-status-circle.moving { background-color: #28a745; }
+    .tm-status-circle.pending { background-color: #ffc107; }
+  </style>
+
 <div class="container mt-5">
   <% if (orders.length > 0) { %> <% orders.forEach(order => { %>
   <%if(order.paymentStatus === "failed"){%>
@@ -47,74 +85,34 @@
   <%}%> <%})%>
 
   <h2 class="mb-4">Your Orders</h2>
-  <% orders.forEach(order => { %> <% order.products.forEach(product => { %> <%
-  if(order.paymentStatus !== "failed"){ %>
-  <div
-    class="row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center"
-  >
-    <div class="d-flex align-items-center col-md-10">
-      <div class="col-md-2 mr-3">
-        <img
-          src="<%= product.productId.imagePaths[0] %>"
-          alt="Product Image"
-          class="img-fluid product-image"
-        />
-      </div>
-      <div class="col-md-7 mr-3">
-        <p><b><%= product.productId.name %></b></p>
-        <p>
-          <b>
-            <div
-              class="tm-status-circle <%= product.status === 'canceled' || product.status === 'returned' || product.status === 'return rejected' ? 'cancelled' : product.status === 'delivered' ? 'moving' : 'pending' %>"
-            ></div>
-            <%= product.status.charAt(0).toUpperCase() + product.status.slice(1)
-            %>
-          </b>
-        </p>
-        <b>Size: <%= product.size.size %></b>
-        <%if(order.coupon){%>
-        <p>
-          coupon applyed. code: <b><%= order.coupon.couponCode %></b> discount:
-          <b><%= order.couponDiscount %></b>
-        </p>
-        <%}%>
-      </div>
-      <div class="col-md-2">
-        <p><b>₹ <%= product.totalPrice %></b></p>
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <a href="/order-view/<%= product._id %>/<%= order.orderId %>">
-        <button class="btn btn-primary mb-2 w-100">View</button>
-      </a>
-      <% if (product.status === "delivered") { %>
-      <button
-        class="btn btn-primary w-100 reviewBtn"
-        data-product-id="<%= product.productId._id %>"
-        data-order-id="<%= order._id%>"
-      >
-        Review
-      </button>
-      <% } %>
-    </div>
+  <div id="paginated-orders" data-orders='<%= JSON.stringify(orders.filter(order => order.paymentStatus !== "failed").flatMap(order => order.products.map(product => ({
+    orderId: order.orderId,
+    productName: product.productId.name,
+    status: product.status,
+    size: product.size.size,
+    totalPrice: product.totalPrice,
+    productId: product._id,
+    product_id: product.productId._id,
+    order_id: order._id,
+    coupon: order.coupon,
+    couponDiscount: order.couponDiscount || 0,
+    imagePath: product.productId.imagePaths[0]
+  })))) %>'>
+    <!-- Paginated orders will be inserted here by JavaScript -->
   </div>
 
-  <% } %> <% }) %> <% }); %> 
   <div class="pagination-controls">
     <button id="prev-page" class="btn btn-secondary">Previous</button>
     <span id="page-info"></span>
     <button id="next-page" class="btn btn-secondary">Next</button>
   </div>
-  <% } else { %>
-  <div
-    id="no-address-alert"
-    class="alert alert-warning text-center"
-    role="alert"
-  >
+<% } else { %>
+  <div id="no-address-alert" class="alert alert-warning text-center" role="alert">
     No Order found!
   </div>
-  <% } %>
+<% } %>
 </div>
+
 
 <!-- Review Modal -->
 <div
@@ -152,7 +150,7 @@
         <div id="errorMessage" class="text-danger"></div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+        <button type="button" class="btn btn-secondary btn-close" data-bs-dismiss="modal">
           Close
         </button>
         <button type="button" class="btn btn-primary" id="submitReview">
@@ -170,122 +168,216 @@
 ></script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
+<!-- pagination  -->
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    try {
-      let selectedRating = 0;
-    let currentProductId = null;
-    const body = {};
-    const starRating = document.querySelector(".star-rating");
-    const stars = starRating.querySelectorAll(".fa-star");
-    const reviewModal = new bootstrap.Modal(
-      document.getElementById("reviewModal")
-    );
-    const submitButton = document.getElementById("submitReview");
-    const errorMessage = document.getElementById("errorMessage");
+  // Pagination variables and functions
+let orders = [];
+const itemsPerPage = 3;
+let currentPage = 1;
 
-    // Open modal and set product ID
-    document.querySelectorAll(".reviewBtn").forEach((btn) => {
-      btn.addEventListener("click", function () {
+function renderOrders(page) {
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedOrders = orders.slice(startIndex, endIndex);
 
-        body.product = this.dataset.productId;
-        body.order = this.dataset.orderId;
-        reviewModal.show();
-      });
-    });
+  const orderContainer = document.getElementById('paginated-orders');
+  orderContainer.innerHTML = '';
 
-    // Star rating functionality
-    stars.forEach((star) => {
-      star.addEventListener("click", function () {
-        body.rating = this.dataset.rating;
-        stars.forEach((s, index) => {
-          s.classList.toggle("text-warning", index < body.rating);
-        });
-      });
-    });
-
-    // Submit review
-    submitButton.addEventListener("click", async function () {
-      const reviewText = document.getElementById("reviewText").value;
-      const words = reviewText
-        .split(/\s+/)
-        .filter((word) => word.trim().length > 0);
-
-      if (body.rating === 0) {
-        errorMessage.textContent = "Please select a star rating.";
-        return;
-      }
-
-      if (words.length < 2) {
-        errorMessage.textContent = "Please write at least 2 words.";
-        return;
-      }
-
-      // Clear any previous error messages
-      errorMessage.textContent = "";
-      body.Description = reviewText;
-
-      // Send review to backend
-      const response = await fetch("/submit-review", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      if (response.ok) {
-        reviewModal.hide();
-        Swal.fire({
-          title: "Success!",
-          text: "Your review has been submitted successfully.",
-          icon: "success",
-        });
-      } else {
-        const data = await response.json();
-        console.log(data);
-        errorMessage.textContent = `${data.error}`;
-      }
-    });
-
-    // Reset modal when it's closed
-    document
-      .getElementById("reviewModal")
-      .addEventListener("hidden.bs.modal", function () {
-        selectedRating = 0;
-        stars.forEach((s) => s.classList.remove("text-warning"));
-        document.getElementById("reviewText").value = "";
-        errorMessage.textContent = "";
-      });
-
-    // Close modal on cancel button click
-    document.querySelectorAll(".btn-close").forEach((button) => {
-      button.addEventListener("click", function () {
-        reviewModal.hide();
-      });
-    });
-
-    // Hide modal on clicking the close button in the footer
-    document
-      .querySelector(".btn-secondary")
-      .addEventListener("click", function () {
-        reviewModal.hide();
-      });
-    } catch (error) {
-      console.log("error",error);
-    }
-    
+  paginatedOrders.forEach(order => {
+    const orderElement = document.createElement('div');
+    orderElement.className = 'row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center';
+    orderElement.innerHTML = `
+      <div class="d-flex align-items-center col-md-10">
+        <div class="col-md-2 mr-3">
+          <img src="${order.imagePath}" alt="Product Image" class="img-fluid product-image" />
+        </div>
+        <div class="col-md-7 mr-3">
+          <p><b>${order.productName}</b></p>
+          <p>
+            <b>
+              <div class="tm-status-circle ${getStatusClass(order.status)}"></div>
+              ${order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+            </b>
+          </p>
+          <b>Size: ${order.size}</b>
+          ${order.coupon ? `
+            <p>
+              coupon applied. code: <b>${order.coupon.couponCode}</b> discount:
+              <b>${order.couponDiscount}</b>
+            </p>
+          ` : ''}
+        </div>
+        <div class="col-md-2">
+          <p><b>₹ ${order.totalPrice}</b></p>
+        </div>
+      </div>
+      <div class="d-flex flex-column">
+        <a href="/order-view/${order.productId}/${order.orderId}">
+          <button class="btn btn-primary mb-2 w-100">View</button>
+        </a>
+        ${order.status.toLowerCase() === "delivered" ? `
+          <button class="btn btn-primary w-100 reviewBtn" data-product-id="${order.product_id}" data-order-id="${order.order_id}">
+            Review
+          </button>
+        ` : ''}
+      </div>
+    `;
+    orderContainer.appendChild(orderElement);
   });
+
+  updatePaginationControls();
+}
+
+function getStatusClass(status) {
+  switch(status.toLowerCase()) {
+    case 'canceled':
+    case 'returned':
+    case 'return rejected':
+      return 'cancelled';
+    case 'delivered':
+      return 'moving';
+    default:
+      return 'pending';
+  }
+}
+
+function updatePaginationControls() {
+  const prevButton = document.getElementById('prev-page');
+  const nextButton = document.getElementById('next-page');
+  const pageInfo = document.getElementById('page-info');
+
+  prevButton.disabled = currentPage === 1;
+  nextButton.disabled = currentPage === Math.ceil(orders.length / itemsPerPage);
+
+  pageInfo.textContent = `Page ${currentPage} of ${Math.ceil(orders.length / itemsPerPage)}`;
+}
+
+// Review modal variables and functions
+let selectedRating = 0;
+let currentProductId = null;
+const body = {};
+let reviewModal;
+let stars;
+const submitButton = document.getElementById("submitReview");
+const errorMessage = document.getElementById("errorMessage");
+
+function initReviewModal() {
+  reviewModal = new bootstrap.Modal(document.getElementById("reviewModal"));
+  const starRating = document.querySelector(".star-rating");
+  stars = starRating.querySelectorAll(".fa-star");
+
+  // Star rating functionality
+  stars.forEach((star) => {
+    star.addEventListener("click", function () {
+      body.rating = parseInt(this.dataset.rating);
+      stars.forEach((s, index) => {
+        s.classList.toggle("text-warning", index < body.rating);
+      });
+    });
+  });
+
+  // Submit review
+  submitButton.addEventListener("click", submitReview);
+
+  // Reset modal when it's closed
+  document.getElementById("reviewModal").addEventListener("hidden.bs.modal", resetReviewModal);
+
+  // Close modal on cancel button click
+  document.querySelectorAll(".btn-close").forEach((button) => {
+    button.addEventListener("click", () => reviewModal.hide());
+  });
+
+  // Hide modal on clicking the close button in the footer
+  document.querySelector(".btn-secondary").addEventListener("click", () => reviewModal.hide());
+}
+
+async function submitReview() {
+  const reviewText = document.getElementById("reviewText").value;
+  const words = reviewText.split(/\s+/).filter((word) => word.trim().length > 0);
+
+  if (!body.rating || body.rating === 0) {
+    errorMessage.textContent = "Please select a star rating.";
+    return;
+  }
+
+  if (words.length < 2) {
+    errorMessage.textContent = "Please write at least 2 words.";
+    return;
+  }
+
+  errorMessage.textContent = "";
+  body.Description = reviewText;
+console.log("body",body);
+  try {
+    const response = await fetch("/submit-review", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+    if (response.ok) {
+      reviewModal.hide();
+      Swal.fire({
+        title: "Success!",
+        text: "Your review has been submitted successfully.",
+        icon: "success",
+      });
+    } else {
+      const data = await response.json();
+      errorMessage.textContent = `${data.error}`;
+    }
+  } catch (error) {
+    console.error("Error submitting review:", error);
+    errorMessage.textContent = "An error occurred while submitting the review.";
+  }
+}
+
+function resetReviewModal() {
+  selectedRating = 0;
+  body.rating = 0;
+  body.product = null;
+  body.order = null;
+  stars.forEach((s) => s.classList.remove("text-warning"));
+  document.getElementById("reviewText").value = "";
+  errorMessage.textContent = "";
+}
+
+// Event listeners and initialization
+document.addEventListener("DOMContentLoaded", function() {
+  const ordersData = document.getElementById('paginated-orders').dataset.orders;
+  orders = JSON.parse(ordersData);
+
+  renderOrders(currentPage);
+
+  document.getElementById('prev-page').addEventListener('click', () => {
+    if (currentPage > 1) {
+      currentPage--;
+      renderOrders(currentPage);
+    }
+  });
+
+  document.getElementById('next-page').addEventListener('click', () => {
+    if (currentPage < Math.ceil(orders.length / itemsPerPage)) {
+      currentPage++;
+      renderOrders(currentPage);
+    }
+  });
+
+  // Initialize review modal
+  initReviewModal();
+
+  // Event delegation for review buttons
+  document.getElementById('paginated-orders').addEventListener('click', function(event) {
+    if (event.target.classList.contains('reviewBtn')) {
+      body.product = event.target.dataset.productId;
+      body.order = event.target.dataset.orderId;
+      reviewModal.show();
+    }
+  });
+});
 </script>
 
-<style>
-  .star-rating .fa-star {
-    cursor: pointer;
-    color: #ccc;
-  }
-  .star-rating .fa-star.text-warning {
-    color: #ffc107;
-  }
-</style>
 
 <!-- save backend  -->
 <script>
@@ -327,6 +419,7 @@
   }
 </script>
 
+<!-- repayment  -->
 <script>
   document.querySelectorAll(".repaymentBtn").forEach((btn) => {
     btn.addEventListener("click", async function () {
@@ -375,110 +468,3 @@
     });
   });
 </script>
-
-<!-- pagination  -->
-<script>
-    let currentPage = 1;
-    let totalPages = 1;
-    
-    function fetchOrders(page) {
-      $.ajax({
-        url: '/user-profile',
-        method: 'GET',
-        data: { page: page },
-        success: function(response) {
-          renderOrders(response.orders);
-          currentPage = response.currentPage;
-          totalPages = response.totalPages;
-          updatePaginationControls();
-        },
-        error: function(error) {
-          console.error('Error fetching orders:', error);
-        }
-      });
-    }
-    
-    function renderOrders(orders) {
-      const container = $('#orders-container');
-      container.empty();
-      
-      orders.forEach(order => {
-        order.products.forEach(product => {
-          if (order.paymentStatus !== "failed") {
-            const productHtml = `
-  <div class="row p-3 mb-3 border bg-white d-flex justify-content-between align-items-center">
-    <div class="d-flex align-items-center col-md-10">
-      <div class="col-md-2 mr-3">
-        <img
-          src="${product.productId.imagePaths[0]}"
-          alt="Product Image"
-          class="img-fluid product-image"
-        />
-      </div>
-      <div class="col-md-7 mr-3">
-        <p><b>${product.productId.name}</b></p>
-        <p>
-          <b>
-            <div
-              class="tm-status-circle ${product.status === 'canceled' || product.status === 'returned' || product.status === 'return rejected' ? 'cancelled' : product.status === 'delivered' ? 'moving' : 'pending'}"
-            ></div>
-            ${product.status.charAt(0).toUpperCase() + product.status.slice(1)}
-          </b>
-        </p>
-        <b>Size: ${product.size.size}</b>
-        ${order.coupon ? `
-        <p>
-          coupon applied. code: <b>${order.coupon.couponCode}</b> discount:
-          <b>${order.couponDiscount}</b>
-        </p>
-        ` : ''}
-      </div>
-      <div class="col-md-2">
-        <p><b>₹ ${product.totalPrice}</b></p>
-      </div>
-    </div>
-    <div class="d-flex flex-column">
-      <a href="/order-view/${product._id}/${order.orderId}">
-        <button class="btn btn-primary mb-2 w-100">View</button>
-      </a>
-      ${product.status === "delivered" ? `
-      <button
-        class="btn btn-primary w-100 reviewBtn"
-        data-product-id="${product.productId._id}"
-        data-order-id="${order._id}"
-      >
-        Review
-      </button>
-      ` : ''}
-    </div>
-  </div>
-`;
-container.append(productHtml);
-
-          }
-        });
-      });
-    }
-    
-    function updatePaginationControls() {
-      $('#page-info').text(`Page ${currentPage} of ${totalPages}`);
-      $('#prev-page').prop('disabled', currentPage === 1);
-      $('#next-page').prop('disabled', currentPage === totalPages);
-    }
-    
-    $(document).ready(function() {
-      fetchOrders(currentPage);
-    
-      $('#prev-page').click(function() {
-        if (currentPage > 1) {
-          fetchOrders(currentPage - 1);
-        }
-      });
-    
-      $('#next-page').click(function() {
-        if (currentPage < totalPages) {
-          fetchOrders(currentPage + 1);
-        }
-      });
-    });
-    </script>

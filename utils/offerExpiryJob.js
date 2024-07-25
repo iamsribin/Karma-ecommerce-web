@@ -3,7 +3,7 @@ const Product = require('../models/adminModels/product');
 
 // Schedule the job to run every day at midnight
 
-    cron.schedule('0 0 * * *', async () => {
+    cron.schedule('* * * * *', async () => {
         console.log('Running offer expiry check...');
         try {
           const products = await Product.find({

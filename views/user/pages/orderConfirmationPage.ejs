@@ -56,7 +56,7 @@
                 <div class="col-6">
                     <p>Subtotal</p>
                     <p>Shipping </p>
-                    <%if(order.discount){%>
+                    <%if(order.couponDiscount){%>
                         <p>Coupon offer</p>
                         <%}%>
                     <%if(order.discount){%>
@@ -67,7 +67,7 @@
                 <div class="col-6 text-right">
                     <p>₹<%=order.subTotal%></p>
                     <p>Free</p>
-                    <%if(order.coupon){%>
+                    <%if(order.couponDiscount){%>
                         <p style="color: green;">₹<%=order.couponDiscount %></p>
                         <%}%>
                     <%if(order.discount){%>

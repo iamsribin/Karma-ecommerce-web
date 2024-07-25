@@ -17,7 +17,6 @@ const productSchema = new mongoose.Schema(
     categoryOfferExpiryDate: { type: Date },
     brand: { type: Schema.Types.ObjectId, ref: Brand },
     category: { type: Schema.Types.ObjectId, ref: Category },
-    // categoryOffer: { type: Schema.Types.ObjectId, ref: CategoryOffer },
     foreFoot: { type: Number },
     midsoleDrop: { type: Number },
     heel: { type: Number },

@@ -7,6 +7,7 @@ const {profileUpload} = require("../../connetion/multerStorage")
 const {
   home,
   loginPage,
+  renderContact
 } = require("../../controller/userController/userController");
 
 //auth controller
@@ -122,6 +123,8 @@ router.get("/getotp", isOTPVerificationProcess, renderotpPage);
 router.post("/verify-otp", isOTPVerificationProcess, verifyOtp);
 //home
 router.get("/",isBlock, home);
+router.get("/Contact",isBlock,renderContact)
+
 //password
 router.get("/changePassword", isPasswordChangingProcess, renderNewPasswordPage);
 router.post("/forgot-password-otp", ForgotOtpPage);
@@ -183,7 +186,4 @@ router.post("/apply-coupon",verifyUser, applyCoupon);
 router.delete("/remove-coupon", verifyUser ,removeCoupon);
 //wallert
 router.post("/addMoney-wallet", verifyUser, addMoneyWallet);
-router.get("/Contact",(req, res) =>{
-  return res.status(200).render("user/pages/contact");
-})
 module.exports = router;

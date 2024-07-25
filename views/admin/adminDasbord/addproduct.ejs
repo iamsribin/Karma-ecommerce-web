@@ -47,7 +47,7 @@
           id="images"
           name="images"
           accept="image/*"
-          multiple...
+          multiple
           onchange="displaySelectedImages(this)"
         />
         <div
@@ -449,6 +449,20 @@ function validateVariants() {
   return { isValid, errorMessage };
 }
 
+//validate image
+function validateImages(files) {
+  if (files.length < 3 || files.length > 5) {
+    return "Please upload between 3 and 5 images.";
+  }
+  for (let i = 0; i < files.length; i++) {
+    if (!validateImageFile(files[i])) {
+      return "Please upload only jpg, jpeg, or png files.";
+    }
+  }
+  return null;
+}
+
+
 form.addEventListener("submit", function (event) {
   let valid = true;
 
@@ -465,6 +479,15 @@ form.addEventListener("submit", function (event) {
   const images = document.getElementById("images").files;
   const offerAmount = parseFloat(document.getElementById("offerAmount").value.trim());
   const offerExpiryDate = document.getElementById("offerExpiryDate").value.trim();
+
+  const imageError = validateImages(images);
+  if (imageError) {
+    valid = false;
+    document.getElementById("images-error").innerText = imageError;
+  } else {
+    document.getElementById("images-error").innerText = "";
+  }
+
 
   // Reset error messages
   document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
@@ -529,21 +552,6 @@ form.addEventListener("submit", function (event) {
     document.getElementById("foreFoot-error").innerText = errorMessages.foreFoot;
   }
 
-  // Image validation
-  if (!images.length) {
-    valid = false;
-    document.getElementById("images-error").innerText = errorMessages.images;
-  } else {
-    for (let i = 0; i < images.length; i++) {
-      if (!validateImageFile(images[i])) {
-        valid = false;
-        document.getElementById("images-error").innerText = errorMessages.images;
-        break;
-      }
-    }
-  }
-  console.log("offer",offerAmount);
-
   // Offer amount validation
   if (offerAmount) {
     if (isNaN(offerAmount) || offerAmount <= 0 || offerAmount > basePrice) {
@@ -581,65 +589,99 @@ function validateInputQty(input) {
 }
 </script>
 
-
+<!-- cropp image  -->
 <script>
-   function displaySelectedImages(input) {
-    const selectedImagesContainer = document.getElementById("selectedImagesContainer");
-    selectedImagesContainer.innerHTML = "";
+function displaySelectedImages(input) {
+  const selectedImagesContainer = document.getElementById("selectedImagesContainer");
+  selectedImagesContainer.innerHTML = "";
 
-    for (let i = 0; i < input.files.length; i++) {
-      const file = input.files[i];
-      const reader = new FileReader();
-      const cropContainer = document.createElement("div");
-      cropContainer.classList.add("image-crop-container");
-      cropContainer.innerHTML = `
-        <div class="image-container">
-          <img id="image${i}" src="" alt="Select an image to crop">
-        </div>
-        <button class="crop-button" id="cropButton${i}">Crop Image ${i + 1}</button>
-      `;
-      selectedImagesContainer.appendChild(cropContainer);
+  // Limit the number of images to 5
+  const maxImages = 5;
+  const filesToProcess = Array.from(input.files).slice(0, maxImages);
 
-      const image = cropContainer.querySelector(`#image${i}`);
-      const cropButton = cropContainer.querySelector(`#cropButton${i}`);
+  for (let i = 0; i < filesToProcess.length; i++) {
+    const file = filesToProcess[i];
+    const reader = new FileReader();
+    const cropContainer = document.createElement("div");
+    cropContainer.classList.add("image-crop-container");
+    cropContainer.innerHTML = `
+      <div class="image-container" style="max-width: 300px; max-height: 300px; overflow: hidden;">
+        <img id="image${i}" src="" alt="Select an image to crop" style="max-width: 100%; max-height: 100%;">
+      </div>
+      <button class="crop-button" id="cropButton${i}">Crop Image ${i + 1}</button>
+    `;
+    selectedImagesContainer.appendChild(cropContainer);
 
-      reader.onload = () => {
-        image.src = reader.result;
-        let cropper = new Cropper(image, {
-          aspectRatio: 1,
-          viewMode: 1,
-        });
+    const image = cropContainer.querySelector(`#image${i}`);
+    const cropButton = cropContainer.querySelector(`#cropButton${i}`);
 
-        cropButton.addEventListener("click", (event) => {
-          event.preventDefault();
-          if (cropper) {
-            const canvas = cropper.getCroppedCanvas({
-              width: 800, // Increased size for better quality
-              height: 800, // Increased size for better quality
-              imageSmoothingEnabled: true,
-              imageSmoothingQuality: 'high',
-            });
-            const croppedImageDataURL = canvas.toDataURL('image/jpeg', 1.0); // Set quality to maximum
-            image.src = croppedImageDataURL;
-            const croppedImageFile = dataURLToFile(croppedImageDataURL, file.name);
-            const currentFiles = Array.from(input.files);
-            currentFiles[i] = croppedImageFile;
+    reader.onload = () => {
+      image.src = reader.result;
+      let cropper = new Cropper(image, {
+        aspectRatio: 1,
+        viewMode: 1,
+        // Significantly reduce the size of the cropping window
+        width: 300,
+        height: 300,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        minCropBoxWidth: 100,
+        minCropBoxHeight: 100,
+        responsive: true,
+        toggleDragModeOnDblclick: false,
+      });
 
-            const newFileList = createFileList(currentFiles);
-            input.files = newFileList;
-            cropper.destroy();
-            cropper = null;
-          } else {
-            cropper = new Cropper(image, {
-              aspectRatio: 1,
-              viewMode: 1,
-            });
-          }
-        });
-      };
-      reader.readAsDataURL(file);
-    }
+      cropButton.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (cropper) {
+          const canvas = cropper.getCroppedCanvas({
+            width: 800, // Keep larger size for better quality
+            height: 800, // Keep larger size for better quality
+            imageSmoothingEnabled: true,
+            imageSmoothingQuality: 'high',
+          });
+          const croppedImageDataURL = canvas.toDataURL('image/jpeg', 0.9); // Slightly reduced quality for better performance
+          image.src = croppedImageDataURL;
+          const croppedImageFile = dataURLToFile(croppedImageDataURL, file.name);
+          const currentFiles = Array.from(input.files);
+          currentFiles[i] = croppedImageFile;
+
+          const newFileList = createFileList(currentFiles);
+          input.files = newFileList;
+          cropper.destroy();
+          cropper = null;
+        }
+      });
+    };
+    reader.readAsDataURL(file);
   }
+
+  // Update the file input to reflect the processed files
+  const newFileList = createFileList(filesToProcess);
+  input.files = newFileList;
+
+  // Trigger validation after updating images
+  const imageError = validateImages(input.files);
+  document.getElementById("images-error").innerText = imageError || "";
+}
+
+// Add this CSS to your stylesheet or in a <style> tag in your HTML
+`
+<style>
+.image-crop-container {
+  max-width: 300px;
+  margin: 10px auto;
+}
+.cropper-container {
+  max-width: 300px !important;
+  max-height: 300px !important;
+}
+.cropper-view-box,
+.cropper-face {
+  border-radius: 50%;
+}
+</style>
+`
 
   function dataURLToFile(dataUrl, filename) {
     const arr = dataUrl.split(",");
@@ -692,7 +734,7 @@ function validateInputQty(input) {
 
 </script>
 
-
+<!-- check availablel products  -->
 <script>
   let titleEl = document.getElementById("name");
   let message = document.getElementById("title-available1");

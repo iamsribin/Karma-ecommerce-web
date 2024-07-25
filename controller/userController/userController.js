@@ -115,4 +115,19 @@ exports.loginPage = (req, res) => {
   }
 };
 
-
+exports.renderContact = async (req, res) =>{
+  const user = req.session?.userId;
+    
+  let userDetalis = null;
+  let cartLength = 0;
+  if (user) {
+    userDetalis = await userDB.findOne({_id: req.session.userId});
+    const cart = await cartDB.findOne({userId: req.session.userId});
+    cartLength = cart?.cart?.length;
+  }
+  return res.status(200).render("user/pages/contact",{
+    user: userDetalis,
+    cartLength,
+    title: "Contact page"
+  });
+}

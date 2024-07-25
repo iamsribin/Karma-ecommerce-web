@@ -44,7 +44,6 @@ const updateProductList = async (id, count, sizeId) => {
     }
     await product.save();
   } catch (error) {
-    console.error(error.message);
     throw new Error(` ${error.message}`);
   }
 };
@@ -144,7 +143,7 @@ exports.renderCheckoutPage = async (req, res, next) => {
       addresses: addresses?.addresses,
     });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({message: "somthing went wrong"});  
   }
 };
 
@@ -252,8 +251,6 @@ exports.placeOrder = async (req, res, next) => {
           { $inc: { currentUsageCount: 1 } }
         );
       }
-
-      orderData.totalPrice -= userCart.couponDiscount;
     }
 
     const newOrder = await Order.create(orderData);
@@ -314,7 +311,6 @@ exports.placeOrder = async (req, res, next) => {
 
   return res.status(200).json({ newOrder });
   } catch (error) {
-    console.log("order eerr", error);
     res.status(400).send({ message: error.message });
   }
 };
@@ -345,7 +341,6 @@ exports.renderOrderConfirmationPage = async (req, res, next) => {
       order,
     });
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };
@@ -355,8 +350,6 @@ exports.renderOrderView = async (req, res, next) => {
   try {
     const userId = req.session?.userId;
     const { id, orderId } = req.params;
-
-    console.log("id:", id, "orderId:", orderId);
 
     const order = await Order.findOne({ userId, orderId })
       .populate({
@@ -376,7 +369,6 @@ exports.renderOrderView = async (req, res, next) => {
     if (!order) return res.status(404).json({ message: "Order not found" });
 
     const orderProduct = order.products.find((item) => item._id.equals(id));
-console.log("order product",orderProduct);
     if (!orderProduct)
       return res.status(404).json({ message: "Product not found in order" });
 
@@ -394,7 +386,6 @@ console.log("order product",orderProduct);
       productReview
     });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -403,20 +394,16 @@ console.log("order product",orderProduct);
 exports.cancelOrder = async (req, res, next) => {
   try {
     const userId = req.session?.userId;
-    console.log("enterd");
     const { productId, orderId, reason } = req.body;
-    console.log(productId, orderId);
 
     const order = await Order.findOne({ userId, orderId });
     if (!order) {
       return res.status(404).json({ message: "Order not found" });
     }
-    console.log(order);
 
     const index = order.products.findIndex(
       (item) => item.productId.toString() === productId
     );
-    console.log(index);
 
     if (index < 0) {
       return res.status(404).json({ message: "Product not found in order" });
@@ -449,7 +436,6 @@ exports.cancelOrder = async (req, res, next) => {
       { new: true }
     );
 
-    console.log( "canceled pro",canceledProduct, order);
     if (order.paymentMethod !== "cashOnDelivery") {
       // Adding the refund to wallet of user.
 
@@ -516,7 +502,7 @@ exports.cancelOrder = async (req, res, next) => {
 
    return res.status(200).json({ message: "Order cancelled successfully" });
   } catch (error) {
-    console.error(error);
+    res.status(500).json({message: "somthing went wrong"});  
    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
@@ -553,7 +539,7 @@ try {
  return res.status(200).json({ message: "return request sended successfully" });
 
 } catch (error) {
-  console.log(error);
+  res.status(500).json({message: "somthing went wrong"});  
 }
 }
 
@@ -580,7 +566,6 @@ exports.generateOrderInvoice = async (req, res) => {
 
     res.status(200).end(pdfBuffer);
   } catch (error) {
-    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -676,11 +661,8 @@ exports.generateOrderInvoice = async (req, res) => {
       await cartDB.findByIdAndDelete(userCart._id);
     }
 
-    console.log(newOrder);
-
   return res.status(200).json({ newOrder });
   } catch (error) {
-    console.log("order eerr", error);
     res.status(400).send({ message: error.message });
   }
 };
@@ -689,7 +671,7 @@ exports.renderOrderFailedProducts = async (req, res) =>{
   try {
     const {orderId} = req.params
     const userId = req.session.userId;
-    console.log("order user id:",orderId, userId);
+
     if (!userId) {
       return res.status(401).json({ message: "User not authenticated" });
     }
@@ -708,9 +690,6 @@ exports.renderOrderFailedProducts = async (req, res) =>{
         model: "Size",
       });
 
-
-      console.log("oder:",order);
-
       if (!order) return res.status(404).json({ message: "Order not found" });
       
       const userDetalis = await userDB.findOne({ _id: userId });
@@ -724,7 +703,6 @@ exports.renderOrderFailedProducts = async (req, res) =>{
 
 
   }catch(error){
-console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
     }
   }
@@ -752,6 +730,6 @@ exports.repaymentOrder = async (req, res) =>{
 return res.status(200).json({ message: "Order repayment successfully" });
 
   } catch (error) {
-    console.log(error);
+    res.status(500).json({message: "somthing went wrong"});  
   }
 } 

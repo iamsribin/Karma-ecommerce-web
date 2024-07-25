@@ -363,15 +363,10 @@
                     </div>
                   </div>
                   <div class="text-dark">
-                    <% function capitalizeFirstLetter(string) { return
-                    string.charAt(0).toUpperCase() + string.slice(1); } %>
-                    <span
-                      ><%=
-                      capitalizeFirstLetter(product.category.name.toLowerCase())
-                      %>'s <%=
-                      capitalizeFirstLetter(product.tag.tagName.toLowerCase())
-                      %> Shoe</span
-                    >
+                    <% function capitalizeFirstLetter(string) {
+                      return string.charAt(0).toUpperCase() + string.slice(1);
+                    } %>
+                    <span><%= capitalizeFirstLetter( product.tag.tagName.toLowerCase()) %>'s <%= capitalizeFirstLetter(product.category.name.toLowerCase()  ) %> Shoe</span>
                   </div>
                   <% if (product.offerAmount) { %>
                   <h6 class="text-dark">
@@ -387,7 +382,7 @@
                   <% } else if (product?.categoryOfferAmount) { %>
 
                   <h6 class="text-dark">
-                    $ <%= product?.categoryOfferAmount?.toFixed(2)
+                    $ <%= product?.categoryOfferAmount
                     %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"
                       ><%= product.basePrice %></span
@@ -522,15 +517,10 @@
                     </div>
                   </div>
                   <div class="text-dark">
-                    <% function capitalizeFirstLetter(string) { return
-                    string.charAt(0).toUpperCase() + string.slice(1); } %>
-                    <span
-                      ><%=
-                      capitalizeFirstLetter(relatedProduct.category.name.toLowerCase())
-                      %>'s <%=
-                      capitalizeFirstLetter(relatedProduct.tag.tagName.toLowerCase())
-                      %> Shoe</span
-                    >
+                    <% function capitalizeFirstLetter(string) {
+                      return string.charAt(0).toUpperCase() + string.slice(1);
+                    } %>
+                    <span><%= capitalizeFirstLetter( relatedProduct.tag.tagName.toLowerCase() ) %>'s <%= capitalizeFirstLetter(relatedProduct.category.name.toLowerCase() ) %> Shoe</span>
                   </div>
                   <% if (relatedProduct.offerAmount) { %>
                   <h6 class="text-dark">
@@ -547,7 +537,7 @@
                   <% } else if (relatedProduct?.categoryOfferAmount) { %>
 
                   <h6 class="text-dark">
-                    $ <%= relatedProduct?.categoryOfferAmount?.toFixed(2)
+                    $ <%= relatedProduct?.categoryOfferAmount
                     %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"
                       ><%= relatedProduct.basePrice %></span

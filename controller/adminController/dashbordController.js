@@ -1,10 +1,5 @@
-
 const Order = require('../../models/userModels/orderModel');
-const Product = require('../../models/adminModels/product');
-const Brand = require('../../models/adminModels/brand');
-const Category = require('../../models/adminModels/category');
 const moment = require('moment');
-const User = require('../../models/userModels/userModel');
 
 //render dashboard page
 exports.renderDashboard = async (req, res) => {
@@ -251,32 +246,10 @@ exports.renderDashboard = async (req, res) => {
       newOrder
     });
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
     res.status(500).send('Error fetching dashboard data');
   }
 };
 
-// render category page
-exports.renderCategory = async (req, res) => {
-  res.render("admin/adminDasbord/addproduct");
-};
-
-// render order page
-exports.renderOrder = async (req, res) => {
-  res.render("admin/adminDasbord/orders");
-};
-
-// render banner page
-exports.renderBanner = async (req, res) => {
-  res.render("admin/adminDasbord/addproduct");
-};
-
-// render payments page
-exports.renderPayments = async (req, res) => {
-  res.render("admin/adminDasbord/payments");
-};
-
-// const Order = require('../../models/userModels/orderModel');
 
 exports.dashbord = async (req, res) => {
   try {
@@ -417,7 +390,6 @@ exports.dashbord = async (req, res) => {
 
     res.json({ salesData, brandPerformance, categoryPerformance });
   } catch (error) {
-    console.error('Error fetching dashboard data:', error);
     res.status(500).json({ error: 'An error occurred while fetching dashboard data' });
   }
 };

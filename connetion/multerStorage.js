@@ -41,7 +41,6 @@ const upload = multer({
   
   const profileUpload = multer({ storage: userProfileStorage });
  
-
   module.exports = {
     upload,
     profileUpload,

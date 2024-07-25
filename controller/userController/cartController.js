@@ -99,8 +99,6 @@ exports.renderCartPage = async (req, res, next) => {
       checkCoupon(userId);
     }
 
-    console.log("carts", userCart);
-
     return res.render("user/pages/cartPage", {
       user: userDetails,
       cartProducts: userCart ? userCart?.cart : null,
@@ -109,7 +107,6 @@ exports.renderCartPage = async (req, res, next) => {
       coupons
     });
   } catch (error) {
-    console.error(error);
     return next(createError(500, "Failed to render cart page"));
   }
 };
@@ -137,16 +134,10 @@ exports.addCart = async (req, res, next) => {
       return res.status(400).json({message: "Invalid size"})
     }
 
-    console.log("size id",product.variants[sizeIdx]);
-
-
     const price = product.basePrice;
     
-    const offerPrice = product.offerAmount ? product.offerAmount: product.categoryOfferAmount ? product.categoryOfferAmount : undefined;
-
+    const offerPrice = product.offerAmount ? product.offerAmount : product.categoryOfferAmount ? product.categoryOfferAmount : null;
     if (userCart) {
-
-      console.log("length",userCart.cart.length);
 
       if(userCart.cart.length === 5){
         return res.status(400).json({message: "Cart limit reached"});
@@ -178,31 +169,20 @@ exports.addCart = async (req, res, next) => {
         userCart.discount += 0;
       }
 
-      calculateTotals(userCart);
+      userCart.grandTotal = userCart.subTotal - userCart.discount;
 
       await userCart.save();
     } else {
 
-      let offerPrice ;
+      // let offerPrice ;
       if(product.variants[sizeIdx].quantity < quantity) {
         return res.status(400).json({message: "Not enough stock"});
       }
 
       const subTotal = product.basePrice * quantity;
       const discount = product.offerAmount ? (product.basePrice - product.offerAmount) * quantity : product.categoryOfferAmount ? (product.basePrice - product.categoryOfferAmount) * quantity :0;
-      // const tax = Math.floor((subTotal - discount) * TAX_PERCENTAGE);
-      if(product.offerAmount){
-        offerPrice = (product.basePrice - product.offerAmount) * quantity ;
-
-      }else if(product.categoryOfferAmount){
-        offerPrice = (product.basePrice - product.categoryOfferAmount) * quantity;
-
-      }else{
-        offerPrice = 0;
-      }
 
       const grandTotal = subTotal  - discount;
-
       await Cart.create({
         userId,
         cart: [{ product: productId, size, quantity, price, offerPrice}],
@@ -215,7 +195,6 @@ exports.addCart = async (req, res, next) => {
 
     return res.status(200).send({ message: "Product added to cart successfully" });
   } catch (error) {
-    console.error(error);
     return next(createError(500, "Failed to add product to cart"));
   }
 };
@@ -249,11 +228,6 @@ exports.updateCartQuantity = async (req, res, next) => {
 
 const sizeIndex = product.variants.findIndex( items => items.size.toString() === size);
 
-console.log("sizeidx",sizeIndex,size);
-console.log(product.variants[sizeIndex].quantity ,"<", userCart.cart[productIndex].quantity );
-
-
-
     if (action === "increment") {
       if(product.variants[sizeIndex].quantity === userCart.cart[productIndex].quantity ){
         return res.status(400).send({ message: "Product quantity is insufficient" });
@@ -269,7 +243,7 @@ console.log(product.variants[sizeIndex].quantity ,"<", userCart.cart[productInde
 
       userCart.cart[productIndex].quantity += 1;
       userCart.subTotal += product.basePrice;
-      // userCart.discount += product.offerAmount ? product.basePrice - product.offerAmount : 0;
+
     } else if (action === "decrement") {
       userCart.cart[productIndex].quantity -= 1;
       userCart.subTotal -= product.basePrice;
@@ -284,7 +258,6 @@ console.log(product.variants[sizeIndex].quantity ,"<", userCart.cart[productInde
         userCart.discount -= 0;
       }
 
-      // userCart.discount -= product.offerAmount ? product.basePrice - product.offerAmount : 0;
       if (userCart.cart[productIndex].quantity <= 0) {
         userCart.cart.splice(productIndex, 1);
       }
@@ -301,7 +274,6 @@ console.log(product.variants[sizeIndex].quantity ,"<", userCart.cart[productInde
 
     return res.status(200).send({ message: "Cart updated successfully" });
   } catch (error) {
-    console.error(error);
     return res.status(500).send({ message: "Failed to update cart quantity" });
   }
 };
@@ -353,7 +325,6 @@ exports.removeItemsFromCart = async (req, res, next) => {
 
     return res.status(200).send({ message: "Product removed from cart successfully" });
   } catch (error) {
-    console.error(error);
     return next(createError(500, "Failed to remove items from cart"));
   }
 };

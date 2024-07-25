@@ -58,7 +58,7 @@ exports.renderAddproduct = async (req, res) => {
 //add products
 exports.addProduct = async (req, res, next) => {
   try {
-    const {
+    let {
       name,
       description,
       basePrice,
@@ -127,6 +127,11 @@ exports.addProduct = async (req, res, next) => {
       .flat()
       .map((file) => `/uploads/products/${file.filename}`);
 
+      if(imagePaths.length < 3 || imagePaths.lengt >5){
+        req.flash("error", `Product mimimum length is 3 maximum 5`);
+        return res.redirect("/admin/add-product");
+      }
+
     let product;
 
     if (offerAmount) {
@@ -149,14 +154,16 @@ exports.addProduct = async (req, res, next) => {
         offerExpiryDate,
       });
     } else {  
-  const isCategoryOffer = categoryOfferDB.findOne({category_id : category});
-  let categoryOffer, categoryOfferExpiryDate;
+
+  const isCategoryOffer = await categoryOfferDB.findOne({category_id : category});
+  let categoryOfferAmount, categoryOfferExpiryDate;
 
 if(isCategoryOffer){
-    categoryOffer = (isCategoryOffer.offerPercentage * basePrice) / 100;  
+  offerAmount = null;
+
+  categoryOfferAmount = Math.ceil(basePrice - (basePrice * (isCategoryOffer.offerPercentage / 100)));
     categoryOfferExpiryDate = isCategoryOffer.expiryDate
 }
-
       product = new Product({
         name: mainName,
         description,
@@ -170,7 +177,7 @@ if(isCategoryOffer){
         imagePaths,
         midsoleDrop,
         heel,
-        categoryOffer, 
+        categoryOfferAmount, 
         categoryOfferExpiryDate,
         foreFoot,
         weight,
@@ -198,13 +205,13 @@ exports.deleteProduct = async (req, res, next) => {
     }
 
     const product = await productDB.findById(id);
+
     product.isActive = false;
 
     product.save();
 
     return res.status(200).json({ product });
   } catch (error) {
-    console.log(error);
     return res.redirect("/internalError");
   }
 };
@@ -226,7 +233,6 @@ exports.recoverProduct = async (req, res, next) => {
   return res.status(200).json({ product });
   
 } catch (error) {
-  console.log(error);
   return res.redirect("/internalError");
 }
 }
@@ -268,7 +274,7 @@ exports.renderEditProductPage = async (req, res, next) => {
 //edit product
 exports.editProduct = async (req, res, next) => {
   try {
-    const {
+    let {
       name,
       description,
       basePrice,
@@ -340,7 +346,7 @@ exports.editProduct = async (req, res, next) => {
           fs.writeFileSync(`./uploads/products/${fileName}`, buffer);
           if (imagePaths[idx]) {
             fs.unlink(path.join(__dirname, '..', imagePaths[idx]), (err) => {
-              if (err) console.error(err);
+              if (err) console.error("edit cropp error:",err);
             });
           }
           imagePaths[idx] = imgPath;
@@ -373,10 +379,12 @@ exports.editProduct = async (req, res, next) => {
     let categoryOfferAmount=null, categoryOfferExpiryDate=null;
 
     if(!offerAmount){
+      offerAmount = null;
       const isCategoryOffer = await categoryOfferDB.findOne({category_id : category});
+
      if(isCategoryOffer){
-      categoryOfferAmount = (isCategoryOffer.offerPercentage * basePrice) / 100;  
-        categoryOfferExpiryDate = isCategoryOffer.expiryDate
+      categoryOfferAmount = Math.ceil(basePrice - (basePrice * (isCategoryOffer.offerPercentage / 100)));
+      categoryOfferExpiryDate = isCategoryOffer.expiryDate;
      }
     }
 
@@ -406,11 +414,12 @@ exports.editProduct = async (req, res, next) => {
       },
       { new: true }
     );
+    console.log("edit pro",product);
+
 
     req.flash('success', `Product ${mainName} updated successfully`);
     res.redirect(`/admin/edit-product/${id}`);
   } catch (error) {
-    console.log('category', error);
     res.redirect('/internalError');
   }
 };
@@ -467,8 +476,8 @@ exports.deleteImage = async (req, res, next) => {
 
     return res.status(200).json({ message: "Image deleted successfully" });
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
+
 

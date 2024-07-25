@@ -36,10 +36,9 @@ exports. renderCoupons = async (req, res, next) => {
       totalPages: Math.ceil(totalItems / ITEMS_PER_PAGE),
       search: search
     });
+
   } catch (error) {
-    console.error("Error rendering coupons:", error);
     next(createError(500, "Internal Server Error"));
-  
     };
   }
 
@@ -86,7 +85,6 @@ exports.addCoupon = async (req, res, next) => {
     await newCoupon.save();
     res.status(200).send(newCoupon);
   } catch (error) {
-    console.error("Error creating coupon:", error);
     next(createError(null, null));
   }
 };
@@ -110,7 +108,6 @@ exports.deleteCoupon = async (req, res, next) => {
 
     res.status(200).send(coupon);
   } catch (error) {
-    console.error("Error deleting coupon:", error);
     next(createError(null, null));
   }
 };
@@ -129,7 +126,6 @@ exports.renderEditCouponPage = async (req, res, next) => {
     }
     return res.render("admin/adminDasbord/editCoupon", { coupon });
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };
@@ -175,7 +171,6 @@ exports.editCoupon = async (req, res, next) => {
 
     res.status(200).send({ coupon });
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };

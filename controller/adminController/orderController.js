@@ -3,35 +3,32 @@ const mongoose = require("mongoose");
 const Products = require("../../models/adminModels/product");
 const Size = require("../../models/adminModels/size");
 const User = require("../../models/userModels/userModel");
-const Tag = require("../../models/adminModels/tag");
 const Payment = require("../../models/userModels/paymentModel");
 const uuid = require("uuid");
 
+//render order list
 exports.listOrders = async (req, res, next) =>{
-    try {
-        const orders = await orderDB.find({"products.status" :{
-          $in: [
-            "pending",
-            "processing",
-            "shipped",
-            "delivered",
-            "canceled",
-          ]},
-          "paymentStatus" :{
-          $in: [
-           "pending",
-            "success"
-          ]}
-    }).sort({ createdAt: -1 }); 
-        res.render("admin/adminDasbord/orders",{orders});
-    } catch (error) {
-        
-    }
+try {
+      
+  const orders = await orderDB.find({"products.status" :{
+    $in:
+     [ "pending", "processing", "shipped", "delivered", "canceled", ]
+    },
+    "paymentStatus" :{
+       $in: [  "pending",  "success"]
+      }
+      }).sort({ createdAt: -1 }); 
+
+    res.render("admin/adminDasbord/orders",{orders});
+
+} catch (error) {
+  res.status(500).json({ error: 'Internal Server Error' });
+}     
 }
 
+// render order ditails page 
 exports.renderViewOrder = async (req, res, next) =>{
     try {
-      
         const id = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(404).render('errorPages/404');
@@ -59,8 +56,7 @@ exports.renderViewOrder = async (req, res, next) =>{
           
         res.render("admin/adminDasbord/viewOrder",{order});
     } catch (error) {
-        console.log(error);
-    }
+      res.status(500).json({ error: 'Internal Server Error' });    }
 }
 
 //update order
@@ -95,8 +91,6 @@ exports.updateProductStatus = async (req, res) => {
       product.status = newStatus;
     }
 
-   
-
     if(order.paymentMethod === "cashOnDelivery" && newStatus === "delivered"){
       await Payment.create({
         orderId: order.orderId,
@@ -113,7 +107,6 @@ exports.updateProductStatus = async (req, res) => {
 
     res.json({ message: 'Status updated successfully' });
   } catch (error) {
-    console.error('Error updating status:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };

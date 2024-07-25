@@ -39,7 +39,6 @@ const updateProductList = async (id, count, sizeId) => {
     }
     await product.save();
   } catch (error) {
-    console.error(error.message);
     throw new Error(` ${error.message}`);
   }
 };
@@ -53,8 +52,6 @@ const getProductStatus = (totalQuantity) => {
     return "published";
   }
 };
-
-
 
 // render returns products
 exports.renderReturnProducts = async (req, res, next) => {
@@ -121,19 +118,16 @@ exports.renderReturnProducts = async (req, res, next) => {
       }
     ]);
 
-    console.log("orders",orders[4]);
-
     res.render("admin/adminDasbord/returnProducts", { orders });
   } catch (error) {
-    console.log(error);
     res.status(500).send("Server Error");
   }
 };
 
+//update return status
 exports.updateReturnStatus = async (req, res, next) =>{
   try {
     const { orderId, productId, newStatus } = req.body;
-    console.log( orderId, productId, newStatus );
     
     const order = await orderDB.findOneAndUpdate(
       { orderId, "products.productId": productId },
@@ -155,7 +149,6 @@ exports.updateReturnStatus = async (req, res, next) =>{
     const index = order.products.findIndex(
       (item) => item.productId.toString() === productId
     );
-    console.log(index);
 
     if (index < 0) {
       return res.status(404).json({ message: "Product not found in order" });
@@ -170,10 +163,8 @@ exports.updateReturnStatus = async (req, res, next) =>{
       returnedProduct.size
     );
 
-
-    if (order.paymentMethod !== "cashOnDelivery") {
+    if (newStatus === "returned") {
       // Adding the refund to wallet of user.
-
       await Payment.create({
         orderId: returnedProduct.orderId,
         amount: returnedProduct.totalPrice,
@@ -239,12 +230,11 @@ exports.updateReturnStatus = async (req, res, next) =>{
 
     res.status(200).json({message: "Successfully updated"});
   } catch (error) {
-    console.log(error);
     res.status(400).json({message: "somthing went wrong"});
   }
 }
 
-
+// render return product details 
 exports.returnProductView = async (req, res )=>{
   try {
     const orderId = req.params.orderId;
@@ -274,6 +264,6 @@ exports.returnProductView = async (req, res )=>{
 
     res.render("admin/adminDasbord/returnProductView", { order,orderProduct });
   } catch (error) {
-    console.log(error);
+    res.status(500).json({message: "somthing went wrong"});
   }
 }

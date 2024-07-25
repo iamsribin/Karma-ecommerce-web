@@ -270,8 +270,8 @@
       "*Name must be between 3 and 18 characters long and contain only letters*"
     );
 
-    return !!isValid;
-  }
+    return false; 
+}
 
   document.getElementById("fullName").addEventListener("input", function () {
     validateField(
@@ -284,53 +284,56 @@
 
   document.getElementById("editProfileForm").addEventListener("submit", async function (event) {
     event.preventDefault();
-    if (validateForm()) {
-      const formData = new FormData(this);
-      const userId = document.getElementById("fullName").getAttribute("data-id");
+    if (validateForm()) { // Only proceed if the form is valid
+        const formData = new FormData(this);
+        const userId = document.getElementById("fullName").getAttribute("data-id");
 
-      try {
-        const response = await fetch(`/edit-user-personal-info/${userId}`, {
-          method: "PATCH",
-          body: formData,
-        });
+        try {
+            const response = await fetch(`/edit-user-personal-info/${userId}`, {
+                method: "PATCH",
+                body: formData,
+            });
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log("Profile updated successfully:", data);
-          Swal.fire({
-            title: "Successfully updated",
-            icon: "success",
-            showCancelButton: false,
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-          }).then(async (result) => {
-            window.location.reload();
-          });
-        } else {
-          const data = await response.json();
-          Swal.fire({
-            title: `${data.message}`,
-            icon: "error",
-            showCancelButton: false,
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "OK",
-          }).then(async (result) => {
-            window.location.reload();
-          });
+            if (response.ok) {
+                const data = await response.json();
+                console.log("Profile updated successfully:", data);
+                Swal.fire({
+                    title: "Successfully updated",
+                    icon: "success",
+                    showCancelButton: false,
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then(async (result) => {
+                    window.location.reload();
+                });
+            } else {
+                const data = await response.json();
+                Swal.fire({
+                    title: `${data.message}`,
+                    icon: "error",
+                    showCancelButton: false,
+                    confirmButtonColor: "#3085d6",
+                    confirmButtonText: "OK",
+                }).then(async (result) => {
+                    window.location.reload();
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: "Something went wrong",
+                icon: "error",
+                showCancelButton: false,
+                confirmButtonColor: "#3085d6",
+                confirmButtonText: "OK",
+            }).then(async (result) => {
+                window.location.reload();
+            });
         }
-      } catch (error) {
-        Swal.fire({
-          title: "Something went wrong",
-          icon: "error",
-          showCancelButton: false,
-          confirmButtonColor: "#3085d6",
-          confirmButtonText: "OK",
-        }).then(async (result) => {
-          window.location.reload();
-        });
-      }
+    } else {
+        // Form is not valid, don't submit
+        console.log("Form validation failed. Please check the errors.");
     }
-  });
+});
 </script>
 
   <script>

@@ -2,7 +2,6 @@ const sizeDB = require("../../models/adminModels/size");
 const { createError } = require("../../utils/errors");
 const tagDB = require("../../models/adminModels/tag");
 const mongoose = require("mongoose");
-const { logCheck } = require("./adminAuthController");
 
 //render tags and size page
 exports.renderTagAndSize = async (req, res, next) => {
@@ -14,7 +13,7 @@ exports.renderTagAndSize = async (req, res, next) => {
       sizes,
     });
   } catch (error) {
-    console.log(error);
+    res.status(400).json({message: "somthing went wrong"});
   }
 };
 
@@ -44,7 +43,6 @@ exports.AddNewTag = async (req, res, next) => {
 
     return res.status(200).send(newTag);
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };
@@ -66,7 +64,6 @@ exports.deleteTag = async (req, res, next) => {
 
     res.status(200).send(tag);
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };
@@ -85,7 +82,6 @@ exports.renderEditTagPage = async (req, res, next) => {
     }
     return res.render("admin/adminDasbord/editTag", { tag });
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };
@@ -124,10 +120,8 @@ exports.editTag = async (req, res, next) => {
     if (!updatedTag) {
       return next(createError(404, "tag not found"));
     }
-    console.log(updatedTag);
     res.status(200).send({ tagName: tagNameUpper });
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };
@@ -202,7 +196,6 @@ exports.renderEditSizePage = async (req, res, next) => {
     }
     return res.render("admin/adminDasbord/editSize", { size });
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };
@@ -238,7 +231,6 @@ exports.editSize = async (req, res, next) => {
     }
    return res.status(200).send({ updatedSize });
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };

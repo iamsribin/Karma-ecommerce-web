@@ -3,19 +3,17 @@ const CategoryOffer = require("../../models/adminModels/categoryOffer");
 const Category = require("../../models/adminModels/category");
 const Product = require("../../models/adminModels/product");
 
+//render offer manage page
 exports.renderManageOfferPage = async (req, res) =>{
     const referralDetails = await Referral.find({}); 
     const CategoryOfferCount = await CategoryOffer.countDocuments();
-
-    console.log("render",referralDetails,CategoryOfferCount);
     res.render('admin/adminDasbord/offerManage',{referralDetails,CategoryOfferCount});
 }
 
-
+// update referralLink
 exports.updateReferralLink = async (req, res) => {
     try {
         const { reward } = req.body;
-        console.log("reward", reward);
         const exist = await Referral.find({});
         let referral;
         if (exist.length === 0) {
@@ -26,12 +24,11 @@ exports.updateReferralLink = async (req, res) => {
 
         res.status(200).json({ referral: referral });
     } catch (error) {
-        console.log("errrrrrrr", error);
         res.status(500).json({ error: 'An error occurred while updating the referral link.' });
     }
 }
 
-
+// delete referral link
 exports.deleteReferral = async (req, res) => {
     try {
         const referral = await Referral.findOneAndDelete({});
@@ -46,9 +43,11 @@ exports.deleteReferral = async (req, res) => {
     }
 }
 
+// render manage categoroy offer page
 exports.renderManageOfferCategory = async (req, res) =>{
     try {
         const offerCategorys = await CategoryOffer.find({isActive: true}).populate("category_id"); 
+       
         const categorys = await Category.find({isActive: true}); 
 
         const offerCategorysWithExpiryStatus = offerCategorys.map((category) => {
@@ -59,28 +58,30 @@ exports.renderManageOfferCategory = async (req, res) =>{
             };
           });
 
-        console.log("render offer",offerCategorysWithExpiryStatus);
         res.render('admin/adminDasbord/categoryOfferManage',{offerCategorysWithExpiryStatus,categorys});
     } catch (error) {
         console.log(error);
     }
 }
+
+//add category
 exports.addNewCategoryOffer = async (req, res) => {
     try {
-        console.log("body", req.body);
-        const { offerPercentage, category_id, expiryDate } = req.body;
+        const { offerPercentage, category_id  } = req.body;
+        const expiryDate = new Date(req.body.expiryDate);
         
         const newCategoryOffer = new CategoryOffer({ offerPercentage, category_id, expiryDate });
         await newCategoryOffer.save();
-        
+
         // Update products with no offerAmount or empty offerAmount
         await Product.updateMany(
             {
                 category: category_id,
                 $or: [
                     { offerAmount: { $exists: false } },
-                    { offerAmount: null },
-                    { offerAmount: "" }
+                    { offerAmount: undefined },
+                    { offerAmount: "" },
+                    {offerAmount: null}
                 ]
             },
             [
@@ -117,12 +118,9 @@ exports.addNewCategoryOffer = async (req, res) => {
             ]
         );
 
-
-        console.log("new", newCategoryOffer);
         return res.status(200).json({ newCategoryOffer });
     } catch (error) {
-        console.log(error);
-        
+
         if (error.code === 11000) {
             return res.status(400).json({ error: "This category has already been added" });
         }
@@ -130,9 +128,11 @@ exports.addNewCategoryOffer = async (req, res) => {
     }
 }
 
+// edit category offer
 exports.updateCategoryOffer = async (req, res) => {
     try {
-        const { offerPercentage, category_id, expiryDate, id } = req.body;
+        const { offerPercentage, category_id, id } = req.body;
+        const expiryDate = new Date(req.body.expiryDate);
 
         const updatedCategoryOffer = await CategoryOffer.findByIdAndUpdate(id, {
             offerPercentage,
@@ -215,7 +215,6 @@ exports.deleteCategoryOffer = async (req, res) =>{
 
         return res.status(200).json({ message: "Category offer deleted successfully" });
     } catch (error) {
-        console.log(error);
         res.status(500).json({ error: "Something went wrong" });
     }
 }

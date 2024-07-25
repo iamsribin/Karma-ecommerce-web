@@ -25,7 +25,6 @@ exports.createRazerPayOrder = async (req, res) => {
         console.log(error);
         throw Error(error);
       }
-      console.log("sendorder:",order);
       res.status(200).json({ order });
     });
   } catch (error) {
@@ -37,8 +36,6 @@ exports.verifyPayment = async (req, res) => {
   try {
 
     const userId = req.session.userId;
-
-    console.log("body",req.body);
 
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature, wallet, orderId} =
       req.body;
@@ -71,7 +68,6 @@ exports.verifyPayment = async (req, res) => {
       .status(200)
       .json({ message: "Payment verified successfully" });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -137,7 +133,6 @@ exports.addMoneyWallet = async (req, res) =>{
       }
       return res.status(200).json({amount:amount})
   } catch (error) {
-    console.log(error);
     res.status(400).json({ error: error.message });
   }
 }
@@ -147,8 +142,6 @@ exports.verifyPaymentFailedPayment = async (req, res) =>{
     const userId = req.session.userId;
 
     const { error: { metadata: { payment_id, order_id } }, orderId } = req.body;
-
-    console.log(payment_id, order_id, orderId);
 
     const order = await Order.findOne({orderId});
 
@@ -164,6 +157,6 @@ exports.verifyPaymentFailedPayment = async (req, res) =>{
 
     return res.status(200).json({ success: true, message: "Failed payment recorded" })
   } catch (error) {
-    console.log(error);
+    res.status(500).json({message: "somthing went wrong"});  
   }
 }

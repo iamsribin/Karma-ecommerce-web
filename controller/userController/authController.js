@@ -63,9 +63,7 @@ exports.saveNewPassword = async (req, res, next) => {
 
     return res.redirect("/login");  
   } catch (error) {
-
-    console.log("new password save error:", error);
-  }
+    res.status(400).json({message: "somthing went wrong"});  }
 };
 
 //logout user
@@ -76,8 +74,8 @@ exports.logout = async (req, res) => {
     return res.redirect("/");
   } catch (error) {
 
-    console.log("google log out error", error);
-  }
+    res.status(400).json({message: "somthing went wrong"});
+    }
 
   if (req.session.googleId) {
     res.redirect("/auth/logout");
@@ -94,6 +92,3 @@ exports.logout = async (req, res) => {
   });
 };
 
-exports.update = (req, res) => {};
-
-exports.delete = (req, res) => {};

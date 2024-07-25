@@ -5,7 +5,7 @@ const mongoose = require("mongoose");
 
 //render categories and brand page
 exports.renderCategoriesAndBrands = async (req, res, next) => {
-  try {
+
     const categories = await categoryDB.find({});
     const brands = await brandDB.find({});
 
@@ -13,10 +13,6 @@ exports.renderCategoriesAndBrands = async (req, res, next) => {
       categories,
       brands,
     });
-
-  } catch (error) {
-    console.log(error);
-  }
 };
 
 //render add category page
@@ -48,7 +44,7 @@ exports.AddNewCategory = async (req, res, next) => {
 
     return res.status(200).send(newCategory);
   } catch (error) {
-    console.log(error);
+
     return next(createError(null, null));
   }
 };
@@ -70,7 +66,6 @@ exports.deleteCategory = async (req, res, next) => {
 
     res.status(200).send(category);
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };
@@ -90,7 +85,6 @@ exports.renderEditCategoryPage = async (req, res, next) => {
     return res.render("admin/adminDasbord/editCategory",{category});
     
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 }
@@ -127,11 +121,9 @@ const category = await categoryDB.findOneAndUpdate(
 if (!category) {
   return next(createError(404, "category not found"));
 }
-console.log(category);
 res.status(200).send({ category });
 
 }catch(error){
-  console.log(error);
 return next(createError(null, null));
 }
 }
@@ -208,10 +200,8 @@ exports.renderEditBrandPage = async (req, res, next) => {
     return res.render("admin/adminDasbord/editBrand",{brand});
     
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
-
 }
 
 //edit brand
@@ -245,11 +235,9 @@ const brand = await brandDB.findOneAndUpdate(
 if (!brand) {
   return next(createError(404, "category not found"));
 }
-console.log(brand);
 res.status(200).send({ brand });
 
 }catch(error){
-  console.log(error);
 return next(createError(null, null));
 }
 }

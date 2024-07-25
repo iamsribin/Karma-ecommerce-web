@@ -8,7 +8,6 @@ const Size = require("../../models/adminModels/size");
 const Tag = require("../../models/adminModels/tag");
 const Brand = require("../../models/adminModels/brand");
 const Review = require("../../models/userModels/reviewModel");
-const { logCheck } = require("../adminController/adminAuthController");
 
 // get single product
 exports.getProduct = async (req, res, next) => {
@@ -20,7 +19,7 @@ exports.getProduct = async (req, res, next) => {
     }
     const cart = await cartDB.findOne({ userId: req.session.userId });
     cartLength = cart?.cart?.length;
-    // Fetch the single product along with its brand and category
+
     const product = await productDB
       .findOne({ _id: id, isActive: true })
       .populate("brand")
@@ -35,7 +34,6 @@ exports.getProduct = async (req, res, next) => {
       return res.render("errorPages/404");
     }
 
-    // Fetch related products by the same category, excluding the current product
     const relatedProducts = await productDB
       .find({
         category: product.category._id,
@@ -46,6 +44,8 @@ exports.getProduct = async (req, res, next) => {
       .populate("category")
       .populate("tag")
       .limit(5);
+
+console.log("related",relatedProducts);
 
     const reviews = await Review.find({ product: id })
       .populate("userId", "name profilePicture")
@@ -76,7 +76,6 @@ exports.getProduct = async (req, res, next) => {
       title: "Single Product",
     });
   } catch (error) {
-    console.log(error);
     return next(createError(500, error.message));
   }
 };
@@ -214,7 +213,7 @@ try {
       totalPages: Math.ceil(totalAvailableProducts / limit),
     });
 } catch (error) {
-  console.log("category render erro:",error);
+  res.status(500).json({message: "somthing went wrong"});  
 }
  
 };
@@ -306,7 +305,6 @@ exports.getProducts = async (req, res) => {
       totalPages: Math.ceil(totalAvailableProducts / limit),
     });
   } catch (error) {
-    console.log(error);
     res.status(400).json({ error: error.message });
   }
 };
@@ -377,7 +375,6 @@ exports.searchProduct = async (req, res) => {
       tags,
     });
   } catch (err) {
-    console.error(err);
     res.status(500).send("Internal Server Error");
   }
 };

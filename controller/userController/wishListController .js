@@ -57,8 +57,6 @@ const getWishlist = async (req, res) => {
       wishlist
     });
   } catch (error) {
-    console.log(error);
-
     res.status(400).json({ error: error.message });
   }
 };
@@ -146,7 +144,6 @@ const deleteOneProductFromWishlist = async (req, res) => {
     const userId = req.session.userId;
 
     const { productId } = req.body;
-console.log(productId);
     if (!mongoose.Types.ObjectId.isValid(productId)) {
       throw Error("Invalid Product !!!");
     }

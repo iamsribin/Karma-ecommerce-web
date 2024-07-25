@@ -17,41 +17,24 @@
             <h2 class="mb-0">My Wallet</h2>
             <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMoneyModal">Add Money</button>
         </div>
-        <div class="card-body">
-            <div class="bg-light p-3 mb-3">
-                <h5 class="mb-0">
-                    <img src="/uploads/assets/wallet.png" alt="Wallet" style="width: 50px;">
-                    <span class="walletBalance">Balance: ₹<%= wallet?.balance?.toFixed(2) || '0.00' %></span>
-                </h5>
-            </div>
-            <h5>History</h5>
-            <% if (wallet && wallet.transactions && wallet.transactions.length > 0) { %>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Date</th>
-                            <th>Amount</th>
-                            <th>Type</th>
-                            <th>Info</th>
-                        </tr>
-                    </thead>
-                    <tbody id="transactionTable">
-                        <% wallet.transactions.forEach((transaction) => { %>
-                            <tr>
-                                <td><%= transaction.createdAt.toDateString() %></td>
-                                <td>₹<%= transaction.amount.toFixed(2) %></td>
-                                <td class="<%= transaction.type === 'credit' ? 'green-text' : 'red-text' %>">
-                                    <%= transaction.type %>
-                                  </td>
-                                <td><%= transaction.description %></td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
-                </table>
-            <% } else { %>
-                <p id="noHistoryMessage" class="text-muted">No history found</p>
-            <% } %>
-        </div>
+<div class="card-body">
+    <div class="bg-light p-3 mb-3">
+        <h5 class="mb-0">
+            <img src="/uploads/assets/wallet.png" alt="Wallet" style="width: 50px;">
+            <span class="walletBalance">Balance: ₹<%= wallet?.balance?.toFixed(2) || '0.00' %></span>
+        </h5>
+    </div>
+    <h5>History</h5>
+    <div id="paginated-transactions" data-transactions='<%= JSON.stringify(wallet?.transactions || []) %>'>
+        <!-- Paginated transactions will be inserted here by JavaScript -->
+    </div>
+
+    <div class="pagination-controls">
+        <button id="prv-page" class="btn btn-secondary">Previous</button>
+        <span id="page-info"></span>
+        <button id="nxt-page" class="btn btn-secondary">Next</button>
+    </div>
+</div>
     </div>
 </div>
 
@@ -80,7 +63,109 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    // Pagination variables and functions
+let transactions = [];
+const transactionPerPage = 7;
+let currPage = 1;
+
+function renderTransactions(page) {
+    const startIndex = (page - 1) * transactionPerPage;
+    const endIndex = startIndex + transactionPerPage;
+    const paginatedTransactions = transactions.slice(startIndex, endIndex);
+
+    const transactionContainer = document.getElementById('paginated-transactions');
+    transactionContainer.innerHTML = '';
+
+    if (paginatedTransactions.length > 0) {
+        const table = document.createElement('table');
+        table.className = 'table';
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Info</th>
+                </tr>
+            </thead>
+            <tbody id="transactionTable">
+            </tbody>
+        `;
+
+        const tbody = table.querySelector('#transactionTable');
+
+        paginatedTransactions.forEach(transaction => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${new Date(transaction.createdAt).toDateString()}</td>
+                <td>₹${transaction.amount.toFixed(2)}</td>
+                <td class="${transaction.type === 'credit' ? 'green-text' : 'red-text'}">
+                    ${transaction.type}
+                </td>
+                <td>${transaction.description}</td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        transactionContainer.appendChild(table);
+    } else {
+        transactionContainer.innerHTML = '<p id="noHistoryMessage" class="text-muted">No history found</p>';
+    }
+
+    updatePaginationControl();
+}
+
+function updatePaginationControl() {
+    const prevButton = document.getElementById('prv-page');
+    const nextButton = document.getElementById('nxt-page');
+    const pageInfo = document.getElementById('page-info');
+
+    prevButton.disabled = currPage === 1;
+    nextButton.disabled = currPage === Math.ceil(transactions.length / transactionPerPage);
+
+    pageInfo.textContent = `Page ${currPage} of ${Math.ceil(transactions.length / transactionPerPage)}`;
+}
+
+// Event listeners and initialization
+document.addEventListener("DOMContentLoaded", function() {
+    const transactionsData = document.getElementById('paginated-transactions').dataset.transactions;
+    transactions = JSON.parse(transactionsData);
+    renderTransactions(currPage);
+
+    document.getElementById('prv-page').addEventListener('click', () => {
+        if (currPage > 1) {
+            currPage--;
+            renderTransactions(currPage);
+        }
+    });
+
+    document.getElementById('nxt-page').addEventListener('click', () => {
+        if (currPage < Math.ceil(transactions.length / transactionPerPage)) {
+            currPage++;
+            renderTransactions(currPage);
+        }
+    });
+
+
+// Function to update frontend after adding money
+function updateFrontend(amount) {
+    const balanceElement = document.querySelector('.walletBalance');
+    const currentBalance = parseFloat(balanceElement.textContent.split('₹')[1]);
+    const newBalance = currentBalance + amount;
+    balanceElement.textContent = `Balance: ₹${newBalance.toFixed(2)}`;
+
+    const newTransaction = {
+        createdAt: new Date(),
+        amount: amount,
+        type: 'credit',
+        description: 'Wallet Recharged'
+    };
+
+    transactions.unshift(newTransaction);
+    currPage = 1; // Reset to first page
+    renderTransactions(currPage);
+}
+
         const addMoneyForm = document.getElementById('addMoneyForm');
     const amountInput = document.getElementById('amount');
     const transactionTable = document.getElementById('transactionTable');

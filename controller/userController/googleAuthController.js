@@ -6,7 +6,6 @@ const {createError} = require("../../utils/errors");
 exports.googleLoginSucess = async (req, res, next) => {
   try {
     if (req.user) {
-      console.log(req.user);
       const { displayName: name, photos, emails, id: googleId } = req.user;
       const photo = photos && photos.length > 0 ? photos[0].value : null;
       const email = emails && emails.length > 0 ? emails[0].value : null;
@@ -57,7 +56,6 @@ exports.googleLoginSucess = async (req, res, next) => {
      return next(createError(403, "Not Authorized!"));
     }
   } catch (error) {
-    console.log("googl",error);
    return next(createError(null, null));
   }
 };

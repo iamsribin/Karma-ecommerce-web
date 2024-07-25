@@ -1,4 +1,3 @@
-
 const Order = require("../../models/userModels/orderModel");
 const User = require("../../models/userModels/userModel");
 const mongoose = require("mongoose");
@@ -12,8 +11,6 @@ exports.createNewReview = async (req, res) => {
         //rating, productid, discription, orderid
         const userId = req.session.userId;
       const body = req.body;
-
-      console.log("body",body);
   
       if (!mongoose.Types.ObjectId.isValid(body.order)) {
         const order = await Order.findOne({ orderId: body.order });
@@ -60,7 +57,6 @@ exports.createNewReview = async (req, res) => {
   
       res.status(200).json({ review, updatedProduct });
     } catch (error) {
-        console.log(error);
      return res.status(400).json({ error: error.message });
     }
   };    
@@ -68,7 +64,6 @@ exports.createNewReview = async (req, res) => {
   // Edit review
 exports.editReview = async (req, res) => {
   try {
-    console.log("edit body",req.body);
       const { order, rating, Description, product } = req.body;
       const userId = req.session.userId;
 
@@ -99,7 +94,6 @@ exports.editReview = async (req, res) => {
 
       res.status(200).json({ updatedReview, updatedProduct });
   } catch (error) {
-      console.log(error);
       res.status(400).json({ error: error.message });
   }
 };
@@ -107,7 +101,6 @@ exports.editReview = async (req, res) => {
 // Delete review
 exports.deleteReview = async (req, res) => {
   try {
-    console.log("delete body",req.body);
       const { product, order } = req.body;
       const userId = req.session.userId;
 
@@ -141,7 +134,6 @@ exports.deleteReview = async (req, res) => {
 
       res.status(200).json({ message: "Review deleted successfully", updatedProduct });
   } catch (error) {
-      console.log(error);
       res.status(400).json({ error: error.message });
   }
 }

@@ -18,14 +18,12 @@ async function maxOtpExceeded() {
   try {
 
     const userWithOtp = await User.findOne({ otp: { $exists: true } });
-    console.log("user with otp: " + userWithOtp);
     if (userWithOtp) {
       await User.deleteOne({ _id: userWithOtp._id });
       return true; 
     }
     return false;
   } catch (error) {
-    console.error("Error in maxOtpExceeded:", error);
     throw error; 
   }
 }
@@ -33,7 +31,6 @@ async function maxOtpExceeded() {
 async function deleteOtp(email) {
   try {
     CurrentCount++;
-    console.log("current coutn:",CurrentCount);
     if (CurrentCount === MAX_OTP_COUNT) {
       const userDeleted = await maxOtpExceeded();
       if (userDeleted) {
@@ -109,7 +106,7 @@ async function giveReward(userId){
   await Referral.findOneAndUpdate({}, { $inc: { userCount: 1 } }, { new: true });
 
   } catch (error) {
-    console.error("Error in giveReward:", error);
+    res.status(500).json({message: "somthing went wrong"});  
   }
 }
 
@@ -186,7 +183,7 @@ const sendOTP = async (req, res, next) => {
         }
 
       } catch (error) {
-        console.error("Error deleting user document:", error);
+        res.status(500).json({message: "somthing went wrong"});  
       }   
     }, 5 * 60 * 1000);
 

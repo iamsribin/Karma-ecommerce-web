@@ -11,9 +11,6 @@ const path = require("path");
 const Referral = require("../../models/adminModels/referral");
 const Wallet = require("../../models/userModels/walletModel");
 
-//render user profile
-const itemsPerPage = 4;
-
 exports.getUserProfile = async (req, res, next) => {
   try {
     const id = req.session.userId;
@@ -22,46 +19,30 @@ exports.getUserProfile = async (req, res, next) => {
     
     const cart = await cartDB.findOne({userId: req.session.userId});
     const cartLength = cart?.cart?.length;
-
-    const wallet = await Wallet.findOne({user: id})
-    .sort({createdAt: -1});
-
-     const page = parseInt(req.query.page) || 1;
-
-const skip = (page - 1) * itemsPerPage;
+    
+    const wallet = await Wallet.findOne({user: id}).sort({createdAt: -1});
+    
+    // Sort transactions in descending order (newest first)
+    if (wallet && wallet.transactions) {
+      wallet.transactions.sort((a, b) => b.createdAt - a.createdAt);
+    }
 
     const orders = await Order.find({ userId: id })
-    .populate('products.productId')
-    .populate('products.size')
-    .populate("coupon")
-    .sort({createdAt: -1})
-    .skip(skip)
+      .populate('products.productId')
+      .populate('products.size')
+      .populate("coupon")
+      .sort({createdAt: -1});
 
-    const referral = await Referral.findOne({  });
+    const referral = await Referral.findOne({});
 
-
-    const totalOrders = await Order.countDocuments({ userId: id });
-    const totalPages = Math.ceil(totalOrders / itemsPerPage);
-
-    if (req.xhr) {
-      console.log("xxxxxxxxxhhhhhhhhhrrrrrrr");
-      return res.json({
-        orders,
-        currentPage: page,
-        totalPages: totalPages
-      });
-    }
-    
     res.render("user/pages/userProfile", {
       userDetalis,
       cartLength,
-      user:userDetalis,
+      user: userDetalis,
       addresses: addresses?.addresses,
       orders,
       referral,
       wallet,
-      currentPage: page,
-      totalPages: totalPages
     });
   } catch (error) {
     console.log(error);
@@ -120,7 +101,7 @@ exports.editUserInfo = async (req, res, next) => {
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    console.error("Error updating profile:", error);
+    console.log(error);
     res.status(500).json({ message: "Server error" });
   }
 };
@@ -132,8 +113,6 @@ exports.createAddressess = async (req, res, next) => {
       if (!mongoose.Types.ObjectId.isValid(userId)) {
           return next(createError(404, "Invalid user ID"));
       }
-
-      console.log("add", req.body);
 
       const addressData = {
           fullName: req.body.name,
@@ -152,7 +131,6 @@ exports.createAddressess = async (req, res, next) => {
 
       let newAddress;
       if (userAddress) {
-          console.log("old address");
           userAddress.addresses.push(addressData);
           await userAddress.save();
           newAddress = userAddress.addresses[userAddress.addresses.length - 1];
@@ -161,13 +139,11 @@ exports.createAddressess = async (req, res, next) => {
               userId,
               addresses: [addressData],
           });
-          console.log("log new address");
           newAddress = newAddressDocument.addresses[0];
       }
 
       return res.status(200).send(newAddress);
   } catch (error) {
-      console.log("error new address:", error);
       next(createError(500, error.message || "Internal Server Error"));
   }
 };
@@ -199,7 +175,6 @@ exports.getEditAddressDetailsWithId = async (req, res, next) => {
 
     return res.status(200).json(address);
   } catch (error) {
-    console.error("Error finding address:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -221,7 +196,6 @@ exports.getEditAddress = async (req, res, next) => {
 
     res.status(200).json(address);
   } catch (error) {
-    console.log(error);
     return next(createError(null, null));
   }
 };
@@ -232,7 +206,6 @@ exports.editAddressDetails = async (req, res, next) => {
     const { id } = req.params;
     const userId = req.session.userId;
 
-    console.log("edit body",req.body);
     if (!mongoose.Types.ObjectId.isValid(userId)) {
       return next(createError(404, "Invalid user ID"));
     }
@@ -307,7 +280,6 @@ exports.deleteAddress = async (req, res, next) => {
 
     return res.status(200).json({userAddress});
   } catch (err) {
-    console.log(err);
     return next(createError(500, "Failed to delete address"));
   }
 };
@@ -323,7 +295,6 @@ exports.getUserOrders = async (req, res) => {
 
     res.render('orders', { orders });
   } catch (error) {
-    console.error('Error fetching orders:', error);
     res.status(500).send('Internal Server Error');
   }
 };
@@ -354,7 +325,6 @@ exports.getUserOrdersAPI = async (req, res) => {
       hasPrevPage: page > 1
     });
   } catch (error) {
-    console.error('Error fetching orders:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
@@ -401,7 +371,6 @@ exports.setNewPassword = async (req, res) => {
     return res.status(200).json({message:"success"})
 
   } catch (error) {
-    console.log(error);
     return res.status(500).json({ message: "something went wrong" });
   }
 }
