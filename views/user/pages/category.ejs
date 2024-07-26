@@ -303,8 +303,7 @@
                       ><%= product.basePrice %></span
                     >&nbsp;&nbsp;
                     <span class="button11 badge badge-success text-white"
-                      >Product Offer <%=Math.ceil((product.offerAmount /
-                      product.basePrice) * 100 ) %>%</span
+                      >Product Offer <%= Math.ceil(((product.basePrice- product.offerAmount )/product.basePrice) * 100)%>%</span
                     >
                   </h6>
                   <% } else if (product?.categoryOfferAmount) { %>
@@ -315,9 +314,7 @@
                       ><%= product.basePrice %></span
                     >&nbsp;&nbsp;
                     <span class="button11 badge badge-success text-white"
-                      >Category Offer <%=Math.ceil(100-(
-                      product?.categoryOfferAmount / product.basePrice) * 100 )
-                      %>%</span
+                      >Category Offer <%= Math.ceil((( product.basePrice - product.categoryOfferAmount) / product.basePrice) * 100 ) %>%</span
                     >
                   </h6>
                   <% } else { %>
@@ -501,9 +498,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <span style="text-decoration: line-through; color: crimson">${
                   product.basePrice
                 }</span>&nbsp;&nbsp;
-                <span class="button11 badge badge-success text-white">Product Offer ${Math.ceil(
-                  100 - (product.offerAmount / product.basePrice) * 100
-                )}%</span>
+                <span class="button11 badge badge-success text-white">Product Offer ${ Math.ceil(((product.basePrice- product.offerAmount )/product.basePrice) * 100)}%</span>
               </h6>
             `
               : product.categoryOfferAmount
@@ -513,9 +508,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 <span style="text-decoration: line-through; color: crimson">${
                   product.basePrice
                 }</span>&nbsp;&nbsp;
-                <span class="button11 badge badge-success text-white">Category Offer${Math.ceil(
-                  100 - (product.categoryOfferAmount / product.basePrice) * 100
-                )}%</span>
+                <span class="button11 badge badge-success text-white">Category Offer${ Math.ceil((( product.basePrice - product.categoryOfferAmount) / product.basePrice) * 100 ) }%</span>
               </h6>
             `
               : `<h6 class="text-dark">$ ${product.basePrice}</h6>`

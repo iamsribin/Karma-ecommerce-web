@@ -8,7 +8,7 @@ exports.renderTagAndSize = async (req, res, next) => {
   try {
     const tags = await tagDB.find({});
     const sizes = await sizeDB.find({});
-    return res.render("admin/adminDasbord/tagsAndsize", {
+    return res.render("admin/adminDasbord/tagsAndSize", {
       tags,
       sizes,
     });

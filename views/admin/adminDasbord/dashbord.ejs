@@ -224,7 +224,7 @@
                     <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-overflow">
                         <h2 class="tm-block-title">New orders</h2>
                         <div class="tm-notification-items">
-                        <%  if(newOrder){  %>
+                        <%  if(newOrder.length > 0){  %>
                           <%  newOrder.forEach((order)=>{  %>
                               <div class="media tm-notification-item">
                                 <div class="tm-gray-circle"><img src="<%=order.userId?.profilePicture%>" alt="Avatar Image" class="rounded-circle" style="width: 80px; height: 80px;" ></div>
@@ -236,13 +236,14 @@
                             </div>
                           <%  })  %>
 
-                         <%  } %>
+                         <%  } else{ %>
+                          <h5 class="text-center"><b>No new order found</b></h5>
+                          <% } %>
                             
                         </div>
                     </div>
                 </div>
 <!-- top products  -->
-
 <div class="col-12 tm-block-col">
   <div class="tm-bg-primary-dark tm-block tm-block-taller tm-block-scroll">
       <h2 class="tm-block-title">top selling product</h2>
@@ -438,8 +439,6 @@
     });
   });
 </script>
-
-
 
 <!-- //sales report  -->
     <script>

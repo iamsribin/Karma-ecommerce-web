@@ -211,7 +211,7 @@ const verifyOtp = async (req, res, next) => {
     if (!isMatch) return next(createError(401, "Invalid OTP"));
      CurrentCount =0;
 
-   const referralLink = `http://localhost:4000/login?userId=${user._id}`;
+   const referralLink = `https://www.karmashop.world/login?userId=${user._id}`;
 
     await User.findOneAndUpdate({ email: user.email },
        { $unset: { otp: "" }, 
@@ -315,7 +315,7 @@ const ForgotOtpPage = async (req, res, next) => {
 };
 
 const renderNewPasswordPage = async (req, res) => {
-  res.render("user/registration/forgotPasswor");
+  res.render("user/registration/forgotPassword");
   }
 module.exports = {
   sendOTP,

@@ -1,5 +1,6 @@
 const Order = require('../../models/userModels/orderModel');
 const moment = require('moment');
+const { logCheck } = require('./adminAuthController');
 
 //render dashboard page
 exports.renderDashboard = async (req, res) => {
@@ -234,6 +235,7 @@ exports.renderDashboard = async (req, res) => {
     .populate("userId")
     // .sort({ createdAt: -1 });
     
+    console.log("new order",newOrder);
     // admin/adminDasbord/orders
     res.render("admin/adminDasbord/dashbord", {
       salesData,
