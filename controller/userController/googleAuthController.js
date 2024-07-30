@@ -37,6 +37,10 @@ exports.googleLoginSucess = async (req, res, next) => {
           profilePicture: photo,
         }); 
 
+        const referralLink = `https://www.karmashop.world/login?userId=${newUser._id}`;
+
+       newUser.referralLink = referralLink
+
         let savedUser = await newUser.save();
 
         // Log in the new user
