@@ -10,7 +10,7 @@ exports.googleLoginSucess = async (req, res, next) => {
       const photo = photos && photos.length > 0 ? photos[0].value : null;
       const email = emails && emails.length > 0 ? emails[0].value : null;
 
-      const existingUser = await userDB.findOne({ googleId: { $exists: true } });
+      const existingUser = await userDB.findOne({ googleId: { $exists: true }, email: email});
       const loginWithEmail = await userDB.findOne({ email: email });
 
       if( loginWithEmail && !existingUser){

@@ -71,6 +71,15 @@ exports.logout = async (req, res) => {
   try {
     req.logout();
 
+    req.session.destroy((err) => {
+      req.logout();
+  
+      if (err) {
+        return next(createError(null, null));
+      }
+      return res.json({ loggedIn: false, redirectTo: "/" });
+    });
+
     return res.redirect("/");
   } catch (error) {
 
@@ -90,5 +99,7 @@ exports.logout = async (req, res) => {
     }
     return res.json({ loggedIn: false, redirectTo: "/" });
   });
+
+  
 };
 
