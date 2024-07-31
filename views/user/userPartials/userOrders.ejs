@@ -61,7 +61,7 @@
         <%if(order.coupon){%>
         <p>
           coupon applyed. code: <b><%= order.coupon.couponCode %></b> discount:
-          <b><%= order.couponDiscount %></b>
+          <b><%= order.coupon.offerAmount %></b>
         </p>
         <%}%>
       </div>
@@ -203,7 +203,7 @@ function renderOrders(page) {
           ${order.coupon ? `
             <p>
               coupon applied. code: <b>${order.coupon.couponCode}</b> discount:
-              <b>${order.couponDiscount}</b>
+              <b>${order.coupon.offerAmount}</b>
             </p>
           ` : ''}
         </div>

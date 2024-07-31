@@ -122,22 +122,22 @@
                   <h4 class="mb-2">Price:</h4>
                   <% if (product.offerAmount) { %>
                   <p>
-                    $<%= product.offerAmount %>
+                    ₹ <%= product.offerAmount %>
                     <span
                       style="text-decoration: line-through; margin-left: 10px"
-                      >$<%= product.basePrice %></span
+                      >₹<%= product.basePrice %></span
                     >
                   </p>
                   <% } else if(product?.categoryOfferAmount) { %>
                   <p>
-                    $<%= product.categoryOfferAmount %>
+                    ₹<%= product.categoryOfferAmount %>
                     <span
                       style="text-decoration: line-through; margin-left: 10px"
-                      >$<%= product.basePrice %></span
+                      >₹<%= product.basePrice %></span
                     >
                   </p>
                   <% } else { %>
-                  <p>$<%= product.basePrice %></p>
+                  <p>₹<%= product.basePrice %></p>
 
                   <% } %>
                 </div>
@@ -370,7 +370,7 @@
                   </div>
                   <% if (product.offerAmount) { %>
                   <h6 class="text-dark">
-                    $ <%= product.offerAmount %>&nbsp;&nbsp;
+                    ₹ <%= product.offerAmount %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"
                       ><%= product.basePrice %></span
                     >&nbsp;&nbsp;
@@ -382,7 +382,7 @@
                   <% } else if (product?.categoryOfferAmount) { %>
 
                   <h6 class="text-dark">
-                    $ <%= product?.categoryOfferAmount
+                    ₹ <%= product?.categoryOfferAmount
                     %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"
                       ><%= product.basePrice %></span
@@ -395,7 +395,7 @@
                   </h6>
                   <% } else { %>
                   <h6 class="text-dark">
-                    <span>$</span><%= product.basePrice %>
+                    <span>₹</span><%= product.basePrice %>
                   </h6>
                   <% } %>
                 </div>
@@ -524,7 +524,7 @@
                   </div>
                   <% if (relatedProduct.offerAmount) { %>
                   <h6 class="text-dark">
-                    $ <%= relatedProduct.offerAmount %>&nbsp;&nbsp;
+                    ₹ <%= relatedProduct.offerAmount %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"
                       ><%= relatedProduct.basePrice %></span
                     >&nbsp;&nbsp;
@@ -537,7 +537,7 @@
                   <% } else if (relatedProduct?.categoryOfferAmount) { %>
 
                   <h6 class="text-dark">
-                    $ <%= relatedProduct?.categoryOfferAmount
+                    ₹ <%= relatedProduct?.categoryOfferAmount
                     %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"
                       ><%= relatedProduct.basePrice %></span

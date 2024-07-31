@@ -91,7 +91,7 @@
                         <th>NO</th>
                         <th>CATEGORY NAME</th>
                         <th>EXPIRY</th>
-                        <th>OFFER PRICE</th>
+                        <th>OFFER</th>
                         <th>EXPIRY DATE</th>
                         <th>ACTION</th>
                     </tr>
@@ -109,7 +109,7 @@
                                         <div class="tm-status-circle moving"></div>
                                     <% } %>
                                 </td>
-                                <td><%= category.offerPercentage %></td>
+                                <td><%= category.offerPercentage %>%</td>
                                 <td><%= new Date(category.expiryDate).toDateString() %></td>
                                 <td>
                                     <a class="btn btn-danger btn-sm deleteAction" onclick="deleteCategoryOffer('<%= category._id %>')">

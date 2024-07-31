@@ -32,7 +32,7 @@ exports.getUserProfile = async (req, res, next) => {
       .populate('products.size')
       .populate("coupon")
       .sort({createdAt: -1});
-
+console.log("order",orders[0]);
     const referral = await Referral.findOne({});
 
     res.render("user/pages/userProfile", {

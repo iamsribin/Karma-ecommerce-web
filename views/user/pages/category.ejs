@@ -298,7 +298,7 @@
                   </div>
                   <% if (product.offerAmount) { %>
                   <h6 class="text-dark">
-                    $ <%= product.offerAmount %>&nbsp;&nbsp;
+                    ₹ <%= product.offerAmount %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"
                       ><%= product.basePrice %></span
                     >&nbsp;&nbsp;
@@ -309,7 +309,7 @@
                   <% } else if (product?.categoryOfferAmount) { %>
 
                   <h6 class="text-dark">
-                    $ <%= product?.categoryOfferAmount %>&nbsp;&nbsp;
+                    ₹ <%= product?.categoryOfferAmount %>&nbsp;&nbsp;
                     <span style="text-decoration: line-through; color: crimson"
                       ><%= product.basePrice %></span
                     >&nbsp;&nbsp;
@@ -319,7 +319,7 @@
                   </h6>
                   <% } else { %>
                   <h6 class="text-dark">
-                    <span>$</span><%= product.basePrice %>
+                    <span>₹</span><%= product.basePrice %>
                   </h6>
                   <% } %>
                 </div>
@@ -494,7 +494,7 @@ document.addEventListener("DOMContentLoaded", function () {
             product.offerAmount
               ? `
               <h6 class="text-dark">
-                $ ${product.offerAmount}&nbsp;&nbsp;
+                ₹ ${product.offerAmount}&nbsp;&nbsp;
                 <span style="text-decoration: line-through; color: crimson">${
                   product.basePrice
                 }</span>&nbsp;&nbsp;
@@ -504,14 +504,14 @@ document.addEventListener("DOMContentLoaded", function () {
               : product.categoryOfferAmount
               ? `
               <h6 class="text-dark">
-                $ ${product.categoryOfferAmount}&nbsp;&nbsp;
+                ₹ ${product.categoryOfferAmount}&nbsp;&nbsp;
                 <span style="text-decoration: line-through; color: crimson">${
                   product.basePrice
                 }</span>&nbsp;&nbsp;
                 <span class="button11 badge badge-success text-white">Category Offer${ Math.ceil((( product.basePrice - product.categoryOfferAmount) / product.basePrice) * 100 ) }%</span>
               </h6>
             `
-              : `<h6 class="text-dark">$ ${product.basePrice}</h6>`
+              : `<h6 class="text-dark">₹ ${product.basePrice}</h6>`
           }
         </div>
     </div>

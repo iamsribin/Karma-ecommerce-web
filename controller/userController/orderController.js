@@ -436,12 +436,30 @@ exports.cancelOrder = async (req, res, next) => {
       { new: true }
     );
 
-    if (order.paymentMethod !== "cashOnDelivery") {
+    // if (order.paymentMethod !== "cashOnDelivery") {
       // Adding the refund to wallet of user.
+
+      const orderTotal = order.totalPrice - canceledProduct.totalPrice;
+      let refundAmount = canceledProduct.totalPrice;
+      order.totalPrice -= canceledProduct.totalPrice;
+
+      if(order.couponDiscount){
+      const coupon = await Coupon.findById(order.coupon);
+
+      if(orderTotal < coupon.minimumPurchaseAmount){
+        refundAmount = canceledProduct.totalPrice - coupon.offerAmount
+        // order.coupon = null;
+        order.couponDiscount = null;
+        console.log("refund amount clnncel",refundAmount);
+        }
+      }
+      
+      order.save()
+      console.log("refund amountt outt xcop",refundAmount);
 
       await Payment.create({
         orderId: order.orderId,
-        amount: canceledProduct.totalPrice,
+        amount: refundAmount,
         payment_id: `wallet_${uuid.v4()}`,
         user: userId,
         status: "refunded",
@@ -469,12 +487,12 @@ exports.cancelOrder = async (req, res, next) => {
       if (exists) {
         wallet = await Wallet.findByIdAndUpdate(exists._id, {
           $inc: {
-            balance: canceledProduct.totalPrice,
+            balance: refundAmount,
           },
           $push: {
             transactions: {
               transaction_id: counter.count + 1,
-              amount: canceledProduct.totalPrice,
+              amount:refundAmount,
               type: "credit",
               description: "Order Cancellation Refund",
               orderId: order._id,
@@ -485,11 +503,11 @@ exports.cancelOrder = async (req, res, next) => {
       } else {
         wallet = await Wallet.create({
           user: userId,
-          balance: canceledProduct.totalPrice,
+          balance: refundAmount,
           transactions: [
             {
               transaction_id: counter.count + 1,
-              amount: canceledProduct.totalPrice,
+              amount: refundAmount,
               type: "credit",
               description: "Order Cancellation Refund",
               orderId: order._id,
@@ -498,7 +516,7 @@ exports.cancelOrder = async (req, res, next) => {
           ],
         });
       }
-    }
+    // }
 
    return res.status(200).json({ message: "Order cancelled successfully" });
   } catch (error) {

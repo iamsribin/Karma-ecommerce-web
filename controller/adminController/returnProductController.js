@@ -1,12 +1,10 @@
-const userDB = require("../../models/userModels/userModel");
-const cartDB = require("../../models/userModels/cartModel");
-const AddressDB = require("../../models/userModels/addressModel");
+
 const Products = require("../../models/adminModels/product");
-const Size = require("../../models/adminModels/size");
 const orderDB = require("../../models/userModels/orderModel");
 const Counter = require("../../models/userModels/counterModel");
 const Payment = require("../../models/userModels/paymentModel");
 const Wallet = require("../../models/userModels/walletModel");
+const Coupon = require("../../models/adminModels/coupon");
 const uuid = require("uuid");
 
 //function increment or decrement product count
@@ -156,6 +154,7 @@ exports.updateReturnStatus = async (req, res, next) =>{
 
     const returnedProduct = order.products[index];
 
+
     // Update product stock
     updateProductList(
       returnedProduct.productId,
@@ -164,10 +163,26 @@ exports.updateReturnStatus = async (req, res, next) =>{
     );
 
     if (newStatus === "returned") {
+      const orderTotal = order.totalPrice - returnedProduct.totalPrice;
+      let refundAmount = returnedProduct.totalPrice;
+      order.totalPrice -= returnedProduct.totalPrice;
+      order.discount -= returnedProduct.offerPrice ? returnedProduct.price - returnedProduct.offerPrice: 0;
+
+      if(order.coupon){
+      const coupon = await Coupon.findById(order.coupon);
+
+      if(orderTotal < coupon.minimumPurchaseAmount){
+        refundAmount = returnedProduct.totalPrice - coupon.offerAmount
+        order.coupon = null;
+        // order.couponDiscount = null;
+        }
+      }
+      
+      order.save()
       // Adding the refund to wallet of user.
       await Payment.create({
         orderId: returnedProduct.orderId,
-        amount: returnedProduct.totalPrice,
+        amount: refundAmount,
         payment_id: `wallet_${uuid.v4()}`,
         user: order.userId,
         status: "refunded",
@@ -197,12 +212,12 @@ exports.updateReturnStatus = async (req, res, next) =>{
       if (exists) {
         wallet = await Wallet.findByIdAndUpdate(exists._id, {
           $inc: {
-            balance: returnedProduct.totalPrice,
+            balance: refundAmount,
           },
           $push: {
             transactions: {
               transaction_id: counter.count + 1,
-              amount: returnedProduct.totalPrice,
+              amount:refundAmount,
               type: "credit",
               description: "Order Cancellation Refund",
               orderId: order._id,
@@ -213,11 +228,11 @@ exports.updateReturnStatus = async (req, res, next) =>{
       } else {
         wallet = await Wallet.create({
           user: order.userId,
-          balance: returnedProduct.totalPrice,
+          balance: refundAmount,
           transactions: [
             {
               transaction_id: counter.count + 1,
-              amount: returnedProduct.totalPrice,
+              amount: refundAmount,
               type: "credit",
               description: "Order Cancellation Refund",
               orderId: order._id,
